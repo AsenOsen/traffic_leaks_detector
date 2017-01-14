@@ -1,0 +1,11 @@
+# Compiled Object files
+target/
+
+
+# Tests
+src/test/
+
+
+# IDE files
+.idea/
+*.iml
