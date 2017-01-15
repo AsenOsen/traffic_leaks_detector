@@ -1,6 +1,6 @@
 package detector.NetwPrimitives.TrafficTable;
 
-import detector.Alerter;
+import detector.Alerter.Alerter;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
@@ -9,7 +9,6 @@ import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TrafficSelector;
 import detector.DB_OsProcessesInfo;
 import detector.OsProcessesPrimitives.NetProcess;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -134,7 +133,7 @@ public class TrafficTable {
                 _ipTraffic.entrySet().iterator();
         while(ipTraffic.hasNext())
         {
-            if(ipTraffic.next().getValue().getInactivityTimeSec() > downTime)
+            if(ipTraffic.next().getValue().getInactivityTimeSec() >= downTime)
                 ipTraffic.remove();
         }
 
@@ -142,7 +141,7 @@ public class TrafficTable {
                 _portTraffic.entrySet().iterator();
         while(portTraffic.hasNext())
         {
-            if(portTraffic.next().getValue().getInactivityTimeSec() > downTime)
+            if(portTraffic.next().getValue().getInactivityTimeSec() >= downTime)
                 portTraffic.remove();
         }
 
@@ -150,7 +149,7 @@ public class TrafficTable {
                 _processTraffic.entrySet().iterator();
         while(processTraffic.hasNext())
         {
-            if(processTraffic.next().getValue().getInactivityTimeSec() > downTime)
+            if(processTraffic.next().getValue().getInactivityTimeSec() >= downTime)
                 processTraffic.remove();
         }
     }
@@ -183,7 +182,7 @@ public class TrafficTable {
     * Determines if there is elements in different traffic tables(ip, port, process)
     * which are belong to the same activity. Remove them if detected.
     * */
-    public void smartCollapse()
+    public void removeSimilarities()
     {
         // OS Processes has the highest collapsing priority
         if(_processTraffic.size() > 0)
@@ -228,17 +227,18 @@ public class TrafficTable {
 
 
     /*
-    * Call complaining methods on traffic which contains inside traffic tables
+    * Call complaining methods on traffic which contains
+    * inside current traffic tables
     * */
-    public void raiseAlerts()
+    public void raiseComplaints(Alerter alerter)
     {
         for(Map.Entry<NetProcess, TrafficFlow> entry : _processTraffic.entrySet())
-            Alerter.complainAboutProcess(entry.getKey(), entry.getValue());
+            alerter.complainAboutProcess(entry.getKey(), entry.getValue());
 
         for(Map.Entry<IPv4Address, TrafficFlow> entry : _ipTraffic.entrySet())
-            Alerter.complainAboutIp(entry.getKey(), entry.getValue());
+            alerter.complainAboutIp(entry.getKey(), entry.getValue());
 
         for(Map.Entry<Port, TrafficFlow> entry : _portTraffic.entrySet())
-            Alerter.complainAboutPort(entry.getKey(), entry.getValue());
+            alerter.complainAboutPort(entry.getKey(), entry.getValue());
     }
 }

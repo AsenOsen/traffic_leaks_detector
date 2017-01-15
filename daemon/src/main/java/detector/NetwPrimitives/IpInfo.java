@@ -19,24 +19,32 @@ public class IpInfo {
 
     public IpInfo(String jsonData)
     {
-
         dump = new String(jsonData);
 
         try
         {
             JSONObject json = new JSONObject(jsonData);
-            ip = json.getString("ip");
-            hostname = json.getString("hostname");
-            city = json.getString("city");
-            region = json.getString("region");
-            country = json.getString("country");
-            location = json.getString("loc");
-            organization = json.getString("org");
+
+            if(json.has("ip"))
+                ip = json.getString("ip");
+            if(json.has("hostname"))
+                hostname = json.getString("hostname");
+            if(json.has("city"))
+                city = json.getString("city");
+            if(json.has("region"))
+                region = json.getString("region");
+            if(json.has("country"))
+                country = json.getString("country");
+            if(json.has("loc"))
+                location = json.getString("loc");
+            if(json.has("org"))
+                organization = json.getString("org");
         }
         catch (JSONException e)
         {
             LogHandler.Warn("Error parsing json object: "+e.getMessage()+", JSON: "+dump);
         }
+
     }
 
 

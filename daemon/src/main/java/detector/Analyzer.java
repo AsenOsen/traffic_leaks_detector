@@ -1,9 +1,10 @@
 package detector;
 
+import detector.Alerter.BigTrafficLeakAlerter;
+import detector.Alerter.LeakageAlerter;
+import detector.Alerter.LongLivingTrafficAlerter;
 import detector.NetwPrimitives.*;
-import detector.NetwPrimitives.TrafficTable.TrafficSelectors.BlackIpSelector;
-import detector.NetwPrimitives.TrafficTable.TrafficSelectors.BlackProcessSelector;
-import detector.NetwPrimitives.TrafficTable.TrafficSelectors.OverflowsSelector;
+import detector.NetwPrimitives.TrafficTable.TrafficSelectors.*;
 import detector.NetwPrimitives.TrafficTable.TrafficTable;
 
 /************************************************************************************
@@ -19,8 +20,8 @@ public class Analyzer{
     // private TrafficTable time05sec;  // network traffic during last 5 seconds
     // private TrafficTable time30sec;  // network traffic during last 30 seconds
     // private TrafficTable time60sec;  // network traffic during last minute
-    private TrafficTable traffic = new TrafficTable(); // common traffic heap
-    private TrafficTable alertsTable; // suspicious traffic
+    private TrafficTable passiveTrafficCollector = new TrafficTable();
+    private TrafficTable activeTrafficCollector = new TrafficTable();
 
 
     private Analyzer(){  }
@@ -34,19 +35,11 @@ public class Analyzer{
 
     public void analyze()
     {
-        // all traffic flows which has been inactive during last second - remove
-        traffic.removeInactive(1f);
+        // clear collectors each 10 and 2 seconds! otherwise it is risky to lose potential leak detection
 
-        TrafficTable overflows = traffic.selectSubset(new OverflowsSelector());
-        //overflows = overflows.selectSubset(new BlackIpSelector());
-        //overflows = overflows.selectSubset(new BlackProcessSelector());
-
-        // if something was detected, its traffic flow should be removed
-        traffic.removeSubset(overflows);
-
-
-        alertsTable = overflows;
-        alert();
+        analyzeStableLeaks();
+        analyzeBigTrafficLeaks();
+        //analyzeLongLivers();
     }
 
 
@@ -55,17 +48,48 @@ public class Analyzer{
         int payloadSize = netPacket.getPayloadSize();
 
         // Accept packet if has payload
-        if(payloadSize > 0)
+        if (payloadSize > 0)
         {
-            traffic.add(netPacket);
+            passiveTrafficCollector.add(netPacket);
+            activeTrafficCollector.add(netPacket);
         }
     }
 
 
-    private void alert()
+    private void analyzeBigTrafficLeaks()
     {
-        alertsTable.smartCollapse();
-        alertsTable.raiseAlerts();
+        passiveTrafficCollector.removeInactive(10f);
+
+        TrafficTable leaks = passiveTrafficCollector.selectSubset(new BigAndFastSelector());
+        passiveTrafficCollector.removeSubset(leaks);
+       // activeTrafficCollector.removeSubset(leaks);
+
+        leaks.removeSimilarities();
+        leaks.raiseComplaints(new BigTrafficLeakAlerter());
+    }
+
+
+    private void analyzeStableLeaks()
+    {
+        activeTrafficCollector.removeInactive(2f);
+
+        TrafficTable leaks = activeTrafficCollector.selectSubset(new StableLeakageSelector());
+        activeTrafficCollector.removeSubset(leaks);
+        //passiveTrafficCollector.removeSubset(leaks);
+
+        leaks.removeSimilarities();
+        leaks.raiseComplaints(new LeakageAlerter());
+    }
+
+
+    private void analyzeLongLivers()
+    {
+        TrafficTable longTimeTraffic = passiveTrafficCollector.selectSubset(new LongLiversSelector());
+        //activeTrafficCollector.removeSubset(longTimeTraffic);
+        passiveTrafficCollector.removeSubset(longTimeTraffic);
+
+        longTimeTraffic.removeSimilarities();
+        longTimeTraffic.raiseComplaints(new LongLivingTrafficAlerter());
     }
 
 }

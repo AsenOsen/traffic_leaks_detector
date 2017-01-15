@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**************************************************************
@@ -22,7 +23,7 @@ public class NetInterceptor implements PcapPacketHandler {
 
     private static final NetInterceptor instance = new NetInterceptor();
     private ArrayList<Pcap> channels = null;
-    private Queue<PcapPacket> packetQueue = new LinkedBlockingQueue<PcapPacket>();
+    private BlockingQueue<PcapPacket> packetQueue = new LinkedBlockingQueue<PcapPacket>();
     //volatile int a=0, b=0;
 
 
@@ -53,10 +54,13 @@ public class NetInterceptor implements PcapPacketHandler {
     @Override
     public void nextPacket(PcapPacket packet, Object userData)
     {
-        //Analyzer.getInstance().register(new Packet(packet));
-        packetQueue.offer(packet);
+        try {
+            packetQueue.put(packet);
+            //System.out.println(a+" --- "+b);
+        } catch (InterruptedException e) {
+
+        }
         //a++;
-        //System.out.println(a+" --- "+b);
     }
 
 
@@ -123,11 +127,16 @@ public class NetInterceptor implements PcapPacketHandler {
                 {
                     // Each iteration looks for new packets and if found,
                     // offers it to the Analyzer`s singleton instance
-                    PcapPacket rawPacket = packetQueue.poll();
-                    if(rawPacket != null) {
-                        Analyzer.getInstance().register(new Packet(rawPacket));
-                        //b++;
-                        //System.out.println(a+" --- "+b);
+                    try {
+                        PcapPacket rawPacket = packetQueue.take();
+                        if(rawPacket != null) {
+                            Analyzer.getInstance().register(new Packet(rawPacket));
+                            //b++;
+                            //System.out.println(a+" --- "+b);
+                        }
+
+                    } catch (InterruptedException e) {
+
                     }
                 }
             }
