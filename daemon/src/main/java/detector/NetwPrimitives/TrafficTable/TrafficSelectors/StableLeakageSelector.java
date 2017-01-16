@@ -11,6 +11,18 @@ import detector.OsProcessesPrimitives.NetProcess;
  */
 public class StableLeakageSelector implements TrafficSelector
 {
+    private int allowedLeakSize;
+    private int allowedActivitySec;
+    private int allowedInactivitySec;
+
+
+    public StableLeakageSelector(int maxTrafficBytes, int minActivitySec, int maxInactivitySec)
+    {
+        this.allowedLeakSize = maxTrafficBytes;
+        this.allowedActivitySec = minActivitySec;
+        this.allowedInactivitySec = maxInactivitySec;
+    }
+
 
     @Override
     public boolean select(IPv4Address dstIp, TrafficFlow trafficFlow)
@@ -42,7 +54,7 @@ public class StableLeakageSelector implements TrafficSelector
     private boolean isOverflowed(TrafficFlow trafficFlow)
     {
         boolean isSuspiciousTrafficSize =
-                trafficFlow.getBytes() >= 1024 * 32;
+                trafficFlow.getBytes() >= allowedLeakSize;
 
         return  isSuspiciousTrafficSize;
     }
@@ -51,9 +63,9 @@ public class StableLeakageSelector implements TrafficSelector
     private boolean isTrafficActual(TrafficFlow trafficFlow)
     {
         boolean lifeTimeAppropriate =
-                trafficFlow.getUpTimeSec() >= 8;
+                trafficFlow.getActivityTimeSec() >= allowedActivitySec;
         boolean wasActiveNotLongAgo =
-                trafficFlow.getInactivityTimeSec() < 8;
+                trafficFlow.getInactivityTimeSec() < allowedInactivitySec;
 
         return lifeTimeAppropriate && wasActiveNotLongAgo;
     }

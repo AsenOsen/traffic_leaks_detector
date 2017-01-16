@@ -9,32 +9,46 @@ import detector.OsProcessesPrimitives.NetProcess;
  * This class describes the next selection rule:
  * "older than 1 minute"
  */
-public class LongLiversSelector implements TrafficSelector {
+public class LongLiversSelector implements TrafficSelector
+{
+    private int allowedTrafficBytes;
+    private int minActivityTimeSec;
+
+    public LongLiversSelector(int minTrafficBytes, int minActivityTimeSec)
+    {
+        this.allowedTrafficBytes = minTrafficBytes;
+        this.minActivityTimeSec = minActivityTimeSec;
+    }
+
 
     @Override
     public boolean select(IPv4Address dstIp, TrafficFlow trafficFlow)
     {
-        return isUpTimeToLong(trafficFlow);
+        return isTrafficSuspicious(trafficFlow);
     }
 
 
     @Override
     public boolean select(Port srcPort, TrafficFlow trafficFlow)
     {
-        return isUpTimeToLong(trafficFlow);
+        return isTrafficSuspicious(trafficFlow);
     }
 
 
     @Override
     public boolean select(NetProcess process, TrafficFlow trafficFlow)
     {
-        return isUpTimeToLong(trafficFlow);
+        return isTrafficSuspicious(trafficFlow);
     }
 
 
-    private boolean isUpTimeToLong(TrafficFlow trafficFlow)
+    private boolean isTrafficSuspicious(TrafficFlow trafficFlow)
     {
-        // if uptime is greater than 1 minute
-        return trafficFlow.getUpTimeSec() >= 60f;
+        boolean isUpTimeTooLong =
+                trafficFlow.getActivityTimeSec() >= minActivityTimeSec;
+        boolean isTrafficSuspicious =
+                trafficFlow.getBytes() >= allowedTrafficBytes;
+
+        return isUpTimeTooLong && isTrafficSuspicious;
     }
 }

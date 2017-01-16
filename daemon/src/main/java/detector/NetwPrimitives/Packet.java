@@ -19,7 +19,7 @@ public class Packet {
     private static final Ip4 ipHeader  = new Ip4();
 
 
-    private IPv4Address destAddress;
+    private IPv4Address dstAddress;
     private Port srcPort;
     private int payloadLen;
 
@@ -38,7 +38,7 @@ public class Packet {
 
     public IPv4Address getDestinationAddress()
     {
-        return new IPv4Address(destAddress);
+        return new IPv4Address(dstAddress);
     }
 
 
@@ -66,7 +66,7 @@ public class Packet {
         synchronized (ipHeader)
         {
             if (packet.hasHeader(ipHeader))
-                destAddress = new IPv4Address(ipHeader.destination());
+                dstAddress = new IPv4Address(ipHeader.destination());
         }
     }
 

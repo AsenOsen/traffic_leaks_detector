@@ -7,6 +7,7 @@ public class IPv4Address {
 
 
     private byte[] address;
+    private String addressStr = null;
 
 
     /*
@@ -15,6 +16,7 @@ public class IPv4Address {
     public IPv4Address(byte[] ipv4)
     {
         address = ipv4;
+        addressStr = this.toString();
     }
     public IPv4Address(IPv4Address ip)
     {
@@ -76,14 +78,15 @@ public class IPv4Address {
 
 
     @Override
-    public int hashCode() {
-        return this.toString() == null ?
-                0 : this.toString().trim().hashCode();
+    public int hashCode()
+    {
+        return addressStr == null ? 0 : addressStr.hashCode();
     }
 
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if(!(obj instanceof IPv4Address))
             return false;
 

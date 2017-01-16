@@ -9,8 +9,7 @@ import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TrafficSelector;
 import detector.DB_OsProcessesInfo;
 import detector.OsProcessesPrimitives.NetProcess;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -50,7 +49,7 @@ public class TrafficTable {
         IPv4Address ip = packet.getDestinationAddress();
         if(ip!=null && ip.isValid())
         {
-            _ipTraffic.putIfAbsent(ip, new TrafficFlow());
+            _ipTraffic.putIfAbsent(ip, createNewFlow());
             _ipTraffic.get(ip).addPayload(packet);
         }
 
@@ -58,7 +57,7 @@ public class TrafficTable {
         Port port = packet.getSourcePort();
         if(port!=null && port.isValid())
         {
-            _portTraffic.putIfAbsent(port, new TrafficFlow());
+            _portTraffic.putIfAbsent(port, createNewFlow());
             _portTraffic.get(port).addPayload(packet);
         }
 
@@ -66,12 +65,12 @@ public class TrafficTable {
         NetProcess portOwnerProcess = DB_OsProcessesInfo.getInstance().getProcessOfPort(port);
         if(portOwnerProcess != null)
         {
-            _processTraffic.putIfAbsent(portOwnerProcess, new TrafficFlow());
+            _processTraffic.putIfAbsent(portOwnerProcess, createNewFlow());
             _processTraffic.get(portOwnerProcess).addPayload(packet);
         }
         else
         {
-            _undefinedProcessTraffic.putIfAbsent(port, new TrafficFlow());
+            _undefinedProcessTraffic.putIfAbsent(port, createNewFlow());
             _undefinedProcessTraffic.get(port).addPayload(packet);
         }
 
@@ -93,7 +92,7 @@ public class TrafficTable {
             NetProcess portOwner = DB_OsProcessesInfo.getInstance().getProcessOfPort(port);
             if(portOwner != null) // port owner is found
             {
-                _processTraffic.putIfAbsent(portOwner, new TrafficFlow());
+                _processTraffic.putIfAbsent(portOwner, createNewFlow());
                 _processTraffic.get(portOwner).mergeWith(portTraffic);
 
                 undProcess.remove();
@@ -105,6 +104,15 @@ public class TrafficTable {
                     undProcess.remove();
             }
         }
+    }
+
+
+    /*
+    * Just produces the new traffic flow
+    * */
+    private TrafficFlow createNewFlow()
+    {
+        return new TrafficFlow();
     }
 
 
@@ -182,7 +190,7 @@ public class TrafficTable {
     * Determines if there is elements in different traffic tables(ip, port, process)
     * which are belong to the same activity. Remove them if detected.
     * */
-    public void removeSimilarities()
+    /*public void removeSimilarities()
     {
         // OS Processes has the highest collapsing priority
         if(_processTraffic.size() > 0)
@@ -223,7 +231,7 @@ public class TrafficTable {
 
         // The lowest priority belongs to PORTs
         // ...
-    }
+    }*/
 
 
     /*
@@ -232,13 +240,50 @@ public class TrafficTable {
     * */
     public void raiseComplaints(Alerter alerter)
     {
+        Set<NetProcess> alertedProcess = new HashSet<NetProcess>(_processTraffic.size());
+        Set<IPv4Address> alertedIp = new HashSet<IPv4Address>(_ipTraffic.size());
+        Set<Port> alertedPort = new HashSet<Port>(_portTraffic.size());
+
+        // OS Processes has the highest alerting priority
         for(Map.Entry<NetProcess, TrafficFlow> entry : _processTraffic.entrySet())
+        {
+            IPv4Address dominantIp = entry.getValue().getDominantDstAddr();
+            Port dominantPort = entry.getValue().getDominantSrcPort();
+
+            alertedIp.add(dominantIp);
+            alertedPort.add(dominantPort);
+            alertedProcess.add(entry.getKey());
+
             alerter.complainAboutProcess(entry.getKey(), entry.getValue());
+        }
 
+        // Destination IPs has the middle alerting priority
         for(Map.Entry<IPv4Address, TrafficFlow> entry : _ipTraffic.entrySet())
-            alerter.complainAboutIp(entry.getKey(), entry.getValue());
+        {
+            NetProcess dominantProcess = entry.getValue().getDominantProcess();
+            Port dominantPort = entry.getValue().getDominantSrcPort();
 
+            if(!alertedIp.contains(entry.getKey()) && !alertedProcess.contains(dominantProcess))
+            {
+                alertedIp.add(entry.getKey());
+                alertedPort.add(dominantPort);
+                alertedProcess.add(dominantProcess);
+
+                alerter.complainAboutIp(entry.getKey(), entry.getValue());
+            }
+        }
+
+        // The lowest alerting priority belongs to PORTs
         for(Map.Entry<Port, TrafficFlow> entry : _portTraffic.entrySet())
-            alerter.complainAboutPort(entry.getKey(), entry.getValue());
+        {
+            IPv4Address dominantIp = entry.getValue().getDominantDstAddr();
+            NetProcess dominantProcess = entry.getValue().getDominantProcess();
+
+            if(!alertedIp.contains(dominantIp) && !alertedProcess.contains(dominantProcess) && !alertedPort.contains(entry.getKey()))
+            {
+                alerter.complainAboutPort(entry.getKey(), entry.getValue());
+            }
+        }
+
     }
 }

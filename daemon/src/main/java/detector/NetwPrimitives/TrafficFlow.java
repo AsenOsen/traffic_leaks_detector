@@ -19,13 +19,13 @@ import java.util.concurrent.ConcurrentMap;
 public class TrafficFlow {
 
     private volatile int totalPayload = 0;
-    private int processedPackets = 0;      // amount of addPayload() calls
-    private long startMillis = 0;          // time when the first byte was added
+    private int totalPackets = 0;      // amount of addPayload() calls
+    private long firstActMillis = 0;          // time when the first byte was added
     private long lastActMillis = 0;        // time of the last AddBytes() call
 
-    private ConcurrentMap<IPv4Address, Integer> ipsPayload   // payload in bytes of each detected DST IPs
+    private ConcurrentMap<IPv4Address, Integer> ipPayload   // payload in bytes of each detected DST IPs
             = new ConcurrentHashMap<IPv4Address, Integer>(32);
-    private ConcurrentMap<Port, Integer> portsPayload        // payload in bytes of each detected SRC PORTs
+    private ConcurrentMap<Port, Integer> portPayload        // payload in bytes of each detected SRC PORTs
             = new ConcurrentHashMap<Port, Integer>(32);
     //private ConcurrentMap<NetProcess, Integer> psPayload     // payload in bytes of each detected OS Process
     //        = new ConcurrentHashMap<NetProcess, Integer>(4);
@@ -33,7 +33,7 @@ public class TrafficFlow {
 
     public TrafficFlow()
     {
-        startMillis = System.currentTimeMillis();
+        firstActMillis = System.currentTimeMillis();
     }
 
 
@@ -43,7 +43,7 @@ public class TrafficFlow {
     public synchronized void addPayload(Packet additional)
     {
         if(totalPayload == 0)
-            startMillis = System.currentTimeMillis();
+            firstActMillis = System.currentTimeMillis();
         lastActMillis = System.currentTimeMillis();
 
         increaseTraffic(additional);
@@ -56,19 +56,19 @@ public class TrafficFlow {
     public synchronized void mergeWith(TrafficFlow traffic)
     {
         totalPayload += traffic.totalPayload;
-        processedPackets += traffic.processedPackets;
-        startMillis = Math.min(startMillis, traffic.startMillis);
+        totalPackets += traffic.totalPackets;
+        firstActMillis = Math.min(firstActMillis, traffic.firstActMillis);
         lastActMillis = Math.max(lastActMillis, traffic.lastActMillis);
 
-        for(IPv4Address ip : traffic.ipsPayload.keySet())
+        for(IPv4Address ip : traffic.ipPayload.keySet())
         {
-            ipsPayload.putIfAbsent(ip, 0);
-            ipsPayload.put(ip, ipsPayload.get(ip) + traffic.ipsPayload.get(ip));
+            ipPayload.putIfAbsent(ip, 0);
+            ipPayload.put(ip, ipPayload.get(ip) + traffic.ipPayload.get(ip));
         }
-        for(Port port : traffic.portsPayload.keySet())
+        for(Port port : traffic.portPayload.keySet())
         {
-            portsPayload.putIfAbsent(port, 0);
-            portsPayload.put(port, portsPayload.get(port) + traffic.portsPayload.get(port));
+            portPayload.putIfAbsent(port, 0);
+            portPayload.put(port, portPayload.get(port) + traffic.portPayload.get(port));
         }
     }
 
@@ -80,18 +80,18 @@ public class TrafficFlow {
     * */
     private void increaseTraffic(Packet packet)
     {
-        IPv4Address destPacketIp = packet.getDestinationAddress();
+        IPv4Address dstPacketIp = packet.getDestinationAddress();
         Port srcPacketPort = packet.getSourcePort();
         int payload = packet.getPayloadSize();
 
         totalPayload += payload;
-        processedPackets++;
+        totalPackets++;
 
-        ipsPayload.putIfAbsent(destPacketIp, 0);
-        ipsPayload.put(destPacketIp, ipsPayload.get(destPacketIp)+payload);
+        ipPayload.putIfAbsent(dstPacketIp, 0);
+        ipPayload.put(dstPacketIp, ipPayload.get(dstPacketIp)+payload);
 
-        portsPayload.putIfAbsent(srcPacketPort, 0);
-        portsPayload.put(srcPacketPort, portsPayload.get(srcPacketPort)+payload);
+        portPayload.putIfAbsent(srcPacketPort, 0);
+        portPayload.put(srcPacketPort, portPayload.get(srcPacketPort)+payload);
     }
 
 
@@ -116,9 +116,9 @@ public class TrafficFlow {
     /*
     * Return time in seconds during which traffic have been collected
     * */
-    public float getUpTimeSec()
+    public float getActivityTimeSec()
     {
-        return (lastActMillis - startMillis) / 1000f;
+        return (lastActMillis - firstActMillis) / 1000f;
     }
 
 
@@ -128,8 +128,8 @@ public class TrafficFlow {
     public IPv4Address getDominantDstAddr()
     {
         // Check each DST IP on dominance
-        for(IPv4Address member : ipsPayload.keySet())
-            if(ipsPayload.get(member) >= getDominancePayloadSize())
+        for(IPv4Address member : ipPayload.keySet())
+            if(ipPayload.get(member) >= getDominancePayloadSize())
                 return member;
 
         return null;
@@ -142,8 +142,8 @@ public class TrafficFlow {
     public Port getDominantSrcPort()
     {
         // Check each SRC PORT on dominance
-        for(Port member : portsPayload.keySet())
-            if(portsPayload.get(member) >= getDominancePayloadSize())
+        for(Port member : portPayload.keySet())
+            if(portPayload.get(member) >= getDominancePayloadSize())
                 return member;
 
         return null;
@@ -158,7 +158,7 @@ public class TrafficFlow {
         HashMap<NetProcess, Integer> processPayload = new HashMap<NetProcess, Integer>();
 
         // make up table NetProcess -> trafficFlow
-        for(Map.Entry<Port, Integer> entry : portsPayload.entrySet())
+        for(Map.Entry<Port, Integer> entry : portPayload.entrySet())
         {
             NetProcess portOwner = entry.getKey().getOwnerProcess();
             if(portOwner == null)
@@ -203,20 +203,20 @@ public class TrafficFlow {
         StringBuilder meanIps = new StringBuilder();
         StringBuilder meanPorts = new StringBuilder();
 
-        for(IPv4Address ip : ipsPayload.keySet())
-                meanIps.append(ip+"("+ipsPayload.get(ip)+"b), ");
-        for(Port port : portsPayload.keySet())
-                meanPorts.append(port+"("+portsPayload.get(port)+"b)"+
+        for(IPv4Address ip : ipPayload.keySet())
+                meanIps.append(ip+"("+ ipPayload.get(ip)+"b), ");
+        for(Port port : portPayload.keySet())
+                meanPorts.append(port+"("+ portPayload.get(port)+"b)"+
                         DB_OsProcessesInfo.getInstance().getProcessOfPort(port)+", ");
 
-        float speedKbPerSec = (totalPayload / getUpTimeSec()) / 1024f;
+        float speedKbPerSec = (totalPayload / getActivityTimeSec()) / 1024f;
         //String type = speedKbPerSec > 30f ? "Отправка накопленных данных" : "Real-Time отправка";
 
         IPv4Address dominant = getDominantDstAddr();
 
         return "KBytes: "+(totalPayload/1024d)+" | "+
-                "AvgPacketSize(b): "+((float)totalPayload/ processedPackets)+" | "+
-                "Uptime(s): "+getUpTimeSec()+" | "+
+                "AvgPacketSize(b): "+((float)totalPayload/ totalPackets)+" | "+
+                "Uptime(s): "+ getActivityTimeSec()+" | "+
                 //"\nType: "+type+
                 "\nDst's: "+meanIps+
                 "\nSrc's: "+meanPorts+

@@ -11,6 +11,15 @@ import detector.OsProcessesPrimitives.NetProcess;
  */
 public class BigAndFastSelector implements TrafficSelector{
 
+    private int allowedTrafficBytes;
+    private int allowedTimeRateSec;
+
+    public BigAndFastSelector(int maxTrafficBytes, int timeRateSec)
+    {
+        this.allowedTrafficBytes = maxTrafficBytes;
+        this.allowedTimeRateSec = timeRateSec;
+    }
+
 
     @Override
     public boolean select(IPv4Address dstIp, TrafficFlow trafficFlow)
@@ -42,7 +51,7 @@ public class BigAndFastSelector implements TrafficSelector{
     private boolean isOverflowed(TrafficFlow trafficFlow)
     {
         boolean isSuspiciousTrafficSize =
-                trafficFlow.getBytes() >= 1024 * 100;
+                trafficFlow.getBytes() >= allowedTrafficBytes;
 
         return  isSuspiciousTrafficSize;
     }
@@ -51,9 +60,9 @@ public class BigAndFastSelector implements TrafficSelector{
     private boolean isTrafficActual(TrafficFlow trafficFlow)
     {
         boolean lifeTimeAppropriate =
-                trafficFlow.getUpTimeSec() <= 10;
+                trafficFlow.getActivityTimeSec() <= allowedTimeRateSec;
         boolean wasActiveNotLongAgo =
-                trafficFlow.getInactivityTimeSec() < 10;
+                trafficFlow.getInactivityTimeSec() < allowedTimeRateSec;
 
         return lifeTimeAppropriate && wasActiveNotLongAgo;
     }

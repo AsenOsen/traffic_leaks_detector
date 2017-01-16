@@ -42,19 +42,22 @@ public class Port {
 
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return port + "";
     }
 
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return port;
     }
 
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if(!(obj instanceof Port))
             return false;
 

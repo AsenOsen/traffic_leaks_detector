@@ -23,6 +23,15 @@ public class Analyzer{
     private TrafficTable passiveTrafficCollector = new TrafficTable();
     private TrafficTable activeTrafficCollector = new TrafficTable();
 
+    private BigAndFastSelector bigLeakSelector = // 100kB per 10sec
+            new BigAndFastSelector(100 * 1024, 10);
+    private StableLeakageSelector stableLeakSelector = // 32 kB during at least 8 sec with inactivity intervals less than 2 sec
+            new StableLeakageSelector(32 * 1024, 8, 2);
+    //private LongLiversSelector longLiversSelector = // 50 kB of non-fading during 60 sec traffic
+    //        new LongLiversSelector(50 * 1024 , 60);
+    private ObsoleteSelector obsoleteSelector = // exists longer than 10 sec
+            new ObsoleteSelector(10);
+
 
     private Analyzer(){  }
 
@@ -35,7 +44,7 @@ public class Analyzer{
 
     public void analyze()
     {
-        // clear collectors each 10 and 2 seconds! otherwise it is risky to lose potential leak detection
+        cleanTraffic();
 
         analyzeStableLeaks();
         analyzeBigTrafficLeaks();
@@ -56,40 +65,45 @@ public class Analyzer{
     }
 
 
-    private void analyzeBigTrafficLeaks()
+    private void cleanTraffic()
     {
         passiveTrafficCollector.removeInactive(10f);
+        activeTrafficCollector.removeInactive(2f);
 
-        TrafficTable leaks = passiveTrafficCollector.selectSubset(new BigAndFastSelector());
-        passiveTrafficCollector.removeSubset(leaks);
-       // activeTrafficCollector.removeSubset(leaks);
-
-        leaks.removeSimilarities();
-        leaks.raiseComplaints(new BigTrafficLeakAlerter());
+        TrafficTable obsolete = passiveTrafficCollector.selectSubset(obsoleteSelector);
+        cleanDetectedTraffic(obsolete);
     }
+
+
+    private void cleanDetectedTraffic(TrafficTable detected)
+    {
+        passiveTrafficCollector.removeSubset(detected);
+        activeTrafficCollector.removeSubset(detected);
+    }
+
+
+    private void analyzeBigTrafficLeaks()
+    {
+        TrafficTable leaks = passiveTrafficCollector.selectSubset(bigLeakSelector);
+        leaks.raiseComplaints(new BigTrafficLeakAlerter());
+        cleanDetectedTraffic(leaks);
+    }
+
 
 
     private void analyzeStableLeaks()
     {
-        activeTrafficCollector.removeInactive(2f);
-
-        TrafficTable leaks = activeTrafficCollector.selectSubset(new StableLeakageSelector());
-        activeTrafficCollector.removeSubset(leaks);
-        //passiveTrafficCollector.removeSubset(leaks);
-
-        leaks.removeSimilarities();
+        TrafficTable leaks = activeTrafficCollector.selectSubset(stableLeakSelector);
         leaks.raiseComplaints(new LeakageAlerter());
+        cleanDetectedTraffic(leaks);
     }
 
 
-    private void analyzeLongLivers()
+    /*private void analyzeLongLivers()
     {
-        TrafficTable longTimeTraffic = passiveTrafficCollector.selectSubset(new LongLiversSelector());
-        //activeTrafficCollector.removeSubset(longTimeTraffic);
-        passiveTrafficCollector.removeSubset(longTimeTraffic);
-
-        longTimeTraffic.removeSimilarities();
-        longTimeTraffic.raiseComplaints(new LongLivingTrafficAlerter());
-    }
+        TrafficTable leaks = passiveTrafficCollector.selectSubset(longLiversSelector);
+        leaks.raiseComplaints(new LongLivingTrafficAlerter());
+        cleanDetectedTraffic(leaks);
+    }*/
 
 }

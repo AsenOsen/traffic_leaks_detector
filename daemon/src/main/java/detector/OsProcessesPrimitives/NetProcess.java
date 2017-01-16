@@ -36,13 +36,15 @@ public class NetProcess {
 
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return pid;
     }
 
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(Object obj)
+    {
         if(!(obj instanceof NetProcess))
             return false;
 
@@ -51,7 +53,8 @@ public class NetProcess {
 
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return String.format("[%s|%s]", getName(), getPid());
     }
 }
