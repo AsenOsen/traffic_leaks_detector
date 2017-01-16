@@ -2,7 +2,7 @@ package detector.NetwPrimitives.TrafficTable.TrafficSelectors;
 
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
-import detector.NetwPrimitives.TrafficFlow;
+import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.OsProcessesPrimitives.NetProcess;
 
 /**

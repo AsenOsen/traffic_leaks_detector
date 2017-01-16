@@ -1,6 +1,9 @@
-package detector.NetwPrimitives;
+package detector.NetwPrimitives.TrafficFlow;
 
 import detector.DB_OsProcessesInfo;
+import detector.NetwPrimitives.IPv4Address;
+import detector.NetwPrimitives.Packet;
+import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
 
 import java.util.HashMap;
@@ -18,14 +21,14 @@ import java.util.concurrent.ConcurrentMap;
 * ***********************************************************************/
 public class TrafficFlow {
 
-    private volatile int totalPayload = 0;
-    private int totalPackets = 0;      // amount of addPayload() calls
-    private long firstActMillis = 0;          // time when the first byte was added
-    private long lastActMillis = 0;        // time of the last AddBytes() call
+    protected volatile int totalPayload = 0;
+    protected int totalPackets = 0;      // amount of addPayload() calls
+    protected long firstActMillis = 0;          // time when the first byte was added
+    protected long lastActMillis = 0;        // time of the last AddBytes() call
 
-    private ConcurrentMap<IPv4Address, Integer> ipPayload   // payload in bytes of each detected DST IPs
+    protected ConcurrentMap<IPv4Address, Integer> ipPayload   // payload in bytes of each detected DST IPs
             = new ConcurrentHashMap<IPv4Address, Integer>(32);
-    private ConcurrentMap<Port, Integer> portPayload        // payload in bytes of each detected SRC PORTs
+    protected ConcurrentMap<Port, Integer> portPayload        // payload in bytes of each detected SRC PORTs
             = new ConcurrentHashMap<Port, Integer>(32);
     //private ConcurrentMap<NetProcess, Integer> psPayload     // payload in bytes of each detected OS Process
     //        = new ConcurrentHashMap<NetProcess, Integer>(4);
@@ -78,7 +81,7 @@ public class TrafficFlow {
      * This is needed for storing the information about
      * active ports/IPs/etc. for traffic flow.
     * */
-    private void increaseTraffic(Packet packet)
+    protected void increaseTraffic(Packet packet)
     {
         IPv4Address dstPacketIp = packet.getDestinationAddress();
         Port srcPacketPort = packet.getSourcePort();

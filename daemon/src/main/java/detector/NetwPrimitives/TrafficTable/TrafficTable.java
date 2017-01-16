@@ -4,7 +4,7 @@ import detector.Alerter.Alerter;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
-import detector.NetwPrimitives.TrafficFlow;
+import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TrafficSelector;
 import detector.DB_OsProcessesInfo;
 import detector.OsProcessesPrimitives.NetProcess;
@@ -24,13 +24,13 @@ import java.util.concurrent.ConcurrentMap;
 public class TrafficTable {
 
 
-    private ConcurrentMap<IPv4Address, TrafficFlow> _ipTraffic   =
+    private ConcurrentMap<IPv4Address, TrafficFlow> ipTraffic =
             new ConcurrentHashMap<IPv4Address, TrafficFlow>(32);
-    private ConcurrentMap<Port, TrafficFlow> _portTraffic =
+    private ConcurrentMap<Port, TrafficFlow> portTraffic =
             new ConcurrentHashMap<Port, TrafficFlow>(32);
     private ConcurrentMap<Port, TrafficFlow> _undefinedProcessTraffic =
             new ConcurrentHashMap<Port, TrafficFlow>(32);
-    private ConcurrentMap<NetProcess, TrafficFlow> _processTraffic =
+    private ConcurrentMap<NetProcess, TrafficFlow> processTraffic =
             new ConcurrentHashMap<NetProcess, TrafficFlow>(32);
 
 
@@ -49,24 +49,24 @@ public class TrafficTable {
         IPv4Address ip = packet.getDestinationAddress();
         if(ip!=null && ip.isValid())
         {
-            _ipTraffic.putIfAbsent(ip, createNewFlow());
-            _ipTraffic.get(ip).addPayload(packet);
+            ipTraffic.putIfAbsent(ip, createNewFlow());
+            ipTraffic.get(ip).addPayload(packet);
         }
 
         // Increases payload of concrete port
         Port port = packet.getSourcePort();
         if(port!=null && port.isValid())
         {
-            _portTraffic.putIfAbsent(port, createNewFlow());
-            _portTraffic.get(port).addPayload(packet);
+            portTraffic.putIfAbsent(port, createNewFlow());
+            portTraffic.get(port).addPayload(packet);
         }
 
         // Increases payload of a process which owns this port
         NetProcess portOwnerProcess = DB_OsProcessesInfo.getInstance().getProcessOfPort(port);
         if(portOwnerProcess != null)
         {
-            _processTraffic.putIfAbsent(portOwnerProcess, createNewFlow());
-            _processTraffic.get(portOwnerProcess).addPayload(packet);
+            processTraffic.putIfAbsent(portOwnerProcess, createNewFlow());
+            processTraffic.get(portOwnerProcess).addPayload(packet);
         }
         else
         {
@@ -92,8 +92,8 @@ public class TrafficTable {
             NetProcess portOwner = DB_OsProcessesInfo.getInstance().getProcessOfPort(port);
             if(portOwner != null) // port owner is found
             {
-                _processTraffic.putIfAbsent(portOwner, createNewFlow());
-                _processTraffic.get(portOwner).mergeWith(portTraffic);
+                processTraffic.putIfAbsent(portOwner, createNewFlow());
+                processTraffic.get(portOwner).mergeWith(portTraffic);
 
                 undProcess.remove();
             }
@@ -110,7 +110,7 @@ public class TrafficTable {
     /*
     * Just produces the new traffic flow
     * */
-    private TrafficFlow createNewFlow()
+    protected TrafficFlow createNewFlow()
     {
         return new TrafficFlow();
     }
@@ -119,16 +119,51 @@ public class TrafficTable {
     /*
     * Removes each traffic record which exists in @sub
     * */
-    public /*synchronized*/ void removeSubset(TrafficTable sub)
+    public /*synchronized*/ void removeIrrelevantSubset(TrafficTable sub)
     {
-        for(IPv4Address ip : sub._ipTraffic.keySet())
-            _ipTraffic.remove(ip);
+        /*for(Map.Entry<NetProcess, TrafficFlow> entry : sub.processTraffic.entrySet())
+        {
+            processTraffic.remove(entry.getKey());
+            removeRelatedElements(entry.getValue());
+        }
+        for(Map.Entry<IPv4Address, TrafficFlow> entry : sub.ipTraffic.entrySet())
+        {
+            ipTraffic.remove(entry.getKey());
+            removeRelatedElements(entry.getValue());
+        }
+        for(Map.Entry<Port, TrafficFlow> entry : sub.portTraffic.entrySet())
+        {
+            portTraffic.remove(entry.getKey());
+            removeRelatedElements(entry.getValue());
+        }*/
 
-        for(Port port : sub._portTraffic.keySet())
-            _portTraffic.remove(port);
+        for(IPv4Address ip : sub.ipTraffic.keySet())
+            ipTraffic.remove(ip);
 
-        for(NetProcess process : sub._processTraffic.keySet())
-            _processTraffic.remove(process);
+        for(Port port : sub.portTraffic.keySet())
+            portTraffic.remove(port);
+
+        for(NetProcess process : sub.processTraffic.keySet())
+            processTraffic.remove(process);
+    }
+
+
+    /*
+    * Cleans all traffic tables where noticed traffic flows
+    * related(by ip, port or process) to @trafficFlow
+    * */
+    private void removeRelatedElements(TrafficFlow trafficFlow)
+    {
+        NetProcess dominantProcess = trafficFlow.getDominantProcess();
+        IPv4Address dominantIp = trafficFlow.getDominantDstAddr();
+        Port dominantPort = trafficFlow.getDominantSrcPort();
+
+        if(dominantProcess != null)
+            processTraffic.remove(dominantProcess);
+        if(dominantIp != null)
+            ipTraffic.remove(dominantIp);
+        if(dominantPort != null)
+            portTraffic.remove(dominantPort);
     }
 
 
@@ -138,7 +173,7 @@ public class TrafficTable {
     public /*synchronized*/ void removeInactive(float downTime)
     {
         Iterator<Map.Entry<IPv4Address, TrafficFlow>> ipTraffic =
-                _ipTraffic.entrySet().iterator();
+                this.ipTraffic.entrySet().iterator();
         while(ipTraffic.hasNext())
         {
             if(ipTraffic.next().getValue().getInactivityTimeSec() >= downTime)
@@ -146,7 +181,7 @@ public class TrafficTable {
         }
 
         Iterator<Map.Entry<Port, TrafficFlow>> portTraffic =
-                _portTraffic.entrySet().iterator();
+                this.portTraffic.entrySet().iterator();
         while(portTraffic.hasNext())
         {
             if(portTraffic.next().getValue().getInactivityTimeSec() >= downTime)
@@ -154,7 +189,7 @@ public class TrafficTable {
         }
 
         Iterator<Map.Entry<NetProcess, TrafficFlow>> processTraffic =
-                _processTraffic.entrySet().iterator();
+                this.processTraffic.entrySet().iterator();
         while(processTraffic.hasNext())
         {
             if(processTraffic.next().getValue().getInactivityTimeSec() >= downTime)
@@ -170,17 +205,17 @@ public class TrafficTable {
     {
         TrafficTable selectedTable = new TrafficTable();
 
-        for(IPv4Address ip : _ipTraffic.keySet())
-            if(selector.select(ip, _ipTraffic.get(ip)))
-                selectedTable._ipTraffic.put(ip, _ipTraffic.get(ip));
+        for(IPv4Address ip : ipTraffic.keySet())
+            if(selector.select(ip, ipTraffic.get(ip)))
+                selectedTable.ipTraffic.put(ip, ipTraffic.get(ip));
 
-        for(Port port : _portTraffic.keySet())
-            if(selector.select(port, _portTraffic.get(port)))
-                selectedTable._portTraffic.put(port, _portTraffic.get(port));
+        for(Port port : portTraffic.keySet())
+            if(selector.select(port, portTraffic.get(port)))
+                selectedTable.portTraffic.put(port, portTraffic.get(port));
 
-        for(NetProcess process : _processTraffic.keySet())
-            if(selector.select(process, _processTraffic.get(process)))
-                selectedTable._processTraffic.put(process, _processTraffic.get(process));
+        for(NetProcess process : processTraffic.keySet())
+            if(selector.select(process, processTraffic.get(process)))
+                selectedTable.processTraffic.put(process, processTraffic.get(process));
 
         return selectedTable;
     }
@@ -193,38 +228,38 @@ public class TrafficTable {
     /*public void removeSimilarities()
     {
         // OS Processes has the highest collapsing priority
-        if(_processTraffic.size() > 0)
+        if(processTraffic.size() > 0)
         {
-            for (NetProcess process : _processTraffic.keySet())
+            for (NetProcess process : processTraffic.keySet())
             {
-                TrafficFlow processTraffic = _processTraffic.get(process);
+                TrafficFlow processTraffic = processTraffic.get(process);
                 IPv4Address dominantIP = processTraffic.getDominantDstAddr();
                 Port dominantPort = processTraffic.getDominantSrcPort();
 
                 if(dominantIP != null) {
-                    TrafficFlow remIpTraffic = _ipTraffic.remove(dominantIP);
+                    TrafficFlow remIpTraffic = ipTraffic.remove(dominantIP);
                     if(remIpTraffic != null && remIpTraffic.getBytes() > processTraffic.getBytes())
-                        _processTraffic.put(process, remIpTraffic);
+                        processTraffic.put(process, remIpTraffic);
                 }
                 if(dominantPort != null) {
-                    TrafficFlow remIpTraffic = _portTraffic.remove(dominantPort);
+                    TrafficFlow remIpTraffic = portTraffic.remove(dominantPort);
                     if(remIpTraffic != null && remIpTraffic.getBytes() > processTraffic.getBytes())
-                        _processTraffic.put(process, remIpTraffic);
+                        processTraffic.put(process, remIpTraffic);
                 }
             }
         }
 
         // Destination IPs has the middle collapsing priority
-        if(_ipTraffic.size() > 0)
+        if(ipTraffic.size() > 0)
         {
-            for (IPv4Address ip : _ipTraffic.keySet())
+            for (IPv4Address ip : ipTraffic.keySet())
             {
-                TrafficFlow ipTraffic = _ipTraffic.get(ip);
-                Port dominantPort = _ipTraffic.get(ip).getDominantSrcPort();
+                TrafficFlow ipTraffic = ipTraffic.get(ip);
+                Port dominantPort = ipTraffic.get(ip).getDominantSrcPort();
                 if(dominantPort != null) {
-                    TrafficFlow remIpTraffic = _portTraffic.remove(dominantPort);
+                    TrafficFlow remIpTraffic = portTraffic.remove(dominantPort);
                     if(remIpTraffic != null && remIpTraffic.getBytes() > ipTraffic.getBytes())
-                        _ipTraffic.put(ip, remIpTraffic);
+                        ipTraffic.put(ip, remIpTraffic);
                 }
             }
         }
@@ -240,12 +275,12 @@ public class TrafficTable {
     * */
     public void raiseComplaints(Alerter alerter)
     {
-        Set<NetProcess> alertedProcess = new HashSet<NetProcess>(_processTraffic.size());
-        Set<IPv4Address> alertedIp = new HashSet<IPv4Address>(_ipTraffic.size());
-        Set<Port> alertedPort = new HashSet<Port>(_portTraffic.size());
+        Set<NetProcess> alertedProcess = new HashSet<NetProcess>(processTraffic.size());
+        Set<IPv4Address> alertedIp = new HashSet<IPv4Address>(ipTraffic.size());
+        Set<Port> alertedPort = new HashSet<Port>(portTraffic.size());
 
         // OS Processes has the highest alerting priority
-        for(Map.Entry<NetProcess, TrafficFlow> entry : _processTraffic.entrySet())
+        for(Map.Entry<NetProcess, TrafficFlow> entry : processTraffic.entrySet())
         {
             IPv4Address dominantIp = entry.getValue().getDominantDstAddr();
             Port dominantPort = entry.getValue().getDominantSrcPort();
@@ -258,7 +293,7 @@ public class TrafficTable {
         }
 
         // Destination IPs has the middle alerting priority
-        for(Map.Entry<IPv4Address, TrafficFlow> entry : _ipTraffic.entrySet())
+        for(Map.Entry<IPv4Address, TrafficFlow> entry : ipTraffic.entrySet())
         {
             NetProcess dominantProcess = entry.getValue().getDominantProcess();
             Port dominantPort = entry.getValue().getDominantSrcPort();
@@ -274,7 +309,7 @@ public class TrafficTable {
         }
 
         // The lowest alerting priority belongs to PORTs
-        for(Map.Entry<Port, TrafficFlow> entry : _portTraffic.entrySet())
+        for(Map.Entry<Port, TrafficFlow> entry : portTraffic.entrySet())
         {
             IPv4Address dominantIp = entry.getValue().getDominantDstAddr();
             NetProcess dominantProcess = entry.getValue().getDominantProcess();

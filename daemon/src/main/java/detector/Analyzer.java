@@ -2,8 +2,8 @@ package detector;
 
 import detector.Alerter.BigTrafficLeakAlerter;
 import detector.Alerter.LeakageAlerter;
-import detector.Alerter.LongLivingTrafficAlerter;
 import detector.NetwPrimitives.*;
+import detector.NetwPrimitives.TrafficTable.TimedTrafficTable;
 import detector.NetwPrimitives.TrafficTable.TrafficSelectors.*;
 import detector.NetwPrimitives.TrafficTable.TrafficTable;
 
@@ -20,17 +20,16 @@ public class Analyzer{
     // private TrafficTable time05sec;  // network traffic during last 5 seconds
     // private TrafficTable time30sec;  // network traffic during last 30 seconds
     // private TrafficTable time60sec;  // network traffic during last minute
-    private TrafficTable passiveTrafficCollector = new TrafficTable();
+   // private TrafficTable passiveTrafficCollector = new TrafficTable();
     private TrafficTable activeTrafficCollector = new TrafficTable();
+    private TrafficTable last10secCollector = new TimedTrafficTable(10);
 
-    private BigAndFastSelector bigLeakSelector = // 100kB per 10sec
-            new BigAndFastSelector(100 * 1024, 10);
+    private OverflowSelector overflowSelector = // 100kB for last 10 second
+            new OverflowSelector(100 * 1024);
     private StableLeakageSelector stableLeakSelector = // 32 kB during at least 8 sec with inactivity intervals less than 2 sec
             new StableLeakageSelector(32 * 1024, 8, 2);
     //private LongLiversSelector longLiversSelector = // 50 kB of non-fading during 60 sec traffic
     //        new LongLiversSelector(50 * 1024 , 60);
-    private ObsoleteSelector obsoleteSelector = // exists longer than 10 sec
-            new ObsoleteSelector(10);
 
 
     private Analyzer(){  }
@@ -59,34 +58,31 @@ public class Analyzer{
         // Accept packet if has payload
         if (payloadSize > 0)
         {
-            passiveTrafficCollector.add(netPacket);
             activeTrafficCollector.add(netPacket);
+            last10secCollector.add(netPacket);
         }
     }
 
 
     private void cleanTraffic()
     {
-        passiveTrafficCollector.removeInactive(10f);
+        last10secCollector.removeInactive(10f);
         activeTrafficCollector.removeInactive(2f);
-
-        TrafficTable obsolete = passiveTrafficCollector.selectSubset(obsoleteSelector);
-        cleanDetectedTraffic(obsolete);
     }
 
 
-    private void cleanDetectedTraffic(TrafficTable detected)
+    private void removeDetectedTraffic(TrafficTable detected)
     {
-        passiveTrafficCollector.removeSubset(detected);
-        activeTrafficCollector.removeSubset(detected);
+        last10secCollector.removeIrrelevantSubset(detected);
+        activeTrafficCollector.removeIrrelevantSubset(detected);
     }
 
 
     private void analyzeBigTrafficLeaks()
     {
-        TrafficTable leaks = passiveTrafficCollector.selectSubset(bigLeakSelector);
+        TrafficTable leaks = last10secCollector.selectSubset(overflowSelector);
         leaks.raiseComplaints(new BigTrafficLeakAlerter());
-        cleanDetectedTraffic(leaks);
+        removeDetectedTraffic(leaks);
     }
 
 
@@ -95,7 +91,7 @@ public class Analyzer{
     {
         TrafficTable leaks = activeTrafficCollector.selectSubset(stableLeakSelector);
         leaks.raiseComplaints(new LeakageAlerter());
-        cleanDetectedTraffic(leaks);
+        removeDetectedTraffic(leaks);
     }
 
 
@@ -103,7 +99,7 @@ public class Analyzer{
     {
         TrafficTable leaks = passiveTrafficCollector.selectSubset(longLiversSelector);
         leaks.raiseComplaints(new LongLivingTrafficAlerter());
-        cleanDetectedTraffic(leaks);
+        removeDetectedTraffic(leaks);
     }*/
 
 }
