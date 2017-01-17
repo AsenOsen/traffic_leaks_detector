@@ -68,13 +68,14 @@ public class TrafficTable {
             processTraffic.putIfAbsent(portOwnerProcess, createNewFlow());
             processTraffic.get(portOwnerProcess).addPayload(packet);
         }
-        else
+        /*else
         {
-            //_undefinedProcessTraffic.putIfAbsent(port, createNewFlow());
-            //_undefinedProcessTraffic.get(port).addPayload(packet);
+            _undefinedProcessTraffic.putIfAbsent(port, createNewFlow());
+            _undefinedProcessTraffic.get(port).addPayload(packet);
         }
 
-        //resolveUndefinedProcessTraffic();
+        resolveUndefinedProcessTraffic();
+        */
     }
 
 
@@ -206,56 +207,8 @@ public class TrafficTable {
 
 
     /*
-    * Determines if there is elements in different traffic tables(ip, port, process)
-    * which are belong to the same activity. Remove them if detected.
-    * */
-    /*public void removeSimilarities()
-    {
-        // OS Processes has the highest collapsing priority
-        if(processTraffic.size() > 0)
-        {
-            for (NetProcess process : processTraffic.keySet())
-            {
-                TrafficFlow processTraffic = processTraffic.get(process);
-                IPv4Address dominantIP = processTraffic.getDominantDstAddr();
-                Port dominantPort = processTraffic.getDominantSrcPort();
-
-                if(dominantIP != null) {
-                    TrafficFlow remIpTraffic = ipTraffic.remove(dominantIP);
-                    if(remIpTraffic != null && remIpTraffic.getBytes() > processTraffic.getBytes())
-                        processTraffic.put(process, remIpTraffic);
-                }
-                if(dominantPort != null) {
-                    TrafficFlow remIpTraffic = portTraffic.remove(dominantPort);
-                    if(remIpTraffic != null && remIpTraffic.getBytes() > processTraffic.getBytes())
-                        processTraffic.put(process, remIpTraffic);
-                }
-            }
-        }
-
-        // Destination IPs has the middle collapsing priority
-        if(ipTraffic.size() > 0)
-        {
-            for (IPv4Address ip : ipTraffic.keySet())
-            {
-                TrafficFlow ipTraffic = ipTraffic.get(ip);
-                Port dominantPort = ipTraffic.get(ip).getDominantSrcPort();
-                if(dominantPort != null) {
-                    TrafficFlow remIpTraffic = portTraffic.remove(dominantPort);
-                    if(remIpTraffic != null && remIpTraffic.getBytes() > ipTraffic.getBytes())
-                        ipTraffic.put(ip, remIpTraffic);
-                }
-            }
-        }
-
-        // The lowest priority belongs to PORTs
-        // ...
-    }*/
-
-
-    /*
     * Call complaining methods on traffic which contains
-    * inside current traffic tables
+    * inside current traffic table
     * */
     public void raiseComplaints(Alerter alerter)
     {

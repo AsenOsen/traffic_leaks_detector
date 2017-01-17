@@ -167,7 +167,7 @@ public class TrafficFlow {
             if(portOwner == null)
                 continue;
 
-            Integer payload = entry.getValue();
+            int payload = entry.getValue();
             if( processPayload.containsKey(portOwner) )
                 processPayload.put(portOwner, processPayload.get(portOwner) + payload);
             else

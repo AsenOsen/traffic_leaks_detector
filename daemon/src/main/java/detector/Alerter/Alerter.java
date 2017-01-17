@@ -1,5 +1,6 @@
 package detector.Alerter;
 
+import detector.Alerter.Threat.ThreatReport;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
@@ -9,62 +10,29 @@ import detector.OsProcessesPrimitives.NetProcess;
  * Abstract class which describes common logic for all specific alert types.
  * Alerts potential traffic leaks.
  */
-public abstract class Alerter {
+public abstract class Alerter
+{
 
-    /*
-    * Detected PROCESS has THE TOP priority - so informative
-    * */
     public void complainAboutProcess(NetProcess process, TrafficFlow traffic)
     {
-        raiseProcessAlert(process, traffic);
+        alert(new ThreatReport(process, traffic));
     }
 
 
-    /*
-    * Detected IP has THE MIDDLE priority - can be false-positive
-    * */
     public void complainAboutIp(IPv4Address ip, TrafficFlow traffic)
     {
-        NetProcess procDominant = traffic.getDominantProcess();
-
-        if(procDominant != null)
-            complainAboutProcess(procDominant, traffic);
-        else
-            raiseIpAlert(ip, traffic);
+        alert(new ThreatReport(ip, traffic));
     }
 
 
-    /*
-    * Detected PORT has THE LOWEST priority - uninformative, can be false-positive
-    * */
     public void complainAboutPort(Port port, TrafficFlow traffic)
     {
-        NetProcess processDominant = traffic.getDominantProcess();
-        IPv4Address ipDominant = traffic.getDominantDstAddr();
-
-        if(processDominant != null)
-            complainAboutProcess(processDominant, traffic);
-        else
-        if(ipDominant != null)
-            complainAboutIp(ipDominant, traffic);
-        else
-            raisePortAlert(port, traffic);
-
+        alert(new ThreatReport(port, traffic));
     }
 
 
     /*
-    * Alerts suspicious process threat
+    * Reports the user about some potential threatReport
     * */
-    protected abstract void raiseProcessAlert(NetProcess process, TrafficFlow traffic);
-
-    /*
-    * Alerts suspicious port threat
-    * */
-    protected abstract void raisePortAlert(Port port, TrafficFlow traffic);
-
-    /*
-    * Alerts suspicious ip threat
-    * */
-    protected abstract void raiseIpAlert(IPv4Address ip, TrafficFlow traffic);
+    protected abstract void alert(ThreatReport threatReport);
 }
