@@ -6,7 +6,7 @@ import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TrafficSelector;
-import detector.DB_OsProcessesInfo;
+import detector.DB_ProcessInfo;
 import detector.OsProcessesPrimitives.NetProcess;
 
 import java.util.*;
@@ -62,7 +62,7 @@ public class TrafficTable {
         }
 
         // Increases payload of a process which owns this port
-        NetProcess portOwnerProcess = DB_OsProcessesInfo.getInstance().getProcessOfPort(port);
+        NetProcess portOwnerProcess = DB_ProcessInfo.getInstance().getProcessOfPort(port);
         if(portOwnerProcess != null)
         {
             processTraffic.putIfAbsent(portOwnerProcess, createNewFlow());
@@ -89,7 +89,7 @@ public class TrafficTable {
             Map.Entry<Port, TrafficFlow> entry = undProcess.next();
             Port port = entry.getKey();
             TrafficFlow portTraffic = entry.getValue();
-            NetProcess portOwner = DB_OsProcessesInfo.getInstance().getProcessOfPort(port);
+            NetProcess portOwner = DB_ProcessInfo.getInstance().getProcessOfPort(port);
             if(portOwner != null) // port owner is found
             {
                 processTraffic.putIfAbsent(portOwner, createNewFlow());

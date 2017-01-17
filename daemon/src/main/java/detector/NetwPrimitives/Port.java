@@ -1,7 +1,7 @@
 package detector.NetwPrimitives;
 
 
-import detector.DB_OsProcessesInfo;
+import detector.DB_ProcessInfo;
 import detector.OsProcessesPrimitives.NetProcess;
 
 public class Port {
@@ -31,7 +31,7 @@ public class Port {
     * */
     public NetProcess getOwnerProcess()
     {
-        return DB_OsProcessesInfo.getInstance().getProcessOfPort(this);
+        return DB_ProcessInfo.getInstance().getProcessOfPort(this);
     }
 
 

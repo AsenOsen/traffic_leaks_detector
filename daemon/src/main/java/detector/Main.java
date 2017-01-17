@@ -1,7 +1,5 @@
 package detector;
 
-import java.util.Random;
-
 public class Main {
 
 
@@ -54,7 +52,7 @@ public class Main {
 
             while ( true )
             {
-                DB_OsProcessesInfo.getInstance().update();
+                DB_ProcessInfo.getInstance().update();
             }
         }
     }

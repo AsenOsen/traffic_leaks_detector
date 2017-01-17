@@ -12,14 +12,15 @@ import detector.OsProcessesPrimitives.platforms.routine.WindowsProcessTableExtra
 * Its instance suppose to accomplish in different thread.
 * The aim pf class: keep actual info about each process`s open ports
 * ****************************************************************************/
-public class DB_OsProcessesInfo {
+public class DB_ProcessInfo
+{
 
-    private static final DB_OsProcessesInfo instance = new DB_OsProcessesInfo();
+    private static final DB_ProcessInfo instance = new DB_ProcessInfo();
     private ProcessTable processTable = new ProcessTable();
     private ProcessTableExtractor platformProcessTable = null;
 
 
-    private DB_OsProcessesInfo()
+    private DB_ProcessInfo()
     {
         String osName = System.getProperty("os.name");
         if(osName != null)
@@ -38,7 +39,7 @@ public class DB_OsProcessesInfo {
     }
 
 
-    public static DB_OsProcessesInfo getInstance()
+    public static DB_ProcessInfo getInstance()
     {
         return instance;
     }
@@ -50,6 +51,7 @@ public class DB_OsProcessesInfo {
         {
             ProcessTable actualProcessTable = platformProcessTable.getActualTable();
             processTable.mergeWith(actualProcessTable);
+            processTable.clearObsoleteData(10);
         }
     }
 

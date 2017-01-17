@@ -1,6 +1,6 @@
 package detector.NetwPrimitives.TrafficFlow;
 
-import detector.DB_OsProcessesInfo;
+import detector.DB_ProcessInfo;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
@@ -210,7 +210,7 @@ public class TrafficFlow {
                 meanIps.append(ip+"("+ ipPayload.get(ip)+"b), ");
         for(Port port : portPayload.keySet())
                 meanPorts.append(port+"("+ portPayload.get(port)+"b)"+
-                        DB_OsProcessesInfo.getInstance().getProcessOfPort(port)+", ");
+                        DB_ProcessInfo.getInstance().getProcessOfPort(port)+", ");
 
         float speedKbPerSec = (totalPayload / getActivityTimeSec()) / 1024f;
         //String type = speedKbPerSec > 30f ? "Отправка накопленных данных" : "Real-Time отправка";
