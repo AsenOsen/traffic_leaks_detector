@@ -28,8 +28,8 @@ public class TrafficTable {
             new ConcurrentHashMap<IPv4Address, TrafficFlow>(32);
     private ConcurrentMap<Port, TrafficFlow> portTraffic =
             new ConcurrentHashMap<Port, TrafficFlow>(32);
-    private ConcurrentMap<Port, TrafficFlow> _undefinedProcessTraffic =
-            new ConcurrentHashMap<Port, TrafficFlow>(32);
+    //private ConcurrentMap<Port, TrafficFlow> _undefinedProcessTraffic =
+    //        new ConcurrentHashMap<Port, TrafficFlow>(32);
     private ConcurrentMap<NetProcess, TrafficFlow> processTraffic =
             new ConcurrentHashMap<NetProcess, TrafficFlow>(32);
 
@@ -43,7 +43,7 @@ public class TrafficTable {
     /*
     * Inserts new network packet to statistics tables
     * */
-    public /*synchronized*/ void add(Packet packet)
+    public void add(Packet packet)
     {
         // Increases payload of destination IP
         IPv4Address ip = packet.getDestinationAddress();
@@ -70,18 +70,18 @@ public class TrafficTable {
         }
         else
         {
-            _undefinedProcessTraffic.putIfAbsent(port, createNewFlow());
-            _undefinedProcessTraffic.get(port).addPayload(packet);
+            //_undefinedProcessTraffic.putIfAbsent(port, createNewFlow());
+            //_undefinedProcessTraffic.get(port).addPayload(packet);
         }
 
-        resolveUndefinedProcessTraffic();
+        //resolveUndefinedProcessTraffic();
     }
 
 
     /*
     * Resolve unknown port owners(processes)
     * */
-    private void resolveUndefinedProcessTraffic()
+    /*private void resolveUndefinedProcessTraffic()
     {
         Iterator<Map.Entry<Port, TrafficFlow>> undProcess = _undefinedProcessTraffic.entrySet().iterator();
         while(undProcess.hasNext())
@@ -104,7 +104,7 @@ public class TrafficTable {
                     undProcess.remove();
             }
         }
-    }
+    }*/
 
 
     /*
@@ -119,32 +119,25 @@ public class TrafficTable {
     /*
     * Removes each traffic record which exists in @sub
     * */
-    public /*synchronized*/ void removeIrrelevantSubset(TrafficTable sub)
+    public void removeIrrelevantSubset(TrafficTable sub)
     {
-        /*for(Map.Entry<NetProcess, TrafficFlow> entry : sub.processTraffic.entrySet())
+        for(Map.Entry<NetProcess, TrafficFlow> entry : sub.processTraffic.entrySet())
         {
             processTraffic.remove(entry.getKey());
             removeRelatedElements(entry.getValue());
         }
+
         for(Map.Entry<IPv4Address, TrafficFlow> entry : sub.ipTraffic.entrySet())
         {
             ipTraffic.remove(entry.getKey());
             removeRelatedElements(entry.getValue());
         }
+
         for(Map.Entry<Port, TrafficFlow> entry : sub.portTraffic.entrySet())
         {
             portTraffic.remove(entry.getKey());
             removeRelatedElements(entry.getValue());
-        }*/
-
-        for(IPv4Address ip : sub.ipTraffic.keySet())
-            ipTraffic.remove(ip);
-
-        for(Port port : sub.portTraffic.keySet())
-            portTraffic.remove(port);
-
-        for(NetProcess process : sub.processTraffic.keySet())
-            processTraffic.remove(process);
+        }
     }
 
 
@@ -170,38 +163,29 @@ public class TrafficTable {
     /*
     * Removes each traffic record which exists so long(not active enough)
     * */
-    public /*synchronized*/ void removeInactive(float downTime)
+    public void removeInactive(float downTime)
     {
-        Iterator<Map.Entry<IPv4Address, TrafficFlow>> ipTraffic =
-                this.ipTraffic.entrySet().iterator();
-        while(ipTraffic.hasNext())
-        {
-            if(ipTraffic.next().getValue().getInactivityTimeSec() >= downTime)
-                ipTraffic.remove();
-        }
+        Iterator<Map.Entry<IPv4Address, TrafficFlow>> ipItr = ipTraffic.entrySet().iterator();
+        while(ipItr.hasNext())
+            if(ipItr.next().getValue().getInactivityTimeSec() >= downTime)
+                ipItr.remove();
 
-        Iterator<Map.Entry<Port, TrafficFlow>> portTraffic =
-                this.portTraffic.entrySet().iterator();
-        while(portTraffic.hasNext())
-        {
-            if(portTraffic.next().getValue().getInactivityTimeSec() >= downTime)
-                portTraffic.remove();
-        }
+        Iterator<Map.Entry<Port, TrafficFlow>> portItr = portTraffic.entrySet().iterator();
+        while(portItr.hasNext())
+            if(portItr.next().getValue().getInactivityTimeSec() >= downTime)
+                portItr.remove();
 
-        Iterator<Map.Entry<NetProcess, TrafficFlow>> processTraffic =
-                this.processTraffic.entrySet().iterator();
-        while(processTraffic.hasNext())
-        {
-            if(processTraffic.next().getValue().getInactivityTimeSec() >= downTime)
-                processTraffic.remove();
-        }
+        Iterator<Map.Entry<NetProcess, TrafficFlow>> processItr = processTraffic.entrySet().iterator();
+        while(processItr.hasNext())
+            if(processItr.next().getValue().getInactivityTimeSec() >= downTime)
+                processItr.remove();
     }
 
 
     /*
     * This method returns a subset from traffic tables which desires the @selector`s condition
     * */
-    public /*synchronized*/ TrafficTable selectSubset(TrafficSelector selector)
+    public TrafficTable selectSubset(TrafficSelector selector)
     {
         TrafficTable selectedTable = new TrafficTable();
 
