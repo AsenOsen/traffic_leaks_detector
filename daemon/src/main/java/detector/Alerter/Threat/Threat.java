@@ -1,52 +1,72 @@
 package detector.Alerter.Threat;
 
 import detector.NetwPrimitives.IPv4Address;
-import detector.NetwPrimitives.IpInfo;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.OsProcessesPrimitives.NetProcess;
 
 import java.util.Date;
+import java.util.Iterator;
 
 /**
- *
+ * Describes a potential leakage threat
  */
-public class ThreatReport
+public class Threat
 {
+
     private NetProcess process;   // process which caused the alert
     private IPv4Address ip;       // ip which caused the alert
     private Port port;            // port which caused the alert
-    private TrafficFlow traffic;  // malicious traffic
+    private TrafficFlow traffic;  // malicious traffic                 // THIS NEEDED ONLY FOR DEBUGGING
 
 
-    public ThreatReport(NetProcess process, TrafficFlow traffic)
+    public Threat(TrafficFlow traffic)
     {
-        this.process = process;
+        this.process = traffic.getDominantProcess();
         this.ip = traffic.getDominantDstAddr();
         this.port = traffic.getDominantSrcPort();
         this.traffic = traffic;
     }
 
 
-    public ThreatReport(IPv4Address ip, TrafficFlow traffic)
+    public String createReport()
     {
-        this.process = traffic.getDominantProcess();
-        this.ip = ip;
-        this.port = traffic.getDominantSrcPort();
-        this.traffic = traffic;
+        Iterator<ThreatPattern> patternsItr = DB_KnownPatterns.getInstance().getPatterns();
+        while(patternsItr.hasNext())
+        {
+            ThreatPattern pattern = patternsItr.next();
+            if(pattern.test(this))
+            {
+                return pattern.createMessage(this) + "\n" + getDebugMessage();
+            }
+        }
+
+        return getDebugMessage();
     }
 
 
-    public ThreatReport(Port port, TrafficFlow traffic)
+    public NetProcess getInitiatorProcess()
     {
-        this.process = traffic.getDominantProcess();
-        this.ip = traffic.getDominantDstAddr();
-        this.port = port;
-        this.traffic = traffic;
+        return process;
+    }
+
+    public IPv4Address getForeignIp()
+    {
+        return ip;
+    }
+
+    public Port getInitiatorPort()
+    {
+        return port;
+    }
+
+    public float getLeakSize()
+    {
+        return traffic.getBytes()/1000f;
     }
 
 
-    public String getHumanReadable()
+    private String getDebugMessage()
     {
         StringBuilder msg = new StringBuilder();
         msg.append("Date: "+(new Date().toString())+"\n");
@@ -61,15 +81,6 @@ public class ThreatReport
             msg.append("[port]Порт отправляет подозрительно много данных\n:"+port + " => " + traffic+"\n");
 
 
-        IpInfo info = ip.getIpInfo();
-        if(info != null)
-        {
-            String owner = info.getOwner();
-            if(owner != null && owner.toLowerCase().indexOf("yandex llc") > -1)
-                msg.append("Яндукс метрика следит за тобой, сын мой...\n");
-        }
-
-
-        return  msg.toString();
+        return msg.toString();
     }
 }

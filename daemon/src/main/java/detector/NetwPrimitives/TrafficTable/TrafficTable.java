@@ -21,9 +21,10 @@ import java.util.concurrent.ConcurrentMap;
  *
  * This is a thread safe class.
 * ************************************************************/
-public class TrafficTable {
+public class TrafficTable
+{
 
-
+    // Each of map below lets make more bondings "entity->trafficFlow"
     private ConcurrentMap<IPv4Address, TrafficFlow> ipTraffic =
             new ConcurrentHashMap<IPv4Address, TrafficFlow>(32);
     private ConcurrentMap<Port, TrafficFlow> portTraffic =
@@ -191,15 +192,15 @@ public class TrafficTable {
         TrafficTable selectedTable = new TrafficTable();
 
         for(IPv4Address ip : ipTraffic.keySet())
-            if(selector.select(ip, ipTraffic.get(ip)))
+            if(selector.select(ipTraffic.get(ip)))
                 selectedTable.ipTraffic.put(ip, ipTraffic.get(ip));
 
         for(Port port : portTraffic.keySet())
-            if(selector.select(port, portTraffic.get(port)))
+            if(selector.select(portTraffic.get(port)))
                 selectedTable.portTraffic.put(port, portTraffic.get(port));
 
         for(NetProcess process : processTraffic.keySet())
-            if(selector.select(process, processTraffic.get(process)))
+            if(selector.select(processTraffic.get(process)))
                 selectedTable.processTraffic.put(process, processTraffic.get(process));
 
         return selectedTable;
@@ -226,7 +227,7 @@ public class TrafficTable {
             alertedPort.add(dominantPort);
             alertedProcess.add(entry.getKey());
 
-            alerter.complainAboutProcess(entry.getKey(), entry.getValue());
+            alerter.complainAboutFlow(entry.getValue());
         }
 
         // Destination IPs has the middle alerting priority
@@ -241,7 +242,7 @@ public class TrafficTable {
                 alertedPort.add(dominantPort);
                 alertedProcess.add(dominantProcess);
 
-                alerter.complainAboutIp(entry.getKey(), entry.getValue());
+                alerter.complainAboutFlow(entry.getValue());
             }
         }
 
@@ -253,7 +254,7 @@ public class TrafficTable {
 
             if(!alertedIp.contains(dominantIp) && !alertedProcess.contains(dominantProcess) && !alertedPort.contains(entry.getKey()))
             {
-                alerter.complainAboutPort(entry.getKey(), entry.getValue());
+                alerter.complainAboutFlow(entry.getValue());
             }
         }
 

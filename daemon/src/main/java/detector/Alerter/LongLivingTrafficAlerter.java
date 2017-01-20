@@ -1,6 +1,6 @@
 package detector.Alerter;
 
-import detector.Alerter.Threat.ThreatReport;
+import detector.Alerter.Threat.Threat;
 
 /**
  * Alerts about long-active traffic flows
@@ -8,10 +8,10 @@ import detector.Alerter.Threat.ThreatReport;
 public class LongLivingTrafficAlerter extends Alerter
 {
     @Override
-    protected void alert(ThreatReport threatReport)
+    protected void alert(Threat threat)
     {
         System.out.println("------------------------------------ Long-living traffic ---");
-        System.out.println(threatReport.getHumanReadable());
+        System.out.println(threat.createReport());
     }
 
 }

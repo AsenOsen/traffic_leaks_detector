@@ -12,36 +12,10 @@ public class BlackProcessSelector implements TrafficSelector
 {
 
     @Override
-    public boolean select(IPv4Address dstIp, TrafficFlow trafficFlow) {
+    public boolean select(TrafficFlow trafficFlow) {
 
         // just an experimental prototyping below...
-        NetProcess dominant = trafficFlow.getDominantProcess();
-        if(dominant != null)
-            if(dominant.getName().toLowerCase().indexOf("chrome") != -1)
-                return false;
-
-        return true;
-
-    }
-
-    @Override
-    public boolean select(Port srcPort, TrafficFlow trafficFlow) {
-
-        // just an experimental prototyping below...
-        NetProcess dominant = trafficFlow.getDominantProcess();
-        if(dominant != null)
-            if(dominant.getName().toLowerCase().indexOf("chrome") != -1)
-                return false;
-
-        return true;
-
-    }
-
-    @Override
-    public boolean select(NetProcess process, TrafficFlow trafficFlow) {
-
-        // just an experimental prototyping below...
-        if(process.getName().toLowerCase().indexOf("chrome") != -1)
+        if(trafficFlow.getDominantProcess().getName().toLowerCase().indexOf("chrome") != -1)
             return false;
 
         return true;

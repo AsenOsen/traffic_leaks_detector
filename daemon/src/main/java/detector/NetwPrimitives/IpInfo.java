@@ -48,9 +48,15 @@ public class IpInfo {
     }
 
 
-    public String getOwner()
+    public String getOrg()
     {
         return organization;
+    }
+
+    public String getHostname()
+    {
+        return hostname.compareToIgnoreCase("No Hostname")==0 ?
+                null : hostname;
     }
 
 

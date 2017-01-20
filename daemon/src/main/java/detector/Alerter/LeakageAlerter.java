@@ -1,6 +1,6 @@
 package detector.Alerter;
 
-import detector.Alerter.Threat.ThreatReport;
+import detector.Alerter.Threat.Threat;
 
 /**
  * Alerts about constant leakage in foreign servers
@@ -8,10 +8,10 @@ import detector.Alerter.Threat.ThreatReport;
 public class LeakageAlerter extends Alerter
 {
     @Override
-    protected void alert(ThreatReport threatReport)
+    protected void alert(Threat threat)
     {
         System.out.println("------------------------------------ Leak traffic ---");
-        System.out.println(threatReport.getHumanReadable());
+        System.out.println(threat.createReport());
     }
 
 }

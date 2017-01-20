@@ -1,5 +1,7 @@
 package detector;
 
+import detector.Alerter.Threat.DB_KnownPatterns;
+
 public class Main {
 
 
@@ -11,6 +13,9 @@ public class Main {
 
     public static void main(String[] args)
     {
+        // Load patterns database
+        DB_KnownPatterns.getInstance().loadDB();
+
         // Begins traffic sniffing
         NetInterceptor.getInstance().startInterceptLoop();
 

@@ -1,6 +1,6 @@
 package detector.Alerter;
 
-import detector.Alerter.Threat.ThreatReport;
+import detector.Alerter.Threat.Threat;
 
 /**
  * Alerts about big outgoing traffic leaks
@@ -8,10 +8,10 @@ import detector.Alerter.Threat.ThreatReport;
 public class BigTrafficLeakAlerter extends Alerter
 {
     @Override
-    protected void alert(ThreatReport threatReport)
+    protected void alert(Threat threat)
     {
         System.out.println("------------------------------------ Big Traffic ---");
-        System.out.println(threatReport.getHumanReadable());
+        System.out.println(threat.createReport());
     }
 
 }

@@ -1,6 +1,6 @@
 package detector.Alerter;
 
-import detector.Alerter.Threat.ThreatReport;
+import detector.Alerter.Threat.Threat;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
@@ -13,26 +13,14 @@ import detector.OsProcessesPrimitives.NetProcess;
 public abstract class Alerter
 {
 
-    public void complainAboutProcess(NetProcess process, TrafficFlow traffic)
+    public void complainAboutFlow(TrafficFlow traffic)
     {
-        alert(new ThreatReport(process, traffic));
-    }
-
-
-    public void complainAboutIp(IPv4Address ip, TrafficFlow traffic)
-    {
-        alert(new ThreatReport(ip, traffic));
-    }
-
-
-    public void complainAboutPort(Port port, TrafficFlow traffic)
-    {
-        alert(new ThreatReport(port, traffic));
+        alert(new Threat(traffic));
     }
 
 
     /*
-    * Reports the user about some potential threatReport
+    * Reports the user about some potential threat
     * */
-    protected abstract void alert(ThreatReport threatReport);
+    protected abstract void alert(Threat threat);
 }

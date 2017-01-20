@@ -13,11 +13,10 @@ import java.util.concurrent.ConcurrentMap;
 
 /*************************************************************************
  * This class contains a single traffic flow.
- * Its instance can be bounded to:
-*    1) IP
-*    2) Port
-*    3) Process
-*    4) ...
+ * TrafficFlow - is a traffic attached to the concrete:
+ *    1) IP
+ *    2) Port
+ *    3) Process
 * ***********************************************************************/
 public class TrafficFlow {
 
@@ -160,7 +159,7 @@ public class TrafficFlow {
     {
         HashMap<NetProcess, Integer> processPayload = new HashMap<NetProcess, Integer>();
 
-        // make up table NetProcess -> trafficFlow
+        // make up table netProcess:trafficFlow
         for(Map.Entry<Port, Integer> entry : portPayload.entrySet())
         {
             NetProcess portOwner = entry.getKey().getOwnerProcess();

@@ -22,21 +22,7 @@ public class LongLiversSelector implements TrafficSelector
 
 
     @Override
-    public boolean select(IPv4Address dstIp, TrafficFlow trafficFlow)
-    {
-        return isTrafficSuspicious(trafficFlow);
-    }
-
-
-    @Override
-    public boolean select(Port srcPort, TrafficFlow trafficFlow)
-    {
-        return isTrafficSuspicious(trafficFlow);
-    }
-
-
-    @Override
-    public boolean select(NetProcess process, TrafficFlow trafficFlow)
+    public boolean select(TrafficFlow trafficFlow)
     {
         return isTrafficSuspicious(trafficFlow);
     }

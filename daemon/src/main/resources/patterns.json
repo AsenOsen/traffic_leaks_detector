@@ -1,0 +1,67 @@
+{
+
+
+  "patterns": {
+
+    "port":{
+      "port": "[0-9]{1,5}",
+      "msg": "В системе обнаружена утечка данных по сети = {kbytes}kB.\nВсе что известо - источникм является порт {port}",
+      "priority": 1
+    },
+
+    "ip":{
+      "ip": "[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}",
+      "msg": "На IP адрес {ip} утекло подозрительно много данных - {kbytes}kB.\nИсточник утечки установить не удалось.",
+      "priority": 2
+    },
+
+    "process":{
+      "pid": "[0-9]{1,5}",
+      "msg": "Процесс {processname} отправил уже {kbytes}kB данных, преимущественно на хост {hostname}(ip={ip}).",
+      "priority": 3
+    },
+
+    "browser" : {
+      "processname" : "chrome|firefox|iexplore|opera|mozilla"  ,
+      "msg": "Какая-то из вкладок браузера отправила уже {kbytes}kB данных с компьютера на хост\n{hostname}(ip={ip})",
+      "priority": 4
+    },
+
+    "yandex_metrica":{
+      "pattern": "browser",
+      "hostname": ".*yandex.ru",
+      "organization": "(.*)|(AS13238.*yandex\\sllc)",
+      "msg": "Яндекс метрика собирает данные о вас из вашего браузера.\nЗа последнее время было отправлено {kbytes}kB",
+      "priority": 5
+    },
+
+    "mailru_metrica":{
+      "pattern": "browser",
+      "hostname": "(smailru\\.net)|(mail\\.ru)",
+      "organization": "AS47764.*Mail\\.Ru",
+      "msg": "Метрика Mail.RU собирает данные о вас из вашего браузера.\nЗа последнее время было отправлено {kbytes}kB",
+      "priority": 5
+    }
+
+  },
+
+
+
+  "ignores": {
+
+    "paranoic":{
+
+    },
+
+    "adequate":{
+
+    },
+
+    "chill":{
+
+    }
+
+  }
+
+
+}
