@@ -1,0 +1,17 @@
+{
+
+  "ignores": [
+
+    {
+      "comment": "Ignores all browsers` traffic",
+      "pattern": "browser"
+    },
+
+    {
+      "comment": "Ignores all typical network processes activity",
+      "processname": "(utorrent.*)|(skype.*)|(steam.*)"
+    }
+
+  ]
+
+}

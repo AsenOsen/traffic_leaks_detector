@@ -35,7 +35,7 @@ public class Threat
         while(patternsItr.hasNext())
         {
             ThreatPattern pattern = patternsItr.next();
-            if(pattern.test(this))
+            if(pattern.matches(this))
             {
                 return pattern.createMessage(this) + "\n" + getDebugMessage();
             }

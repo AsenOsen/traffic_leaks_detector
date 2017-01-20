@@ -1,5 +1,7 @@
 package detector.Alerter.Threat;
 
+import com.fasterxml.jackson.annotation.*;
+
 import detector.LogHandler;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
@@ -15,33 +17,43 @@ import java.util.regex.Pattern;
 /**
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ThreatPattern implements Comparable<ThreatPattern>
 {
+    @JacksonInject
     private final String codeName;
+    @JsonProperty("priority")
     private final int priority;
 
-    private Pattern
-        pid,
-        ip,
-        port,
-        processName,
-        organization,
-        hostname;
-
+    @JsonProperty("pid")
+    private String pid;
+    @JsonProperty("ip")
+    private String ip;
+    @JsonProperty("port")
+    private String port;
+    @JsonProperty("processname")
+    private String processName;
+    @JsonProperty("organization")
+    private String organization;
+    @JsonProperty("hostname")
+    private String hostname;
+    @JsonProperty("dependant-patterns")
+    private String dependantPatterns;
+    @JsonProperty("msg")
     private String msg;
 
-    private Pattern dependantPatterns;
     private ArrayList<ThreatPattern> dependencies = new ArrayList<ThreatPattern>();
 
 
-    public ThreatPattern(String name, int priorityLevel)
+    @JsonCreator
+    public ThreatPattern(@JsonProperty("codeName") String name, @JsonProperty("priority") int priorityLevel)
     {
         this.codeName = name;
         this.priority = priorityLevel;
     }
 
 
-    public boolean test(Threat threat)
+    public boolean matches(Threat threat)
     {
         NetProcess process = threat.getInitiatorProcess();
         Port port = threat.getInitiatorPort();
@@ -70,70 +82,36 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         Port port = threat.getInitiatorPort();
         IPv4Address ip = threat.getForeignIp();
         IpInfo info = ip==null ? null : ip.getIpInfo();
+        String leakSize = (int)threat.getLeakSize()+"";
 
-        float leakSize = threat.getLeakSize();
+        replaceMsgVar("\\{ip\\}", (ip==null ? null : ip.toString()));
+        replaceMsgVar("\\{port\\}", (port==null ? null : port.toString()));
+        replaceMsgVar("\\{pid\\}", (process==null ? null : process.getPid()+""));
+        replaceMsgVar("\\{processname\\}", (process==null ? null : process.getName()));
+        replaceMsgVar("\\{organization\\}", (info==null ? null : info.getOrg()));
+        replaceMsgVar("\\{hostname\\}", (info==null ? null : info.getHostname()));
+        replaceMsgVar("\\{kbytes\\}", leakSize);
 
-        return msg.
-                replaceAll("\\{ip\\}", (ip==null ? "?" : ip.toString())).
-                replaceAll("\\{port\\}", (port==null ? "?" : port.toString())).
-                replaceAll("\\{pid\\}", (process==null ? "?" : process.getPid())+"").
-                replaceAll("\\{processname\\}", (process==null ? "?" : process.getName())).
-                replaceAll("\\{organization\\}", (info==null ? "?" : info.getOrg())).
-                replaceAll("\\{hostname\\}", (info==null ? "?" : info.getHostname())).
-                replaceAll("\\{kbytes\\}", (int)leakSize+"");
+        return msg;
     }
 
 
-    public void setPid(String pattern)
+    private void replaceMsgVar(String regex, String replacement)
     {
-        pid = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-    }
-
-    public void setIp(String pattern)
-    {
-        ip = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-    }
-
-    public void setPort(String pattern)
-    {
-        port = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-    }
-
-    public void setProcessName(String pattern)
-    {
-        processName = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-    }
-
-    public void setOrganization(String pattern)
-    {
-        organization = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-    }
-
-    public void setHostName(String pattern)
-    {
-        hostname = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-    }
-
-    public void setDependentPatterns(String pattern)
-    {
-        dependantPatterns = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-    }
-
-    public void setMessage(String msg)
-    {
-        this.msg = msg;
+        if(replacement == null)
+            replacement = "(?)";
+        msg = msg.replaceAll(regex, replacement);
     }
 
 
-    public void loadDependentPatterns()
+    private void loadDependencies()
     {
         if(dependantPatterns != null)
         {
-            Iterator<ThreatPattern> patternsItr = DB_KnownPatterns.getInstance().getPatterns();
-            while(patternsItr.hasNext())
+            for (Iterator<ThreatPattern> it = DB_KnownPatterns.getInstance().getPatterns(); it.hasNext(); )
             {
-                ThreatPattern pattern = patternsItr.next();
-                if(isMatches(dependantPatterns, pattern.codeName))
+                ThreatPattern pattern = it.next();
+                if(isStringMatches(dependantPatterns, pattern.codeName))
                     dependencies.add(pattern);
             }
         }
@@ -142,11 +120,16 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
     private boolean testDependencies(Threat threat)
     {
+        // First time dependencies list will be empty
+        if(dependencies.size()==0 && dependantPatterns!=null)
+            loadDependencies();
+
         for(ThreatPattern dependency : dependencies)
         {
-            if(!dependency.test(threat))
+            if(!dependency.matches(threat))
                 return false;
         }
+
         return true;
     }
 
@@ -156,7 +139,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         if(this.processName != null)
         {
             String processName = process == null ? null : process.getName();
-            return isMatches(this.processName, processName);
+            return isStringMatches(this.processName, processName);
         }
         return true;
     }
@@ -167,7 +150,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         if(this.pid != null)
         {
             String pid = String.valueOf(process == null ? -1 : process.getPid());
-            return isMatches(this.pid, pid);
+            return isStringMatches(this.pid, pid);
         }
         return true;
     }
@@ -178,7 +161,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         if(this.ip != null)
         {
             String ipAddress = String.valueOf(ip == null ? null : ip.toString());
-            return isMatches(this.ip, ipAddress);
+            return isStringMatches(this.ip, ipAddress);
         }
         return true;
     }
@@ -189,7 +172,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         if(this.port != null)
         {
             String portNum = String.valueOf(port == null ? null : port.toString());
-            return isMatches(this.port, portNum);
+            return isStringMatches(this.port, portNum);
         }
         return true;
     }
@@ -200,7 +183,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         if(this.organization != null)
         {
             String orgName = String.valueOf(info == null ? null : info.getOrg());
-            return isMatches(this.organization, orgName);
+            return isStringMatches(this.organization, orgName);
         }
         return true;
     }
@@ -211,19 +194,20 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         if(this.hostname != null)
         {
             String host = String.valueOf(info == null ? null : info.getHostname());
-            return isMatches(this.hostname, host);
+            return isStringMatches(this.hostname, host);
         }
         return true;
     }
 
 
-    private boolean isMatches(Pattern pattern, String str)
+    private boolean isStringMatches(String pattern, String str)
     {
         if(str == null)
             return false;
 
-        Matcher matcher = pattern.matcher(str);
-        return matcher.find();
+        return str.matches("(?i)"+pattern);
+        /*Matcher matcher = pattern.matcher(str);
+        return matcher.find();*/
     }
 
 
