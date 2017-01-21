@@ -1,9 +1,7 @@
 package detector;
 
-import detector.Alerter.Threat.DB_KnownPatterns;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import detector.ThreatPattern.DB_HarmlessPatterns;
+import detector.ThreatPattern.DB_KnownPatterns;
 
 public class Main {
 
@@ -18,6 +16,7 @@ public class Main {
     {
         // Load patterns database
         DB_KnownPatterns.getInstance().loadDB();
+        DB_HarmlessPatterns.getInstance().loadDB();
 
         // Begins traffic sniffing
         NetInterceptor.getInstance().startInterceptLoop();

@@ -1,6 +1,6 @@
 package detector.Alerter;
 
-import detector.Alerter.Threat.Threat;
+import detector.ThreatPattern.Threat;
 
 /**
  * Alerts about constant leakage in foreign servers

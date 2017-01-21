@@ -24,10 +24,12 @@ public class Analyzer
     private TrafficTable activeTrafficCollector = new TrafficTable();
     private TrafficTable last10secCollector = new TimedTrafficTable(10);
 
+    private BlackListSelector blackListSelector =
+            new BlackListSelector();
     private SuddenLeakSelector suddenLeakSelector = // 100kB for last 10 second
             new SuddenLeakSelector(100 * 1024, 10);
     private StableLeakSelector stableLeakSelector = // 32 kB during at least last 8 sec with inactivity intervals less than 1 sec
-            new StableLeakSelector(32 * 1024, 8, 1);
+            new StableLeakSelector(32 * 1024, 8, 2);
     //private LongLiversSelector longLiversSelector = // 50 kB of non-fading during 60 sec traffic
     //        new LongLiversSelector(50 * 1024 , 60);
 
@@ -70,7 +72,7 @@ public class Analyzer
     private void cleanTraffic()
     {
         last10secCollector.removeInactive(10f);
-        activeTrafficCollector.removeInactive(1f);
+        activeTrafficCollector.removeInactive(2f);
     }
 
 
@@ -84,6 +86,7 @@ public class Analyzer
     private void analyzeSuddenLeaks()
     {
         TrafficTable leaks = last10secCollector.selectSubset(suddenLeakSelector);
+        leaks = leaks.selectSubset(blackListSelector);
         leaks.raiseComplaints(new BigTrafficLeakAlerter());
         removeDetectedTraffic(leaks);
     }
@@ -93,6 +96,7 @@ public class Analyzer
     private void analyzeStableLeaks()
     {
         TrafficTable leaks = activeTrafficCollector.selectSubset(stableLeakSelector);
+        leaks = leaks.selectSubset(blackListSelector);
         leaks.raiseComplaints(new LeakageAlerter());
         removeDetectedTraffic(leaks);
     }

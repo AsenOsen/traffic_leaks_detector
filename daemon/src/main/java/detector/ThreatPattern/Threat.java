@@ -1,4 +1,4 @@
-package detector.Alerter.Threat;
+package detector.ThreatPattern;
 
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;

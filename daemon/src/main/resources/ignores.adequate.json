@@ -4,12 +4,16 @@
 
     {
       "comment": "Ignores all browsers` traffic",
-      "pattern": "browser"
+      "dependant-patterns": "Pattern\\.(Browser)"
     },
 
     {
       "comment": "Ignores all typical network processes activity",
       "processname": "(utorrent.*)|(skype.*)|(steam.*)"
+    },
+
+    {
+      "processname": ".*t6zm7.*"
     }
 
   ]

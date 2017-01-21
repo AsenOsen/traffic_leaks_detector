@@ -1,10 +1,7 @@
 package detector.Alerter;
 
-import detector.Alerter.Threat.Threat;
-import detector.NetwPrimitives.IPv4Address;
-import detector.NetwPrimitives.Port;
+import detector.ThreatPattern.Threat;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
-import detector.OsProcessesPrimitives.NetProcess;
 
 /**
  * Abstract class which describes common logic for all specific alert types.
