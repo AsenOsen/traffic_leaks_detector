@@ -3,6 +3,7 @@ package detector;
 import detector.ThreatPattern.DB_HarmlessPatterns;
 import detector.ThreatPattern.DB_KnownPatterns;
 
+
 public class Main {
 
 
@@ -14,7 +15,7 @@ public class Main {
 
     public static void main(String[] args)
     {
-        // Load patterns database
+        // Load patterns databases
         DB_KnownPatterns.getInstance().loadDB();
         DB_HarmlessPatterns.getInstance().loadDB();
 

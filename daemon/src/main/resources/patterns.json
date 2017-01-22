@@ -2,42 +2,82 @@
 
   "Pattern.Port":{
     "srcport": "^[0-9]{1,5}$",
-    "msg": "В системе обнаружена утечка данных по сети = {kbytes}kB.\nВсе что известо - источникм является порт {port}",
-    "priority": 1
+    "msg":
+      "В системе обнаружена утечка данных по сети = {kbytes}kB за последние {timesec} секунд.\nВсе что известо - источникм является порт {port}",
+    "priority": 10
   },
 
   "Pattern.IP":{
     "dstip": "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$",
-    "msg": "На IP адрес {ip} утекло подозрительно много данных - {kbytes}kB.\nИсточник утечки установить не удалось.",
-    "priority": 2
+    "msg": "На IP адрес {ip} утекло подозрительно много данных - {kbytes}kB за последние {timesec} секунд.\nИсточник утечки установить не удалось.",
+    "priority": 20
   },
 
   "Pattern.Process":{
     "pid": "^[0-9]{1,5}$",
-    "msg": "Процесс {processname} отправил уже {kbytes}kB данных, преимущественно на хост {hostname}(ip={ip}).",
-    "priority": 3
+    "msg": "Процесс {processname} отправил уже {kbytes}kB данных за последние {timesec} секунд,\n преимущественно на хост {hostname}(ip={ip}).",
+    "priority": 30
+  },
+
+  "Pattern.StandardApps": {
+    "comment" : "This pattern is also used by SlowStableLeakSelector.java",
+    "dependant-patterns": "Pattern\\.(Browser|Skype|Steam)",
+    "priority": 40
   },
 
   "Pattern.Browser" : {
     "processname" : ".*(chrome|firefox|iexplore|opera|mozilla).*"  ,
-    "msg": "Какая-то из вкладок браузера отправила уже {kbytes}kB данных с компьютера на хост\n{hostname}(ip={ip})",
-    "priority": 4
+    "msg": "Какая-то из вкладок браузера отправила уже {kbytes}kB данных за последние {timesec} секунд с компьютера на хост\n{hostname}(ip={ip})",
+    "priority": 50
+  },
+
+  "Pattern.Skype" : {
+    "processname" : ".*skype.*"  ,
+    "msg": "Skype отправил {kbytes}kB данных за последние {timesec} секунд.\nПреимущественно на хост {hostname}(ip={ip}).",
+    "priority": 50
+  },
+
+  "Pattern.Steam" : {
+    "processname" : ".*steam.*"  ,
+    "msg": "Steam отправил {kbytes}kB данных за последние {timesec} секунд.\nПреимущественно на хост {hostname}(ip={ip}).",
+    "priority": 50
+  },
+
+  "Pattern.YandexStatica": {
+    "dependant-patterns": "Pattern\\.(Browser)",
+    "hostname": ".*(st\\.kp).*yandex.*",
+    "organization": "^AS13238.*yandex\\sllc$",
+    "msg": "Яндекс подгружает данные с возможным сбором метрики браузера.\nЗа последние {timesec} секунд было отправлено {kbytes}kB",
+    "priority": 60
   },
 
   "Pattern.YandexMetrica":{
     "dependant-patterns": "Pattern\\.(Browser)",
-    "hostname": ".*((st\\.kp)|bs|mc|awaps|metrica).*yandex.*",
+    "hostname": ".*(bs|mc|awaps|metrica).*yandex.*",
     "organization": "^AS13238.*yandex\\sllc$",
-    "msg": "Яндекс метрика собирает данные о вас из вашего браузера.\nЗа последнее время было отправлено {kbytes}kB",
-    "priority": 5
+    "msg": "Яндекс метрика собирает данные о вас из вашего браузера.\nЗа последние {timesec} секунд было отправлено {kbytes}kB",
+    "priority": 70
   },
 
   "Pattern.MailruMetrica":{
     "dependant-patterns": "Pattern\\.(Browser)",
     "hostname": ".*(smailru\\.net)|(mail\\.ru)$",
     "organization": "^AS47764.*Mail\\.Ru.*",
-    "msg": "Метрика Mail.RU собирает данные о вас из вашего браузера.\nЗа последнее время было отправлено {kbytes}kB",
-    "priority": 5
+    "msg": "Метрика Mail.RU собирает данные о вас из вашего браузера.\nЗа последние {timesec} секунд было отправлено {kbytes}kB",
+    "priority": 70
+  },
+
+  "Pattern.AmazonAws":{
+    "hostname": ".*amazonaws.*",
+    "organization": ".*amazon\\.com.*",
+    "msg": "В облака Amazon с вашего компьютера утекло уже {kbytes}kB данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}",
+    "priority": 70
+  },
+
+  "Pattern.Google":{
+    "organization": "^AS15169.*google.*",
+    "msg": "На сервера Google утекло {kbytes}kB данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}",
+    "priority": 70
   }
 
 }

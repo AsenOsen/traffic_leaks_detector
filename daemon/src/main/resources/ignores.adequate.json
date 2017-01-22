@@ -3,12 +3,12 @@
   "ignores": [
 
     {
-      "comment": "Ignores all browsers` traffic",
+      "comment": "Ignore browsers",
       "dependant-patterns": "Pattern\\.(Browser)"
     },
 
     {
-      "comment": "Ignores all typical network processes activity",
+      "comment": "Ignore stuffy applications",
       "processname": "(utorrent.*)|(skype.*)|(steam.*)"
     },
 

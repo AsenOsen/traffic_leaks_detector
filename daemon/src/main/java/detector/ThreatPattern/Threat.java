@@ -65,6 +65,11 @@ public class Threat
         return traffic.getBytes()/1000f;
     }
 
+    public float getActivityTime()
+    {
+        return traffic.getActivityTimeSec();
+    }
+
 
     private String getDebugMessage()
     {

@@ -22,13 +22,9 @@ public class SuddenLeakSelector implements TrafficSelector
     @Override
     public boolean select(TrafficFlow trafficFlow)
     {
-        boolean isDominantDetected =
-                trafficFlow.getDominantDstAddr() != null ||
-                        trafficFlow.getDominantSrcPort() != null;
-
         return !isTimeRateExceeded(trafficFlow) &&
                 isTrafficSizeExceeded(trafficFlow) &&
-                isDominantDetected;
+                (trafficFlow.getDominantDstAddr() != null || trafficFlow.getDominantSrcPort() != null);
     }
 
 

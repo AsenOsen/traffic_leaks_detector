@@ -55,8 +55,8 @@ public class IpInfo {
 
     public String getHostname()
     {
-        return hostname.compareToIgnoreCase("No Hostname")==0 ?
-                null : hostname;
+        return hostname==null ? null :
+                (hostname.compareToIgnoreCase("No Hostname")==0 ? null : hostname);
     }
 
 

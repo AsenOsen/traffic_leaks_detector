@@ -14,7 +14,6 @@ import java.util.List;
  */
 public class DB_HarmlessPatterns
 {
-
     private static final DB_HarmlessPatterns ourInstance =
             new DB_HarmlessPatterns();
     private List<ThreatPattern> harmlessList =

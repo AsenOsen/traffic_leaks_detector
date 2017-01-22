@@ -1,0 +1,17 @@
+{
+
+  "ignores": [
+
+    {
+      "comment": "Ignore browsers",
+      "dependant-patterns": "Pattern\\.(Browser)"
+    },
+
+    {
+      "comment": "Ignore all kind of metrica",
+      "dependant-patterns": "Pattern\\..*metrica.*"
+    }
+
+  ]
+
+}

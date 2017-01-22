@@ -17,6 +17,8 @@ public class DB_KnownPatterns
             new DB_KnownPatterns();
     private List<ThreatPattern> priorityPatternList =  // Patters stores strictly in ordered way!
             new ArrayList<ThreatPattern>();
+    private HashMap<String, ThreatPattern> patternDB =
+            new HashMap<String, ThreatPattern>();
 
 
     public static DB_KnownPatterns getInstance()
@@ -44,7 +46,17 @@ public class DB_KnownPatterns
     {
         new PatternsDbParser().fillListWithData(priorityPatternList);
         Collections.sort(priorityPatternList);
+
+        for(ThreatPattern pattern : priorityPatternList)
+            patternDB.put(pattern.getName(), pattern);
+
         LogHandler.Log("Threats patterns database loaded "+priorityPatternList.size()+" patterns...");
+    }
+
+
+    public ThreatPattern getPatternByName(String name)
+    {
+        return patternDB.get(name);
     }
 
 }

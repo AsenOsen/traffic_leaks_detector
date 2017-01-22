@@ -24,13 +24,9 @@ public class StableLeakSelector implements TrafficSelector
     @Override
     public boolean select(TrafficFlow trafficFlow)
     {
-        boolean isDominantDetected =
-                trafficFlow.getDominantDstAddr() != null ||
-                        trafficFlow.getDominantSrcPort() != null;
-
-        return isTrafficActual(trafficFlow) &&
+        return isNonFading(trafficFlow) &&
                 isOverflowed(trafficFlow) &&
-                isDominantDetected;
+                (trafficFlow.getDominantDstAddr() != null || trafficFlow.getDominantSrcPort() != null);
     }
 
 
@@ -43,7 +39,7 @@ public class StableLeakSelector implements TrafficSelector
     }
 
 
-    private boolean isTrafficActual(TrafficFlow trafficFlow)
+    private boolean isNonFading(TrafficFlow trafficFlow)
     {
         boolean lifeTimeAppropriate =
                 trafficFlow.getActivityTimeSec() >= minActivitySec;

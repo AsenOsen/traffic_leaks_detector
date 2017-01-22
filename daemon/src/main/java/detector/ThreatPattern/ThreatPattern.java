@@ -7,9 +7,12 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 
 /**
@@ -42,7 +45,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     @JsonProperty("comment")
     private String comment;
 
-    private ArrayList<ThreatPattern> dependencies = new ArrayList<ThreatPattern>();
+    private Set<ThreatPattern> dependencies = new HashSet<ThreatPattern>();
 
 
     @JsonCreator
@@ -50,6 +53,16 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         this.codeName = name;
         this.priority = priorityLevel;
+
+        // pattern name naming convention checking
+        if(codeName.indexOf("Pattern.") == -1)
+            LogHandler.Err(new Exception("Pattern`s name SHOULD starts with 'Pattern.'!"));
+    }
+
+
+    public String getName()
+    {
+        return codeName;
     }
 
 
@@ -91,6 +104,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         String orgName= info==null ? stub : (info.getOrg()==null ? stub : info.getOrg());
         String hstName= info==null ? stub : (info.getHostname()==null ? stub : info.getHostname());
         String leakSize = (int)threat.getLeakSize()+"";
+        String actTime  = (int)threat.getActivityTime()+"";
 
         return msg
                 .replaceAll("\\{ip\\}", ipAddr)
@@ -99,7 +113,8 @@ public class ThreatPattern implements Comparable<ThreatPattern>
                 .replaceAll("\\{processname\\}", psName)
                 .replaceAll("\\{organization\\}", orgName)
                 .replaceAll("\\{hostname\\}", hstName)
-                .replaceAll("\\{kbytes\\}", leakSize);
+                .replaceAll("\\{kbytes\\}", leakSize)
+                .replaceAll("\\{timesec\\}", actTime);
     }
 
 

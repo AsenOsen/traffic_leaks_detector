@@ -22,8 +22,8 @@ public class TrafficFlow {
 
     protected volatile int totalPayload = 0;
     protected int totalPackets = 0;      // amount of addPayload() calls
-    protected long firstActMillis = 0;          // time when the first byte was added
-    protected long lastActMillis = 0;        // time of the last AddBytes() call
+    protected long firstActMillis = 0;   // time when the first byte was added
+    protected long lastActMillis = 0;    // time of the last addPayload() call
 
     protected ConcurrentMap<IPv4Address, Integer> ipPayload   // payload in bytes of each detected DST IPs
             = new ConcurrentHashMap<IPv4Address, Integer>(32);
