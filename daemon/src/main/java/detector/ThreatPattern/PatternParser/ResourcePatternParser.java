@@ -52,6 +52,7 @@ public abstract class ResourcePatternParser
         {
             ObjectMapper mapper = new ObjectMapper();
             ThreatPattern newThreatPattern = mapper.readValue(jPattern.toString(), ThreatPattern.class);
+            newThreatPattern.validate();
             return newThreatPattern;
         }
         catch (Exception e)

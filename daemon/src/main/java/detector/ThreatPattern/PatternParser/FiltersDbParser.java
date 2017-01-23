@@ -47,6 +47,10 @@ public class FiltersDbParser extends ResourcePatternParser
     {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream resStream = classLoader.getResourceAsStream(getResourceNameByMode());
+
+        if(resStream==null)
+            LogHandler.Warn("No filters db resource found.");
+
         return resStream;
     }
 

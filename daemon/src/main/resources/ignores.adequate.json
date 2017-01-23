@@ -3,17 +3,8 @@
   "ignores": [
 
     {
-      "comment": "Ignore browsers",
-      "dependant-patterns": "Pattern\\.(Browser)"
-    },
-
-    {
-      "comment": "Ignore stuffy applications",
-      "processname": "(utorrent.*)|(skype.*)|(steam.*)"
-    },
-
-    {
-      "processname": ".*t6zm7.*"
+      "comment": "Ignore all standard apps",
+      "related-patterns": "Pattern\\.StdApps"
     }
 
   ]

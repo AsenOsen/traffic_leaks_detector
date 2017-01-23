@@ -24,7 +24,7 @@ public class BlackListSelector implements TrafficSelector
         {
             ThreatPattern harmless = harmlessItr.next();
             if(harmless.matches(potentialThreat)) {
-                //System.out.println("Ignored: "+harmless);
+                //System.out.println("Ignored: "+harmless.getName());
                 return false;
             }
         }

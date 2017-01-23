@@ -1,5 +1,14 @@
 {
 
-  "ignores": []
+  "ignores": [
+
+    {
+      "name": "Ignore.Browser.GoogleOrAmazone",
+      "comment": "Ignore browsers and other stuffy apps",
+      "related-patterns": "Pattern\\.StdApp\\.Browser\\.(Google|AmazonAws)",
+      "relation-mode": "any"
+    }
+
+  ]
 
 }

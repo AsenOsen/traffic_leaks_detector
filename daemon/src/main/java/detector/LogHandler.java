@@ -4,12 +4,15 @@ public class LogHandler {
 
 
     /*
-    * Serious errors
+    * Errors after which application cannot executes anymore
     * */
     public static synchronized void Err(Throwable error)
     {
+        assert error!=null : "Error message cant be null!";
+
         if(error!=null && error.getMessage() != null) {
             System.err.println(error.getMessage());
+            error.printStackTrace();
         }
         else {
             System.err.println("Empty log message:");
@@ -22,11 +25,12 @@ public class LogHandler {
 
 
     /*
-    * Not very important messages about errors
+    * Errors, but after which application can save working state
     * */
     public static synchronized void Warn(String warning)
     {
-        System.out.println(warning);
+        assert warning!=null && warning.length()>0 : "Warning message cant be empty!";
+        System.out.println("=== Warning(!): "+warning);
     }
 
 

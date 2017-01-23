@@ -2,6 +2,7 @@ package detector;
 
 import detector.ThreatPattern.DB_HarmlessPatterns;
 import detector.ThreatPattern.DB_KnownPatterns;
+import detector.ThreatPattern.ThreatPattern;
 
 
 public class Main {

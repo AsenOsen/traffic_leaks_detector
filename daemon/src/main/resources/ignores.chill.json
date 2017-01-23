@@ -3,13 +3,13 @@
   "ignores": [
 
     {
-      "comment": "Ignore browsers",
-      "dependant-patterns": "Pattern\\.(Browser)"
+      "comment": "Ignore all standard apps",
+      "related-patterns": "Pattern\\.StdApps"
     },
 
     {
-      "comment": "Ignore all kind of metrica",
-      "dependant-patterns": "Pattern\\..*metrica.*"
+      "comment": "Ignore microsoft updating activity",
+      "related-patterns": "Pattern\\.Microsoft\\.Updates"
     }
 
   ]

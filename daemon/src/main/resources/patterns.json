@@ -1,82 +1,124 @@
 {
+  "Pattern.Undefined":{
+    "comment": "Normally, this situation is impossible.",
+    "msg": "Неустановленный источник утечки.",
+    "priority": 0
+  },
 
-  "Pattern.Port":{
+  "Pattern.LowLvl.Port":{
     "srcport": "^[0-9]{1,5}$",
-    "msg":
-      "В системе обнаружена утечка данных по сети = {kbytes}kB за последние {timesec} секунд.\nВсе что известо - источникм является порт {port}",
+    "msg": "В системе обнаружена утечка данных по сети = {kbytes}kB за последние {timesec} секунд.\nВсе что известо - источникм является порт {srcport}",
     "priority": 10
   },
 
-  "Pattern.IP":{
+  "Pattern.LowLvl.IP":{
     "dstip": "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$",
-    "msg": "На IP адрес {ip} утекло подозрительно много данных - {kbytes}kB за последние {timesec} секунд.\nИсточник утечки установить не удалось.",
+    "msg": "На IP адрес {dstip} утекло подозрительно много данных - {kbytes}kB за последние {timesec} секунд.\nИсточник утечки установить не удалось.",
     "priority": 20
   },
 
-  "Pattern.Process":{
+  "Pattern.LowLvl.Process":{
     "pid": "^[0-9]{1,5}$",
-    "msg": "Процесс {processname} отправил уже {kbytes}kB данных за последние {timesec} секунд,\n преимущественно на хост {hostname}(ip={ip}).",
+    "msg": "Процесс {processname} отправил уже {kbytes}kB данных за последние {timesec} секунд,\n преимущественно на хост {hostname}(ip={dstip}), который принадлежит компании {organization}",
     "priority": 30
   },
 
-  "Pattern.StandardApps": {
-    "comment" : "This pattern is also used by SlowStableLeakSelector.java",
-    "dependant-patterns": "Pattern\\.(Browser|Skype|Steam)",
+  "Pattern.StdApps": {
+    "comment": "This pattern is also used by SlowStableLeakSelector.java",
+    "related-patterns": "Pattern\\.StdApp\\.([a-zA-Z0-9]+)$",
+    "relation-mode": "any",
+    "msg": "Одно из стандартных приложений {processname} отправило уже {kbytes}kB данных за последние {timesec} секунд,\n преимущественно на хост {hostname}(ip={dstip}), который принадлежит компании {organization}",
     "priority": 40
   },
 
-  "Pattern.Browser" : {
-    "processname" : ".*(chrome|firefox|iexplore|opera|mozilla).*"  ,
-    "msg": "Какая-то из вкладок браузера отправила уже {kbytes}kB данных за последние {timesec} секунд с компьютера на хост\n{hostname}(ip={ip})",
+  "Pattern.StdApp.Browser":{
+    "comment": "Only top-5 known browsers",
+    "processname" : ".*(chrome|firefox|mozilla|iexplore|opera|safari|browser|iceweasel).*"  ,
+    "msg": "Одна из вкладок браузера отправила {kbytes}kB данных за последние {timesec} секунд на хост\n{hostname}(ip={dstip}), который принадлежит компании {organization}",
     "priority": 50
   },
 
-  "Pattern.Skype" : {
-    "processname" : ".*skype.*"  ,
-    "msg": "Skype отправил {kbytes}kB данных за последние {timesec} секунд.\nПреимущественно на хост {hostname}(ip={ip}).",
+  "Pattern.StdApp.Skype":{
+    "processname": ".*skype.*"  ,
+    "msg": "Skype отправил {kbytes}kB данных за последние {timesec} секунд.\nПреимущественно на хост {hostname}(ip={dstip}).",
     "priority": 50
   },
 
-  "Pattern.Steam" : {
+  "Pattern.StdApp.Steam":{
     "processname" : ".*steam.*"  ,
-    "msg": "Steam отправил {kbytes}kB данных за последние {timesec} секунд.\nПреимущественно на хост {hostname}(ip={ip}).",
+    "organization": ".*Valve\\sCorporation$",
+    "msg": "Steam отправил {kbytes}kB данных за последние {timesec} секунд.\nПреимущественно на хост {hostname}(ip={dstip}).",
     "priority": 50
   },
 
-  "Pattern.YandexStatica": {
-    "dependant-patterns": "Pattern\\.(Browser)",
-    "hostname": ".*(st\\.kp).*yandex.*",
+  "Pattern.StdApp.Torrents":{
+    "processname" : ".*torrent.*"  ,
+    "msg": "В системе обнаружен Torrent-клиент, который за последние {timesec} секунд отправил {kbytes}kB.\nИмя торрент-клиента - {processname}",
+    "priority": 50
+  },
+
+  "Pattern.StdApp.Browser.Yandex.Statica":{
+    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
+    "hostname": ".*((st\\.kp)|(static)).*yandex.*",
     "organization": "^AS13238.*yandex\\sllc$",
-    "msg": "Яндекс подгружает данные с возможным сбором метрики браузера.\nЗа последние {timesec} секунд было отправлено {kbytes}kB",
+    "msg": "Яндекс подгружает данные с возможным сбором метрики браузера.\nЗа последние {timesec} секунд на сервера статики было отправлено {kbytes}kB",
     "priority": 60
   },
 
-  "Pattern.YandexMetrica":{
-    "dependant-patterns": "Pattern\\.(Browser)",
+  "Pattern.StdApp.Browser.Metrica.Yandex":{
+    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
     "hostname": ".*(bs|mc|awaps|metrica).*yandex.*",
     "organization": "^AS13238.*yandex\\sllc$",
     "msg": "Яндекс метрика собирает данные о вас из вашего браузера.\nЗа последние {timesec} секунд было отправлено {kbytes}kB",
     "priority": 70
   },
 
-  "Pattern.MailruMetrica":{
-    "dependant-patterns": "Pattern\\.(Browser)",
+  "Pattern.StdApp.Browser.Metrica.Mailru":{
+    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
     "hostname": ".*(smailru\\.net)|(mail\\.ru)$",
     "organization": "^AS47764.*Mail\\.Ru.*",
     "msg": "Метрика Mail.RU собирает данные о вас из вашего браузера.\nЗа последние {timesec} секунд было отправлено {kbytes}kB",
     "priority": 70
   },
 
-  "Pattern.AmazonAws":{
+  "Pattern.Amazon.Aws":{
     "hostname": ".*amazonaws.*",
-    "organization": ".*amazon\\.com.*",
-    "msg": "В облака Amazon с вашего компьютера утекло уже {kbytes}kB данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}",
+    "organization": ".*Amazon\\.Com.*",
+    "msg": "В облака Amazon с вашего компьютера утекло уже {kbytes}kB данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}\nХост, на который отправлялись данные -{hostname}",
+    "priority": 60
+  },
+
+  "Pattern.StdApp.Browser.Amazon.Aws":{
+    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
+    "hostname": ".*amazonaws.*",
+    "organization": ".*Amazon\\.Com.*",
+    "msg": "Какая-то из вкладок браузера отправляет большой объем данных в облака Amazon.\nЗа последние {timesec} секунд было отправлено {kbytes}kB\nХост, на который отправлялись данные -{hostname}",
+    "priority": 70
+  },
+
+  "Pattern.Microsoft.Updates":{
+    "processname": "^svchost.*",
+    "organization": ".*Microsoft\\sCorporation.*",
+    "msg": "В Microsoft за последние {timesec} секунд утекло {kbytes}kB данных на IP {dstip}.\nВероятнее всего, отправленные данные были связаны с обновлением системы Windows.\nПроцесс, который отправлял данные - {processname}",
     "priority": 70
   },
 
   "Pattern.Google":{
     "organization": "^AS15169.*google.*",
     "msg": "На сервера Google утекло {kbytes}kB данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}",
+    "priority": 50
+  },
+
+  "Pattern.Google.Cache":{
+    "hostname": ".*cache.google.com.*",
+    "msg": "В кэш Google утекло {kbytes}kB данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}",
+    "priority": 60
+  },
+
+  "Pattern.StdApp.Browser.Google":{
+    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
+    "organization": "^AS15169.*google.*",
+    "msg": "Какая-то из вкладок браузера отправляет большой объем данных в облака Google.\nЗа последние {timesec} секунд было отправлено {kbytes}kB\nIP, на который отправлялись данные -{dstip}",
     "priority": 70
   }
 

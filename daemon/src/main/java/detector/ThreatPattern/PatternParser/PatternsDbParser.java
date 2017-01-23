@@ -19,6 +19,10 @@ public class PatternsDbParser extends ResourcePatternParser
     {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream resStream = classLoader.getResourceAsStream("patterns.json");
+
+        if(resStream==null)
+            LogHandler.Warn("No 'patterns.json' resource found.");
+
         return resStream;
     }
 

@@ -54,7 +54,10 @@ public class DB_IpInfo {
         }
 
         if(info.toString().trim().length() > 0)
-            ipTable.putIfAbsent(ip, new IpInfo(info.toString()));
+        {
+            IpInfo infoObject = new IpInfo(info.toString());
+            ipTable.putIfAbsent(ip, infoObject);
+        }
     }
 
 

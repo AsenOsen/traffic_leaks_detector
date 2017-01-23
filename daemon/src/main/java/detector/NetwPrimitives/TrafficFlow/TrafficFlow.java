@@ -6,6 +6,7 @@ import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -173,7 +174,7 @@ public class TrafficFlow {
                 processPayload.put(portOwner, payload);
         }
 
-        int maxDetectedTraffic = Integer.MIN_VALUE;
+        int maxDetectedTraffic = 0;
         NetProcess probableInitiator = null;
 
         // pick the process with the biggest trafficFlow

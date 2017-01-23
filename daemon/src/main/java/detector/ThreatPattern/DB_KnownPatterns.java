@@ -50,6 +50,11 @@ public class DB_KnownPatterns
         for(ThreatPattern pattern : priorityPatternList)
             patternDB.put(pattern.getName(), pattern);
 
+        /*for(ThreatPattern pattern : priorityPatternList) {
+            System.out.println("==="+pattern.getName());
+            pattern.loadDependencies();
+        }*/
+
         LogHandler.Log("Threats patterns database loaded "+priorityPatternList.size()+" patterns...");
     }
 

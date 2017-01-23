@@ -4,6 +4,9 @@ import detector.LogHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class IpInfo {
 
     private String dump;
@@ -51,6 +54,13 @@ public class IpInfo {
     public String getOrg()
     {
         return organization;
+    }
+
+    public String getPrettyOrg()
+    {
+        Pattern pattern = Pattern.compile("^AS[0-9]{3,}\\s(.*)$");
+        Matcher matcher = pattern.matcher(organization);
+        return matcher.find() ? matcher.group(1) : organization;
     }
 
     public String getHostname()

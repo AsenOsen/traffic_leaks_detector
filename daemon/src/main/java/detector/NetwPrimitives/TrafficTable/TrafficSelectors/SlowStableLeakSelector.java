@@ -47,7 +47,7 @@ public class SlowStableLeakSelector implements TrafficSelector
     private boolean isNonFadingForSoLong(TrafficFlow trafficFlow)
     {
         boolean lifeTimeAppropriate =
-                trafficFlow.getActivityTimeSec() >= minActivitySec;
+                minActivitySec <= trafficFlow.getActivityTimeSec() && trafficFlow.getActivityTimeSec() <= minActivitySec + 10;
         boolean wasActiveNotLongAgo =
                 trafficFlow.getInactivityTimeSec() < maxDelaySec;
 
@@ -60,7 +60,7 @@ public class SlowStableLeakSelector implements TrafficSelector
     private boolean isTypicalApplication(TrafficFlow trafficFlow)
     {
         Threat threat = new Threat(trafficFlow);
-        ThreatPattern knownApps = DB_KnownPatterns.getInstance().getPatternByName("Pattern.StandardApps");
+        ThreatPattern knownApps = DB_KnownPatterns.getInstance().getPatternByName("Pattern.StdApps");
 
         return
                 (knownApps!=null) && (knownApps.matches(threat));

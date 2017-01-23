@@ -7,9 +7,7 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
-import sun.rmi.runtime.Log;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -38,8 +36,10 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     private String organization;
     @JsonProperty("hostname")
     private String hostname;
-    @JsonProperty("dependant-patterns")
-    private String dependantPatterns;
+    @JsonProperty("related-patterns")
+    private String relatedPatterns;
+    @JsonProperty("relation-mode")
+    private String relationMode;
     @JsonProperty("msg")
     private String msg;
     @JsonProperty("comment")
@@ -51,12 +51,25 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     @JsonCreator
     public ThreatPattern(@JsonProperty("name") String name, @JsonProperty("priority") int priorityLevel)
     {
-        this.codeName = name;
+        this.codeName = name==null ? "<unnamed_filter>" : name;
         this.priority = priorityLevel;
+    }
 
-        // pattern name naming convention checking
-        if(codeName.indexOf("Pattern.") == -1)
-            LogHandler.Err(new Exception("Pattern`s name SHOULD starts with 'Pattern.'!"));
+
+    /*
+    * Validates pattern conventions
+    * */
+    public void validate()
+    {
+        // only pattern with special name 'Undefined' can have no rules
+        boolean isAllowedEmptyPattern = !codeName.equalsIgnoreCase("Pattern.Undefined");
+
+        // at least 1 rule convention
+        if(pid==null && dstip==null && srcport==null &&
+                processName==null && organization==null && hostname==null &&
+                relatedPatterns ==null && isAllowedEmptyPattern
+                )
+            LogHandler.Err(new Exception("Pattern '"+codeName+"' SHOULD have at least 1 rule!"));
     }
 
 
@@ -73,13 +86,13 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         IPv4Address ip = threat.getForeignIp();
         IpInfo info = ip==null ? null : ip.getIpInfo();
 
-        return testDependencies(threat) &&
-                testPid(process) &&
-                testDstIp(ip) &&
-                testSrcPort(port) &&
-                testProcessName(process) &&
-                testOrganization(info) &&
-                testHostname(info);
+        return matchRelations(threat) &&
+                matchPid(process) &&
+                matchDstIp(ip) &&
+                matchSrcPort(port) &&
+                matchProcessName(process) &&
+                matchOrganization(info) &&
+                matchHostname(info);
     }
 
 
@@ -101,14 +114,14 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         String portNo = port==null ? stub : (port.toString()==null ? stub : port.toString());
         String psPid  = process==null ? stub : process.getPid()+"";
         String psName = process==null ? stub : (process.getName()==null ? stub : process.getName());
-        String orgName= info==null ? stub : (info.getOrg()==null ? stub : info.getOrg());
+        String orgName= info==null ? stub : (info.getOrg()==null ? stub : info.getPrettyOrg());
         String hstName= info==null ? stub : (info.getHostname()==null ? stub : info.getHostname());
         String leakSize = (int)threat.getLeakSize()+"";
         String actTime  = (int)threat.getActivityTime()+"";
 
         return msg
-                .replaceAll("\\{ip\\}", ipAddr)
-                .replaceAll("\\{port\\}", portNo)
+                .replaceAll("\\{dstip\\}", ipAddr)
+                .replaceAll("\\{srcport\\}", portNo)
                 .replaceAll("\\{pid\\}", psPid)
                 .replaceAll("\\{processname\\}", psName)
                 .replaceAll("\\{organization\\}", orgName)
@@ -120,39 +133,56 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
     private void loadDependencies()
     {
-        if(dependantPatterns != null)
+        if(relatedPatterns != null)
         {
             Iterator<ThreatPattern> it = DB_KnownPatterns.getInstance().getPatterns();
             while (it.hasNext())
             {
                 ThreatPattern pattern = it.next();
-                if(isStringMatches(dependantPatterns, pattern.codeName))
+                if(isStringMatches(relatedPatterns, pattern.codeName))
                     dependencies.add(pattern);
             }
 
+            //for(ThreatPattern dep : dependencies)
+            //    System.out.println(dep);
+
             if(dependencies.size() == 0)
-                LogHandler.Warn("No 'pattern' matches found for "+codeName+" pattern!");
+                LogHandler.Warn("No related patterns found for "+codeName+" pattern!");
         }
     }
 
 
-    private boolean testDependencies(Threat threat)
+    private boolean matchRelations(Threat threat)
     {
-        // First time dependencies list will be empty
-        if(dependencies.size()==0 && dependantPatterns!=null)
+        // Lazy dependencies loading
+        if(dependencies.size()==0 && relatedPatterns !=null)
             loadDependencies();
 
-        for(ThreatPattern dependency : dependencies)
+        // At least one of related pattern - OR
+        if(relationMode!=null && relationMode.equalsIgnoreCase("any"))
         {
-            if(!dependency.matches(threat))
-                return false;
-        }
+            for(ThreatPattern dependency : dependencies)
+            {
+                if(dependency.matches(threat))
+                    return true;
+            }
 
-        return true;
+            return false;
+        }
+        // All patterns without exceptions - AND
+        else
+        {
+            for(ThreatPattern dependency : dependencies)
+            {
+                if(!dependency.matches(threat))
+                    return false;
+            }
+            return true;
+        }
     }
 
 
-    private boolean testProcessName(NetProcess process)
+    private boolean matchProcessName(NetProcess process)
     {
         if(this.processName != null)
         {
@@ -163,7 +193,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     }
 
 
-    private boolean testPid(NetProcess process)
+    private boolean matchPid(NetProcess process)
     {
         if(this.pid != null)
         {
@@ -174,7 +204,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     }
 
 
-    private boolean testDstIp(IPv4Address ip)
+    private boolean matchDstIp(IPv4Address ip)
     {
         if(this.dstip != null)
         {
@@ -185,7 +215,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     }
 
 
-    private boolean testSrcPort(Port port)
+    private boolean matchSrcPort(Port port)
     {
         if(this.srcport != null)
         {
@@ -196,7 +226,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     }
 
 
-    private boolean testOrganization(IpInfo info)
+    private boolean matchOrganization(IpInfo info)
     {
         if(this.organization != null)
         {
@@ -207,7 +237,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     }
 
 
-    private boolean testHostname(IpInfo info)
+    private boolean matchHostname(IpInfo info)
     {
         if(this.hostname != null)
         {
@@ -220,6 +250,8 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
     private boolean isStringMatches(String pattern, String str)
     {
+        assert pattern!=null : "Pattern cant be NULL!";
+
         if(str == null)
             return false;
 

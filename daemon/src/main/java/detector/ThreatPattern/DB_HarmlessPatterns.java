@@ -44,6 +44,12 @@ public class DB_HarmlessPatterns
     public void loadDB()
     {
         new FiltersDbParser().fillListWithData(harmlessList);
+
+        /*for(ThreatPattern pattern : harmlessList) {
+            System.out.println("==="+pattern.getName());
+            pattern.loadDependencies();
+        }*/
+
         LogHandler.Log("Filter patterns database loaded "+harmlessList.size()+" patterns...");
     }
 

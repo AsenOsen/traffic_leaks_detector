@@ -3,7 +3,7 @@ package detector.Alerter;
 import detector.ThreatPattern.Threat;
 
 /**
- * Alerts about long-active traffic flows
+ * Alerts about long-active but slow traffic flows
  */
 public class SlowStableTrafficAlerter extends Alerter
 {

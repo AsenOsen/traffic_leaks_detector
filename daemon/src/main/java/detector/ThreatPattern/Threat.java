@@ -41,6 +41,7 @@ public class Threat
             }
         }
 
+        // if no pattern match found
         return getDebugMessage();
     }
 
