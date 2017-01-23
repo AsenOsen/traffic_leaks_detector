@@ -8,14 +8,14 @@ import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
  */
 public class SuddenLeakSelector implements TrafficSelector
 {
-    private int rateSizeBytes;
-    private int rateTimeSec;
+    private int limitSizeBytes;
+    private int limitTimeSec;
 
 
     public SuddenLeakSelector(int limitTrafficBytes, int allowedTimeSec)
     {
-        this.rateSizeBytes = limitTrafficBytes;
-        this.rateTimeSec = allowedTimeSec;
+        this.limitSizeBytes = limitTrafficBytes;
+        this.limitTimeSec = allowedTimeSec;
     }
 
 
@@ -31,7 +31,7 @@ public class SuddenLeakSelector implements TrafficSelector
     private boolean isTrafficSizeExceeded(TrafficFlow trafficFlow)
     {
         boolean isExceeded =
-                trafficFlow.getBytes() >= rateSizeBytes;
+                trafficFlow.getBytes() >= limitSizeBytes;
 
         return isExceeded;
     }
@@ -40,7 +40,7 @@ public class SuddenLeakSelector implements TrafficSelector
     private boolean isTimeRateExceeded(TrafficFlow trafficFlow)
     {
         boolean isExceeded =
-                trafficFlow.getActivityTimeSec() > rateTimeSec;
+                trafficFlow.getActivityTimeSec() > limitTimeSec;
 
         return isExceeded;
     }

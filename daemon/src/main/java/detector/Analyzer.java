@@ -6,6 +6,7 @@ import detector.Alerter.SlowStableTrafficAlerter;
 import detector.NetwPrimitives.*;
 import detector.NetwPrimitives.TrafficTable.TimedTrafficTable;
 import detector.NetwPrimitives.TrafficTable.TrafficSelectors.*;
+import detector.NetwPrimitives.TrafficTable.TrafficSelectors.CleaningSelectors.SlowLongLivingSelector;
 import detector.NetwPrimitives.TrafficTable.TrafficTable;
 
 /************************************************************************************
@@ -18,22 +19,28 @@ public class Analyzer
 {
 
     private static final Analyzer instance = new Analyzer();
-    // private TrafficTable time05sec;  // network traffic during last 5 seconds
-    // private TrafficTable time30sec;  // network traffic during last 30 seconds
-    // private TrafficTable time60sec;  // network traffic during last minute
-   // private TrafficTable passiveTrafficCollector = new TrafficTable();
-    private TrafficTable activeTrafficCollector = new TrafficTable();
+
+    private TrafficTable active2secTrafficCollector = new TrafficTable();
     private TrafficTable last10secCollector = new TimedTrafficTable(10);
     private TrafficTable stable60secCollector = new TrafficTable();
 
     private BlackListSelector blackListSelector =
             new BlackListSelector();
-    private SuddenLeakSelector suddenLeakSelector = // 100kB for last 10 second
+    // 100kB for last 10 second
+    private SuddenLeakSelector suddenLeakSelector =
             new SuddenLeakSelector(100 * 1024, 10);
-    private StableLeakSelector stableLeakSelector = // 32 kB during at least last 8 sec with inactivity intervals less than w sec
+    // 32 kB during at least last 8 sec with inactivity intervals less than w sec
+    private StableLeakSelector stableLeakSelector =
             new StableLeakSelector(32 * 1024, 8, 2);
-    private SlowStableLeakSelector slowStableSelector = // 32 kB during at least last 60 sec with inactivity intervals less than 15 sec
+    // 32 kB during at least last 60 sec with inactivity intervals less than 15 sec (at least 4 actions at last minute)
+    private SlowStableLeakSelector slowStableSelector =
             new SlowStableLeakSelector(32 * 1024 , 60, 15);
+    // 32 kB still not accumulated during 70 sec of activity
+    private SlowLongLivingSelector slowLongLivingSelector =
+            new SlowLongLivingSelector(32 * 1024, 60+5);
+
+    // time of the last traffic tables cleaning
+    private long lastCleaningTime = System.currentTimeMillis();
 
 
     private Analyzer()
@@ -64,7 +71,7 @@ public class Analyzer
         // Accept packet if has payload
         if (payloadSize > 0)
         {
-            activeTrafficCollector.add(netPacket);
+            active2secTrafficCollector.add(netPacket);
             last10secCollector.add(netPacket);
             stable60secCollector.add(netPacket);
         }
@@ -74,16 +81,37 @@ public class Analyzer
     private void cleanTraffic()
     {
         last10secCollector.removeInactive(10f);
-        activeTrafficCollector.removeInactive(2f);
+        active2secTrafficCollector.removeInactive(2f);
         stable60secCollector.removeInactive(15f);
+
+        // garbage cleaner runs each minute
+        boolean isTimeToClean = (System.currentTimeMillis() - lastCleaningTime) > 60000L;
+        if(isTimeToClean)
+        {
+            runGarbageCleaners();
+            lastCleaningTime = System.currentTimeMillis();
+        }
+    }
+
+
+    private void runGarbageCleaners()
+    {
+        // remove garbage from @last10secCollector
+        TrafficTable leaks = last10secCollector.selectSubset(slowLongLivingSelector);
+        last10secCollector.removeIrrelevantSubset(leaks, false);
+        // remove garbage from @stable60secCollector
+        leaks = stable60secCollector.selectSubset(slowLongLivingSelector);
+        stable60secCollector.removeIrrelevantSubset(leaks, false);
+        // @active2secTrafficCollector contains no garbage for default
+        // ...
     }
 
 
     private void removeDetectedTraffic(TrafficTable detected)
     {
-        last10secCollector.removeIrrelevantSubset(detected);
-        activeTrafficCollector.removeIrrelevantSubset(detected);
-        stable60secCollector.removeIrrelevantSubset(detected);
+        last10secCollector.removeIrrelevantSubset(detected, true);
+        active2secTrafficCollector.removeIrrelevantSubset(detected, true);
+        stable60secCollector.removeIrrelevantSubset(detected, true);
     }
 
 
@@ -99,7 +127,7 @@ public class Analyzer
 
     private void analyzeStableLeaks()
     {
-        TrafficTable leaks = activeTrafficCollector.selectSubset(stableLeakSelector);
+        TrafficTable leaks = active2secTrafficCollector.selectSubset(stableLeakSelector);
         leaks = leaks.selectSubset(blackListSelector);
         leaks.raiseComplaints(new LeakageAlerter());
         removeDetectedTraffic(leaks);

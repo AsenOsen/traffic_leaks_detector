@@ -118,7 +118,7 @@
   "Pattern.StdApp.Browser.Google":{
     "related-patterns": "Pattern\\.StdApp\\.(Browser)",
     "organization": "^AS15169.*google.*",
-    "msg": "Какая-то из вкладок браузера отправляет большой объем данных в облака Google.\nЗа последние {timesec} секунд было отправлено {kbytes}kB\nIP, на который отправлялись данные -{dstip}",
+    "msg": "Какая-то из вкладок браузера отправляет большой объем данных в облака Google.\nЗа последние {timesec} секунд было отправлено {kbytes}kB\nIP, на который отправлялись данные - {dstip}",
     "priority": 70
   }
 

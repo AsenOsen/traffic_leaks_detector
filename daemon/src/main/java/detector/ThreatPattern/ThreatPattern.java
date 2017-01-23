@@ -158,7 +158,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         if(dependencies.size()==0 && relatedPatterns !=null)
             loadDependencies();
 
-        // At least one of related pattern - OR
+        // At least one of related pattern matches -- OR
         if(relationMode!=null && relationMode.equalsIgnoreCase("any"))
         {
             for(ThreatPattern dependency : dependencies)
@@ -169,7 +169,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
             return false;
         }
-        // All patterns without exceptions - AND
+        // All patterns match without exceptions -- AND
         else
         {
             for(ThreatPattern dependency : dependencies)

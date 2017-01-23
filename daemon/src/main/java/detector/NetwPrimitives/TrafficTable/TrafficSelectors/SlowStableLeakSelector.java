@@ -47,7 +47,7 @@ public class SlowStableLeakSelector implements TrafficSelector
     private boolean isNonFadingForSoLong(TrafficFlow trafficFlow)
     {
         boolean lifeTimeAppropriate =
-                minActivitySec <= trafficFlow.getActivityTimeSec() && trafficFlow.getActivityTimeSec() <= minActivitySec + 10;
+                minActivitySec <= trafficFlow.getActivityTimeSec();
         boolean wasActiveNotLongAgo =
                 trafficFlow.getInactivityTimeSec() < maxDelaySec;
 

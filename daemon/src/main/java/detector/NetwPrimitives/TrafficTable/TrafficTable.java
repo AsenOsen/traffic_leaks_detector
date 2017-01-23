@@ -120,25 +120,29 @@ public class TrafficTable
 
     /*
     * Removes each traffic record which exists in @sub
+    * And remove all related to it if @removeRelated==true
     * */
-    public void removeIrrelevantSubset(TrafficTable sub)
+    public void removeIrrelevantSubset(TrafficTable sub, boolean removeRelated)
     {
         for(Map.Entry<NetProcess, TrafficFlow> entry : sub.processTraffic.entrySet())
         {
             processTraffic.remove(entry.getKey());
-            removeRelatedElements(entry.getValue());
+            if(removeRelated)
+                removeRelatedElements(entry.getValue());
         }
 
         for(Map.Entry<IPv4Address, TrafficFlow> entry : sub.ipTraffic.entrySet())
         {
             ipTraffic.remove(entry.getKey());
-            removeRelatedElements(entry.getValue());
+            if(removeRelated)
+                removeRelatedElements(entry.getValue());
         }
 
         for(Map.Entry<Port, TrafficFlow> entry : sub.portTraffic.entrySet())
         {
             portTraffic.remove(entry.getKey());
-            removeRelatedElements(entry.getValue());
+            if(removeRelated)
+                removeRelatedElements(entry.getValue());
         }
     }
 
