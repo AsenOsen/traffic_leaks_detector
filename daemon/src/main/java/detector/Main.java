@@ -8,6 +8,8 @@ import detector.ThreatPattern.ThreatPattern;
 public class Main {
 
 
+    private static Thread interceptorThread =
+            new InterceptorThread();
     private static Thread analyzerThread =
             new AnalyzerThread();
     private static Thread processInfoUpdaterThread =
@@ -21,16 +23,36 @@ public class Main {
         // Load traffic patterns databases
         DB_KnownPatterns.getInstance().loadDB();
         DB_HarmlessPatterns.getInstance().loadDB();
+        // Lazy load GUI
+        GUIWrapper.getInstance();
 
-        // Start traffic sniffing
-        NetInterceptor.getInstance().startInterceptLoop();
-
+        // Start interceptor lifecycle monitor
+        interceptorThread.start();
         // Start traffic analyzer
         analyzerThread.start();
         // Start process info updater
         processInfoUpdaterThread.start();
         // Start server for interaction with daemon
         communicationModuleThread.start();
+    }
+
+
+    private static class InterceptorThread extends Thread
+    {
+        @Override
+        public void run() {
+
+            Thread.currentThread().setName("__InterceptorLifecycle");
+            while (true)
+            {
+                if(NetInterceptor.getInstance().isDown())
+                    NetInterceptor.getInstance().startInterceptLoop();
+
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {}
+            }
+        }
     }
 
 

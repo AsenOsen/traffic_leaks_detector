@@ -1,7 +1,9 @@
 package detector;
 
+import com.sun.istack.internal.Nullable;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
+import org.jetbrains.annotations.NotNull;
 import org.jnetpcap.*;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
@@ -9,7 +11,6 @@ import org.jnetpcap.packet.PcapPacketHandler;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -22,14 +23,35 @@ public class NetInterceptor implements PcapPacketHandler {
 
 
     private static final NetInterceptor instance = new NetInterceptor();
-    private ArrayList<Pcap> channels = null;
+    private List<Pcap> channels = null;
     private BlockingQueue<PcapPacket> packetQueue = new LinkedBlockingQueue<PcapPacket>();
+
+    private List<Thread> receivers = new ArrayList<Thread>();
+    private Thread queueThread = null;
+
+    private long lastProcessedPacketTime = 0;
+    private int reloadAttempts = 0;
     //volatile int a=0, b=0;
+
+
+    static {
+        // Load native library
+        String jreArch = System.getProperty("os.arch");
+        boolean is64bitJRE = jreArch.indexOf("64") != -1;
+        try
+        {
+            System.loadLibrary(is64bitJRE ? "jnetpcap.x64" : "jnetpcap.x86");
+        }
+        catch (UnsatisfiedLinkError e)
+        {
+            LogHandler.Err(e);
+        }
+    }
 
 
     private NetInterceptor()
     {
-        Init();
+
     }
 
 
@@ -41,14 +63,25 @@ public class NetInterceptor implements PcapPacketHandler {
 
     public void startInterceptLoop()
     {
+        Init();
         startPacketReceivers();
         startPacketQueueHandler();
-        LogHandler.Log("Loops started at "+ new Date(System.currentTimeMillis()).toString()+"...");
     }
 
 
     /*
-    * Method accepts the next packet from LibPcap and puts it in @packetQueue.
+    * Determines whether interceptor loops are down or not.
+    * This can happen after PC`s hibernation mode.
+    * */
+    public boolean isDown()
+    {
+        // if no packets were processed in last 10 seconds, then everything is down
+        return (System.currentTimeMillis() - lastProcessedPacketTime) > 10000;
+    }
+
+
+    /*
+    * Method accepts the next packet from LibPCAP and puts it in @packetQueue.
     * Queue is processed by separate thread.
     * */
     @Override
@@ -66,33 +99,48 @@ public class NetInterceptor implements PcapPacketHandler {
 
     private void Init()
     {
-        // 1) Load native library
-        String jreArch = System.getProperty("os.arch");
-        boolean is64bitJRE = jreArch.indexOf("64") != -1;
-        try
+        // if too much connection reloadAttempts
+        if(reloadAttempts > 5)
         {
-            System.loadLibrary(is64bitJRE ? "jnetpcap.x64" : "jnetpcap.x86");
-        }
-        catch (UnsatisfiedLinkError e)
-        {
-            LogHandler.Err(e);
+            LogHandler.Err(new Exception("Network interfaces not found on this computer. Or could not access them."));
             return;
         }
 
-        // 2) Network interface discovering : IP4 ONLY
+        // 1) network interfaces discovering : IP4 ONLY
+        LogHandler.Log("Looking for network interfaces...");
         List<PcapIf> interfaces = getIPv4Interfaces();
         if(interfaces == null || interfaces.size()==0) {
-            LogHandler.Err(new Exception("Network interfaces not found!"));
+            reloadAttempts++;
+            LogHandler.Warn("Could not find any interface! Trying again..."+ reloadAttempts +"...");
             return;
         }
 
-        // 3) Open channels for each interface
-        LogHandler.Log("Looking for network interfaces...");
-        channels = new ArrayList<Pcap>(getChannels(interfaces));
-        if(channels == null || channels.size()==0) {
-            LogHandler.Err(new Exception("Cant open any interface. Do I have rights?"));
-            return;
+        // 2) kill each channel in case of restarting
+        if(channels!=null) {
+            for (Pcap channel : channels)
+                channel.breakloop();
         }
+
+        // 3) open channel for each discovered interface
+        channels = new ArrayList<Pcap>(getChannels(interfaces));
+        if(channels.size()==0)
+        {
+            LogHandler.Err(new Exception("Cant open any interface. Do app have root rights?"));
+            return;
+        } else {
+            interceptorSucceeded();
+        }
+    }
+
+
+    /*
+    * Runs when interceptor loops were successfully started
+    * */
+    private void interceptorSucceeded()
+    {
+        String msg = "%d loops started at %s...";
+        LogHandler.Log(String.format(msg, channels.size(), new Date(System.currentTimeMillis()).toString()));
+        reloadAttempts = 0;
     }
 
 
@@ -102,15 +150,21 @@ public class NetInterceptor implements PcapPacketHandler {
     * */
     private void startPacketReceivers()
     {
+        for(Thread receiver : receivers)
+            receiver.interrupt();
+        receivers.clear();
+
         for(final Pcap channel : channels)
         {
-            new Thread(new Runnable() {
+            Thread newReceiver = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Thread.currentThread().setName("__Reciever");
                     channel.loop(Pcap.LOOP_INFINITE, NetInterceptor.this, null);
                 }
-            }).start();
+            });
+            receivers.add(newReceiver);
+            newReceiver.start();
         }
     }
 
@@ -120,42 +174,49 @@ public class NetInterceptor implements PcapPacketHandler {
     * */
     private void startPacketQueueHandler()
     {
-        new Thread(new Runnable() {
+        if(queueThread!=null && queueThread.isAlive() && !queueThread.isInterrupted())
+            return;
+
+        queueThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 Thread.currentThread().setName("__PacketQueue");
+                // Each iteration looks for new packets and if found,
+                // offers it to the Analyzer`s singleton instance
                 while(true)
                 {
-                    // Each iteration looks for new packets and if found,
-                    // offers it to the Analyzer`s singleton instance
+                    PcapPacket rawPacket;
                     try {
-                        PcapPacket rawPacket = packetQueue.take();
-                        if(rawPacket != null) {
-                            Analyzer.getInstance().register(new Packet(rawPacket));
-                            //b++;
-                            //System.out.println(a+" --- "+b);
-                        }
+                       rawPacket = packetQueue.take();
+                    }
+                    catch (InterruptedException e) { continue; }
 
-                    } catch (InterruptedException e) {
-
+                    if(rawPacket != null) {
+                        Analyzer.getInstance().register(new Packet(rawPacket));
+                        lastProcessedPacketTime = System.currentTimeMillis();
+                        //b++;
+                        //System.out.println(a+" --- "+b);
                     }
                 }
             }
-        }).start();
+        });
+
+        queueThread.start();
     }
 
 
     /*
     * Method looks up for all interfaces which has at least one IPv4 address
     * */
+    @Nullable
     private List<PcapIf> getIPv4Interfaces()
     {
         List<PcapIf> interfaces = new ArrayList<PcapIf>();
         StringBuilder errorBuffer = new StringBuilder();
 
         int ifaceDiscover = Pcap.findAllDevs(interfaces, errorBuffer);
-        if ( ifaceDiscover != Pcap.OK || interfaces.isEmpty() ) {
-            String errorMsg = String.format("Error during interfaces discover:\n%s", errorBuffer);
+        if ( ifaceDiscover != Pcap.OK ) {
+            String errorMsg = String.format("Error during interfaces discover! Error: %s", errorBuffer);
             LogHandler.Err(new Exception(errorMsg));
             return null;
         }
@@ -179,6 +240,7 @@ public class NetInterceptor implements PcapPacketHandler {
     /*
     * Method open the handles of selected interfaces
     * */
+    @NotNull
     private List<Pcap> getChannels(List<PcapIf> interfaces)
     {
         ArrayList<Pcap> channelList = new ArrayList<Pcap>();
@@ -220,6 +282,7 @@ public class NetInterceptor implements PcapPacketHandler {
     *   2) Outgoing traffic only
     *   3) TrafficFlow which goes out of local network
     * */
+    @Nullable
     private String createFilterForInterface(PcapIf iface)
     {
         assert iface != null;
@@ -274,6 +337,7 @@ public class NetInterceptor implements PcapPacketHandler {
     /*
     * Extract the IPv4 address from concrete network interface if it has one
     * */
+    @Nullable
     private IPv4Address getInterfaceIPv4Address(PcapIf iface)
     {
         assert iface != null;

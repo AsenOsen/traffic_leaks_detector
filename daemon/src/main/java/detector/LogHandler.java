@@ -30,7 +30,7 @@ public class LogHandler {
     public static synchronized void Warn(String warning)
     {
         assert warning!=null && warning.length()>0 : "Warning message cant be empty!";
-        System.out.println("=== Warning(!): "+warning);
+        System.out.println("=== WARNING(!) "+warning);
     }
 
 

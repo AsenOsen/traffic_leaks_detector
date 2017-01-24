@@ -1,23 +1,22 @@
-package detector.Alerter;
-
-import detector.LogHandler;
+package detector;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * GUI runner for Alerter class
+ * This is a singleton.
+ * Wraps the logic for calling GUI messages
  */
-public class AlerterGUI
+public class GUIWrapper
 {
-    private static AlerterGUI instance = new AlerterGUI();
+    private static GUIWrapper instance = new GUIWrapper();
 
     private static String guiExecutable;
     private static long guiHashSum;
     private static boolean isGuiPresented;
 
 
-    public static AlerterGUI getInstance()
+    public static GUIWrapper getInstance()
     {
         return instance;
     }
@@ -41,7 +40,7 @@ public class AlerterGUI
     }
 
 
-    private AlerterGUI()
+    private GUIWrapper()
     {
         initGui();
     }
@@ -50,7 +49,6 @@ public class AlerterGUI
     private void initGui()
     {
         guiExecutable = System.getProperty("gui", null);
-        System.out.println(guiExecutable);
 
         if(guiExecutable == null) {
             guiFail();
@@ -78,7 +76,7 @@ public class AlerterGUI
     {
         guiHashSum = 0;
         isGuiPresented = false;
-        LogHandler.Log("No GUI presented for daemon.");
+        LogHandler.Log("No GUI specified for daemon.");
     }
 
 }

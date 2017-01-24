@@ -38,7 +38,7 @@ public class FiltersDbParser extends ResourcePatternParser
 
         if(filterMode == null)
             LogHandler.Err(new Exception("Specified filter mode '"+userPickedMode+"' is incorrect!"));
-        LogHandler.Log("Chosen mode: "+filterMode);
+        LogHandler.Log("Chosen alert mode: "+filterMode);
     }
 
 

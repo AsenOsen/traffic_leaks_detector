@@ -1,5 +1,6 @@
 package detector.Alerter;
 
+import detector.GUIWrapper;
 import detector.ThreatPattern.PatternParser.ThreatMessage;
 import detector.ThreatPattern.Threat;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
@@ -21,7 +22,7 @@ public abstract class Alerter
 
     private void alert(ThreatMessage message)
     {
-        AlerterGUI.getInstance().runGui();
+        GUIWrapper.getInstance().runGui();
         message.Dump();
     }
 
