@@ -1,5 +1,6 @@
 package detector.Alerter;
 
+import detector.ThreatPattern.PatternParser.ThreatMessage;
 import detector.ThreatPattern.Threat;
 
 /**
@@ -8,10 +9,11 @@ import detector.ThreatPattern.Threat;
 public class SlowStableTrafficAlerter extends Alerter
 {
     @Override
-    protected void alert(Threat threat)
+    protected ThreatMessage getThreatMessage(Threat threat)
     {
-        System.out.println("------------------------------------ Long-living stable leakage ---");
-        System.out.println(threat.createReport());
+        ThreatMessage threatMsg = threat.createReport();
+        threatMsg.setType(ThreatMessage.ThreatType.SlowLeakageMessage);
+        return threatMsg;
     }
 
 }

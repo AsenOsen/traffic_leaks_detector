@@ -7,6 +7,7 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
+import detector.ThreatPattern.PatternParser.ThreatMessage;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -42,8 +43,6 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     private String relationMode;
     @JsonProperty("msg")
     private String msg;
-    @JsonProperty("comment")
-    private String comment;
 
     private Set<ThreatPattern> dependencies = new HashSet<ThreatPattern>();
 
@@ -96,7 +95,16 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     }
 
 
-    public String createMessage(Threat threat)
+    public ThreatMessage createMessage(Threat threat)
+    {
+        ThreatMessage threatMessage = new ThreatMessage();
+        threatMessage.setMessage(getMessageByThreatPattern(threat));
+        threatMessage.setPatternName(this.codeName);
+        return threatMessage;
+    }
+
+
+    private String getMessageByThreatPattern(Threat threat)
     {
         if(msg == null)
         {
@@ -109,7 +117,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         IPv4Address ip = threat.getForeignIp();
         IpInfo info = ip==null ? null : ip.getIpInfo();
 
-        String stub = "?";
+        String stub = "(?)";
         String ipAddr = ip==null ? stub : (ip.toString()==null ? stub : ip.toString());
         String portNo = port==null ? stub : (port.toString()==null ? stub : port.toString());
         String psPid  = process==null ? stub : process.getPid()+"";
@@ -299,7 +307,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
         return priority+" - "+codeName+": "+
                 pid+" | "+ dstip +" | "+ srcport +" | "+processName+" | "+hostname+" | "+organization+
-                " | "+msg+" | Dependencies: "+dependencies+ " | Comment: "+comment;
+                " | "+msg+" | Dependencies: "+dependencies;
     }
 
 }

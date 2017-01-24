@@ -12,22 +12,25 @@ public class Main {
             new AnalyzerThread();
     private static Thread processInfoUpdaterThread =
             new ProcessUpdaterThread();
+    private static Thread communicationModuleThread =
+            new CommunicationThread();
 
 
     public static void main(String[] args)
     {
-        // Load patterns databases
+        // Load traffic patterns databases
         DB_KnownPatterns.getInstance().loadDB();
         DB_HarmlessPatterns.getInstance().loadDB();
 
-        // Begins traffic sniffing
+        // Start traffic sniffing
         NetInterceptor.getInstance().startInterceptLoop();
 
-        // Starts analyzing immediately
+        // Start traffic analyzer
         analyzerThread.start();
-
-        // Starts process info updater immediately
+        // Start process info updater
         processInfoUpdaterThread.start();
+        // Start server for interaction with daemon
+        communicationModuleThread.start();
     }
 
 
@@ -63,6 +66,17 @@ public class Main {
             {
                 DB_ProcessInfo.getInstance().update();
             }
+        }
+    }
+
+
+    private static class CommunicationThread extends Thread
+    {
+        @Override
+        public void run() {
+
+            Thread.currentThread().setName("__CommunicationModule");
+            InteractionModule.getInstance().run();
         }
     }
 

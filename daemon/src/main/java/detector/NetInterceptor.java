@@ -87,6 +87,7 @@ public class NetInterceptor implements PcapPacketHandler {
         }
 
         // 3) Open channels for each interface
+        LogHandler.Log("Looking for network interfaces...");
         channels = new ArrayList<Pcap>(getChannels(interfaces));
         if(channels == null || channels.size()==0) {
             LogHandler.Err(new Exception("Cant open any interface. Do I have rights?"));
@@ -221,6 +222,8 @@ public class NetInterceptor implements PcapPacketHandler {
     * */
     private String createFilterForInterface(PcapIf iface)
     {
+        assert iface != null;
+
         // Get the MAC of this channel
         IPv4Address ipAddress = getInterfaceIPv4Address(iface);
         if(ipAddress == null)
@@ -273,6 +276,8 @@ public class NetInterceptor implements PcapPacketHandler {
     * */
     private IPv4Address getInterfaceIPv4Address(PcapIf iface)
     {
+        assert iface != null;
+
         for(PcapAddr addr : iface.getAddresses())
         {
             if(addr.getAddr().getFamily() == PcapSockAddr.AF_INET)

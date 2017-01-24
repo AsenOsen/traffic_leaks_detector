@@ -4,6 +4,7 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.OsProcessesPrimitives.NetProcess;
+import detector.ThreatPattern.PatternParser.ThreatMessage;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -14,10 +15,10 @@ import java.util.Iterator;
 public class Threat
 {
 
-    private NetProcess process;   // process which caused the alert
-    private IPv4Address ip;       // ip which caused the alert
-    private Port port;            // port which caused the alert
-    private TrafficFlow traffic;  // malicious traffic                 // THIS NEEDED ONLY FOR DEBUGGING
+    private NetProcess process;   // process which caused the getThreatMessage
+    private IPv4Address ip;       // ip which caused the getThreatMessage
+    private Port port;            // port which caused the getThreatMessage
+    private TrafficFlow traffic;  // malicious traffic
 
 
     public Threat(TrafficFlow traffic)
@@ -29,7 +30,7 @@ public class Threat
     }
 
 
-    public String createReport()
+    public ThreatMessage createReport()
     {
         Iterator<ThreatPattern> patternsItr = DB_KnownPatterns.getInstance().getPatterns();
         while(patternsItr.hasNext())
@@ -37,12 +38,16 @@ public class Threat
             ThreatPattern pattern = patternsItr.next();
             if(pattern.matches(this))
             {
-                return pattern.createMessage(this) + "\n" + getDebugMessage();
+                ThreatMessage msg = pattern.createMessage(this);
+                msg.setLowLevelMessage(this.toString());
+                return msg;
             }
         }
 
         // if no pattern match found
-        return getDebugMessage();
+        ThreatMessage report = new ThreatMessage();
+        report.setMessage(this.toString());
+        return report;
     }
 
 
@@ -72,20 +77,20 @@ public class Threat
     }
 
 
-    private String getDebugMessage()
+    @Override
+    public String toString()
     {
         StringBuilder msg = new StringBuilder();
-        msg.append("Date: "+(new Date().toString())+"\n");
+        msg.append("Time: "+(new Date().toString())+"\n");
 
         if(process != null)
-            msg.append("[process]Процесс отправляет подозрительно много данных\n"+process+" => "+ traffic+"\n");
+            msg.append("[process]\n"+process+" => "+ traffic+"\n");
         else
         if(ip != null)
-            msg.append("[ip]На IP уходит подозрительно много данных\n"+ip + " => " + traffic+"\n");
+            msg.append("[ip]\n"+ip + " => " + traffic+"\n");
         else
         if(port != null)
-            msg.append("[port]Порт отправляет подозрительно много данных\n:"+port + " => " + traffic+"\n");
-
+            msg.append("[port]\n:"+port + " => " + traffic+"\n");
 
         return msg.toString();
     }
