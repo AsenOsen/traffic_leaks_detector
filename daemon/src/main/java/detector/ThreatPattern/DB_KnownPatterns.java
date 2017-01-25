@@ -1,5 +1,6 @@
 package detector.ThreatPattern;
 
+import com.sun.istack.internal.Nullable;
 import detector.LogHandler;
 import detector.ThreatPattern.PatternParser.PatternsDbParser;
 
@@ -27,9 +28,28 @@ public class DB_KnownPatterns
     }
 
 
-    public Iterator<ThreatPattern> getPatterns()
+    @Nullable
+    public ThreatPattern findMatchingPattern(Threat threat)
     {
-        return priorityPatternList.iterator();
+        for(ThreatPattern pattern : priorityPatternList)
+        {
+            if(pattern.matches(threat))
+                return pattern;
+        }
+        return null;
+    }
+
+
+    public Set<String> getNames()
+    {
+        return patternDB.keySet();
+    }
+
+
+    @Nullable
+    public ThreatPattern getPatternByName(String name)
+    {
+        return patternDB.get(name);
     }
 
 
@@ -56,12 +76,6 @@ public class DB_KnownPatterns
         }*/
 
         LogHandler.Log("Threats patterns database loaded "+priorityPatternList.size()+" patterns...");
-    }
-
-
-    public ThreatPattern getPatternByName(String name)
-    {
-        return patternDB.get(name);
     }
 
 }

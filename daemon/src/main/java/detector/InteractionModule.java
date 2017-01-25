@@ -1,6 +1,7 @@
 package detector;
 
 import com.sun.istack.internal.Nullable;
+import detector.ThreatPattern.ThreatMessage;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -15,9 +16,8 @@ public class InteractionModule
 
     private ServerSocket communicationServer;
     private int portIntervalStart = 5000;
-    private int getPortIntervalEnd = 6000;
+    private int getPortIntervalEnd = 5025;
     private int serverPort = -1;
-    private int reconnectAttempts = 0;
 
 
     public static InteractionModule getInstance()
@@ -46,7 +46,7 @@ public class InteractionModule
     }
 
 
-    private boolean startServer()
+    private void startServer()
     {
         IOException error = null;
 
@@ -57,7 +57,7 @@ public class InteractionModule
                 communicationServer = new ServerSocket(port);
                 serverPort = port;
                 LogHandler.Log("Communication server is successfully started on localhost:"+serverPort+"...");
-                return true;
+                break;
             } catch (IOException e)
             {
                 error = e;
@@ -67,9 +67,7 @@ public class InteractionModule
 
         if(serverPort == -1)
             LogHandler.Warn("Could not find any available port in range: " +
-                    portIntervalStart + ".." + getPortIntervalEnd+"\nError: "+error.getMessage());
-
-        return false;
+                    portIntervalStart + ".." + getPortIntervalEnd+"\nError: "+(error==null ? "": error.getMessage()));
     }
 
 
@@ -96,12 +94,15 @@ public class InteractionModule
             try
             {
                 Socket client = communicationServer.accept();
+                LogHandler.Log("New communication client: "+client.toString());
+
                 BufferedReader clientInput = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 PrintWriter clientOutput = new PrintWriter(client.getOutputStream(), true);
-                clientOutput.println(":::daemon_leaks_analyzer_protocol_start:::");
+                clientOutput.println(":::daemon_protocol_start:::");
 
                 while(true) {
                     if(!HandleClientQuery(clientInput, clientOutput)) {
+                        LogHandler.Log("Client terminated: "+client.toString());
                         client.close();
                         break;
                     }
@@ -128,12 +129,25 @@ public class InteractionModule
         String param;
 
         if(isQuitCommand(command))
+        {
+            clientOutput.println(":::daemon_protocol_finish:::");
             return false;
-
+        }
+        else
         if(command.equalsIgnoreCase("test"))
         {
             param = getClientLine(clientInput);
             clientOutput.println("Tested. Param: " + param);
+        }
+        else
+        if(command.equalsIgnoreCase("get_alert"))
+        {
+            ThreatMessage message = GUIWrapper.getInstance().takeMessageForGui();
+            clientOutput.println(message==null ? ":::daemon_protocol_no_msg:::" : message.produceClientMessage());
+        }
+        else
+        {
+            clientOutput.println(command+":::daemon_protocol_unknown_command:::");
         }
 
         return true;
@@ -145,7 +159,7 @@ public class InteractionModule
     {
         try
         {
-            return clientInput.readLine();
+            return clientInput.readLine().trim();
         }
         catch (IOException e)
         {

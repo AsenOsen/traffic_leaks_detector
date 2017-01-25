@@ -17,18 +17,10 @@ public class BlackListSelector implements TrafficSelector
     @Override
     public boolean select(TrafficFlow trafficFlow)
     {
-        Iterator<ThreatPattern> harmlessItr = DB_HarmlessPatterns.getInstance().getPatterns();
         Threat potentialThreat = new Threat(trafficFlow);
+        ThreatPattern harmless = DB_HarmlessPatterns.getInstance().findMatchingPattern(potentialThreat);
 
-        while (harmlessItr.hasNext())
-        {
-            ThreatPattern harmless = harmlessItr.next();
-            if(harmless.matches(potentialThreat)) {
-                //System.out.println("Ignored: "+harmless.getName());
-                return false;
-            }
-        }
-
-        return true;
+        boolean isHarmless = harmless != null; // pattern in harmless list
+        return isHarmless ? false : true;      // if so, then do not select
     }
 }

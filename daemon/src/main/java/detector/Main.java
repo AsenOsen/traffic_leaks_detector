@@ -2,7 +2,6 @@ package detector;
 
 import detector.ThreatPattern.DB_HarmlessPatterns;
 import detector.ThreatPattern.DB_KnownPatterns;
-import detector.ThreatPattern.ThreatPattern;
 
 
 public class Main {
@@ -43,10 +42,11 @@ public class Main {
         public void run() {
 
             Thread.currentThread().setName("__InterceptorLifecycle");
+
             while (true)
             {
                 if(NetInterceptor.getInstance().isDown())
-                    NetInterceptor.getInstance().startInterceptLoop();
+                    NetInterceptor.getInstance().startInterceptor();
 
                 try {
                     Thread.sleep(5000);

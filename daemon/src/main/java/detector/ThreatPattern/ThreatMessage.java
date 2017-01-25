@@ -1,4 +1,4 @@
-package detector.ThreatPattern.PatternParser;
+package detector.ThreatPattern;
 
 /**
  * Describes a high-level message about threat
@@ -48,26 +48,39 @@ public class ThreatMessage
     }
 
 
+    public String produceClientMessage()
+    {
+        return message;
+    }
+
     /*
     * Debug method
     * */
     public void Dump()
     {
+        System.out.println(getDump());
+    }
+
+
+    private String getDump()
+    {
+        StringBuilder dump = new StringBuilder();
         switch (type)
         {
             case BigTrafficMessage:
-                System.out.println("---------------------------- Big traffic ---");
+                dump.append("---------------------------- Big traffic ---");
                 break;
             case LeakageMessage:
-                System.out.println("---------------------------- Default Traffic Leakage ---");
+                dump.append("---------------------------- Default Traffic Leakage ---");
                 break;
             case SlowLeakageMessage:
-                System.out.println("---------------------------- Long-living leakage ---");
+                dump.append("---------------------------- Long-living leakage ---");
                 break;
         }
 
-        System.out.println(message);
-        System.out.println(lowLvlMessage);
-    }
+        dump.append("\n"+message);
+        dump.append("\n"+lowLvlMessage);
 
+        return dump.toString();
+    }
 }

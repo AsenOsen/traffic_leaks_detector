@@ -1,7 +1,12 @@
 package detector;
 
+import com.sun.istack.internal.Nullable;
+import detector.ThreatPattern.ThreatMessage;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 /**
  * This is a singleton.
@@ -14,6 +19,8 @@ public class GUIWrapper
     private static String guiExecutable;
     private static long guiHashSum;
     private static boolean isGuiPresented;
+
+    private Queue<ThreatMessage> messagesForGui = new ArrayDeque<ThreatMessage>();
 
 
     public static GUIWrapper getInstance()
@@ -37,6 +44,19 @@ public class GUIWrapper
         {
             LogHandler.Warn("Gui presented, but error when run it.");
         }
+    }
+
+
+    public synchronized void offerMessageForGui(ThreatMessage message)
+    {
+        messagesForGui.add(message);
+    }
+
+
+    @Nullable
+    public synchronized ThreatMessage takeMessageForGui()
+    {
+        return messagesForGui.poll();
     }
 
 

@@ -1,6 +1,6 @@
 package detector.Alerter;
 
-import detector.ThreatPattern.PatternParser.ThreatMessage;
+import detector.ThreatPattern.ThreatMessage;
 import detector.ThreatPattern.Threat;
 
 /**

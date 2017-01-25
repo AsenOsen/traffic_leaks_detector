@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**************************************************************
@@ -26,11 +28,14 @@ public class NetInterceptor implements PcapPacketHandler {
     private List<Pcap> channels = null;
     private BlockingQueue<PcapPacket> packetQueue = new LinkedBlockingQueue<PcapPacket>();
 
-    private List<Thread> receivers = new ArrayList<Thread>();
+    private ExecutorService packetReceiverService = null;
     private Thread queueThread = null;
 
-    private long lastProcessedPacketTime = 0;
-    private int reloadAttempts = 0;
+    // time in millis of last successfully processed packet from queue
+    private volatile boolean isInterceptorActive = false;
+    // amount of failed interceptor runs
+    private int connFailedAttempts = 0;
+    private int reconnectsCount = 0;
     //volatile int a=0, b=0;
 
 
@@ -61,11 +66,13 @@ public class NetInterceptor implements PcapPacketHandler {
     }
 
 
-    public void startInterceptLoop()
+    public void startInterceptor()
     {
-        Init();
-        startPacketReceivers();
-        startPacketQueueHandler();
+        if(init())
+        {
+            startPacketReceivers();
+            startPacketQueueHandler();
+        }
     }
 
 
@@ -75,8 +82,7 @@ public class NetInterceptor implements PcapPacketHandler {
     * */
     public boolean isDown()
     {
-        // if no packets were processed in last 10 seconds, then everything is down
-        return (System.currentTimeMillis() - lastProcessedPacketTime) > 10000;
+        return !isInterceptorActive;
     }
 
 
@@ -97,28 +103,31 @@ public class NetInterceptor implements PcapPacketHandler {
     }
 
 
-    private void Init()
+    private boolean init()
     {
-        // if too much connection reloadAttempts
-        if(reloadAttempts > 5)
+        // if too much connection connFailedAttempts
+        if(connFailedAttempts > 5)
         {
             LogHandler.Err(new Exception("Network interfaces not found on this computer. Or could not access them."));
-            return;
+            return false;
         }
 
         // 1) network interfaces discovering : IP4 ONLY
         LogHandler.Log("Looking for network interfaces...");
         List<PcapIf> interfaces = getIPv4Interfaces();
         if(interfaces == null || interfaces.size()==0) {
-            reloadAttempts++;
-            LogHandler.Warn("Could not find any interface! Trying again..."+ reloadAttempts +"...");
-            return;
+            connFailedAttempts++;
+            LogHandler.Warn("Could not find any interface! Try number: "+ connFailedAttempts +"...");
+            return false;
         }
 
         // 2) kill each channel in case of restarting
         if(channels!=null) {
-            for (Pcap channel : channels)
+            for (Pcap channel : channels) {
                 channel.breakloop();
+                channel.close();
+            }
+            channels.clear();
         }
 
         // 3) open channel for each discovered interface
@@ -126,21 +135,15 @@ public class NetInterceptor implements PcapPacketHandler {
         if(channels.size()==0)
         {
             LogHandler.Err(new Exception("Cant open any interface. Do app have root rights?"));
-            return;
-        } else {
-            interceptorSucceeded();
+            return false;
         }
-    }
-
-
-    /*
-    * Runs when interceptor loops were successfully started
-    * */
-    private void interceptorSucceeded()
-    {
-        String msg = "%d loops started at %s...";
-        LogHandler.Log(String.format(msg, channels.size(), new Date(System.currentTimeMillis()).toString()));
-        reloadAttempts = 0;
+        else
+        {
+            String msg = "%d loops started at %s..."+(++reconnectsCount);
+            LogHandler.Log(String.format(msg, channels.size(), new Date(System.currentTimeMillis()).toString()));
+            connFailedAttempts = 0;
+            return true;
+        }
     }
 
 
@@ -150,22 +153,22 @@ public class NetInterceptor implements PcapPacketHandler {
     * */
     private void startPacketReceivers()
     {
-        for(Thread receiver : receivers)
-            receiver.interrupt();
-        receivers.clear();
+        if(packetReceiverService == null)
+            packetReceiverService = Executors.newCachedThreadPool();
 
         for(final Pcap channel : channels)
         {
-            Thread newReceiver = new Thread(new Runnable() {
+            packetReceiverService.submit(new Runnable() {
                 @Override
                 public void run() {
-                    Thread.currentThread().setName("__Reciever");
+                    Thread.currentThread().setName("__Receiver-"+System.currentTimeMillis());
                     channel.loop(Pcap.LOOP_INFINITE, NetInterceptor.this, null);
+                    isInterceptorActive = false;
                 }
             });
-            receivers.add(newReceiver);
-            newReceiver.start();
         }
+
+        isInterceptorActive = true;
     }
 
 
@@ -193,7 +196,6 @@ public class NetInterceptor implements PcapPacketHandler {
 
                     if(rawPacket != null) {
                         Analyzer.getInstance().register(new Packet(rawPacket));
-                        lastProcessedPacketTime = System.currentTimeMillis();
                         //b++;
                         //System.out.println(a+" --- "+b);
                     }

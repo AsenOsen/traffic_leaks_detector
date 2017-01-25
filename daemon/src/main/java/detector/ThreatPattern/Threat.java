@@ -4,7 +4,6 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.OsProcessesPrimitives.NetProcess;
-import detector.ThreatPattern.PatternParser.ThreatMessage;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -32,16 +31,12 @@ public class Threat
 
     public ThreatMessage createReport()
     {
-        Iterator<ThreatPattern> patternsItr = DB_KnownPatterns.getInstance().getPatterns();
-        while(patternsItr.hasNext())
+        ThreatPattern pattern = DB_KnownPatterns.getInstance().findMatchingPattern(this);
+        if(pattern != null)
         {
-            ThreatPattern pattern = patternsItr.next();
-            if(pattern.matches(this))
-            {
-                ThreatMessage msg = pattern.createMessage(this);
-                msg.setLowLevelMessage(this.toString());
-                return msg;
-            }
+            ThreatMessage msg = pattern.createMessage(this);
+            msg.setLowLevelMessage(this.toString());
+            return msg;
         }
 
         // if no pattern match found

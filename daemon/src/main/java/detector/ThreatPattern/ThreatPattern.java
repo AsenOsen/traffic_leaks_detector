@@ -7,10 +7,8 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
-import detector.ThreatPattern.PatternParser.ThreatMessage;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 
@@ -143,12 +141,12 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         if(relatedPatterns != null)
         {
-            Iterator<ThreatPattern> it = DB_KnownPatterns.getInstance().getPatterns();
-            while (it.hasNext())
+            for(String patternName : DB_KnownPatterns.getInstance().getNames())
             {
-                ThreatPattern pattern = it.next();
-                if(isStringMatches(relatedPatterns, pattern.codeName))
-                    dependencies.add(pattern);
+                if (isStringMatches(relatedPatterns, patternName)) {
+                    ThreatPattern dependency = DB_KnownPatterns.getInstance().getPatternByName(patternName);
+                    dependencies.add(dependency);
+                }
             }
 
             //for(ThreatPattern dep : dependencies)
@@ -289,6 +287,9 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     @Override
     public int compareTo(ThreatPattern o)
     {
+        if(o == null)
+            return -1;
+
         if(o.priority > this.priority)
             return +1;
         if(o.priority < this.priority)

@@ -22,7 +22,7 @@ public class IpInfo {
 
     public IpInfo(String jsonData)
     {
-        dump = new String(jsonData);
+        dump = jsonData;
 
         try
         {

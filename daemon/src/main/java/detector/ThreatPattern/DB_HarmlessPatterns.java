@@ -1,5 +1,6 @@
 package detector.ThreatPattern;
 
+import com.sun.istack.internal.Nullable;
 import detector.LogHandler;
 import detector.ThreatPattern.PatternParser.FiltersDbParser;
 import detector.ThreatPattern.PatternParser.PatternsDbParser;
@@ -26,9 +27,15 @@ public class DB_HarmlessPatterns
     }
 
 
-    public Iterator<ThreatPattern> getPatterns()
+    @Nullable
+    public ThreatPattern findMatchingPattern(Threat threat)
     {
-        return harmlessList.iterator();
+        for(ThreatPattern pattern : harmlessList)
+        {
+            if(pattern.matches(threat))
+                return pattern;
+        }
+        return null;
     }
 
 

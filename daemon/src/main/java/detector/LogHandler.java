@@ -8,7 +8,7 @@ public class LogHandler {
     * */
     public static synchronized void Err(Throwable error)
     {
-        assert error!=null : "Error message cant be null!";
+        assert error != null : "Error message cant be null!";
 
         if(error!=null && error.getMessage() != null) {
             System.err.println(error.getMessage());

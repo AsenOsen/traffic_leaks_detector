@@ -138,7 +138,7 @@
 
   "Pattern.StdApp.Browser.Metrica.Mailru":{
     "related-patterns": "Pattern\\.StdApp\\.(Browser)",
-    "hostname": ".*(smailru\\.net)|(mail\\.ru)$",
+    "hostname": ".*((smailru\\.net)|(mail\\.ru))$",
     "organization": "^AS47764.*Mail\\.Ru.*",
     "msg": "Метрика Mail.RU собирает данные о вас из вашего браузера.\nЗа последние {timesec} секунд было отправлено {kbytes}kB",
     "priority": 70
