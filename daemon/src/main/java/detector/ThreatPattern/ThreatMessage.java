@@ -1,7 +1,9 @@
 package detector.ThreatPattern;
 
+import org.json.JSONObject;
+
 /**
- * Describes a high-level message about threat
+ * Describes a high-level userMessage about threat
  */
 public class ThreatMessage
 {
@@ -13,7 +15,7 @@ public class ThreatMessage
     }
 
     private ThreatType type;
-    private String message;
+    private String userMessage;
     private String lowLvlMessage;
     private String pattern;
 
@@ -36,9 +38,9 @@ public class ThreatMessage
     }
 
 
-    public void setMessage(String msg)
+    public void setUserMessage(String msg)
     {
-        this.message = msg;
+        this.userMessage = msg;
     }
 
 
@@ -48,10 +50,16 @@ public class ThreatMessage
     }
 
 
-    public String produceClientMessage()
+    public String produceGuiMessage()
     {
-        return message;
+        JSONObject json = new JSONObject();
+        json.put("user_message", userMessage);
+        json.put("label", getThreatType());
+
+        System.out.println(json.toString());
+        return json.toString();
     }
+
 
     /*
     * Debug method
@@ -62,23 +70,29 @@ public class ThreatMessage
     }
 
 
-    private String getDump()
+    private String getThreatType()
     {
-        StringBuilder dump = new StringBuilder();
         switch (type)
         {
             case BigTrafficMessage:
-                dump.append("---------------------------- Big traffic ---");
-                break;
+                return "Отправка большого объема данных";
             case LeakageMessage:
-                dump.append("---------------------------- Default Traffic Leakage ---");
-                break;
+                return "Утечка данных";
             case SlowLeakageMessage:
-                dump.append("---------------------------- Long-living leakage ---");
-                break;
+                return "Медленная утечка данных";
+            default:
+                assert true : "There is cannot be any other threat types!";
+                return null;
         }
+    }
 
-        dump.append("\n"+message);
+
+    private String getDump()
+    {
+        StringBuilder dump = new StringBuilder();
+
+        dump.append("-------------------------------------- " + getThreatType() + " --- ");
+        dump.append("\n"+ userMessage);
         dump.append("\n"+lowLvlMessage);
 
         return dump.toString();

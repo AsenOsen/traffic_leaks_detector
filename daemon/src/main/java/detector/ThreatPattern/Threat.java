@@ -6,7 +6,6 @@ import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.OsProcessesPrimitives.NetProcess;
 
 import java.util.Date;
-import java.util.Iterator;
 
 /**
  * Describes a potential leakage threat
@@ -41,7 +40,7 @@ public class Threat
 
         // if no pattern match found
         ThreatMessage report = new ThreatMessage();
-        report.setMessage(this.toString());
+        report.setUserMessage(this.toString());
         return report;
     }
 
@@ -61,9 +60,9 @@ public class Threat
         return port;
     }
 
-    public float getLeakSize()
+    public int getLeakSizeBytes()
     {
-        return traffic.getBytes()/1000f;
+        return traffic.getBytes();
     }
 
     public float getActivityTime()

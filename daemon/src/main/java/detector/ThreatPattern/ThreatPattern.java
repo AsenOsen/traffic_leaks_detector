@@ -96,7 +96,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     public ThreatMessage createMessage(Threat threat)
     {
         ThreatMessage threatMessage = new ThreatMessage();
-        threatMessage.setMessage(getMessageByThreatPattern(threat));
+        threatMessage.setUserMessage(getMessageByThreatPattern(threat));
         threatMessage.setPatternName(this.codeName);
         return threatMessage;
     }
@@ -115,14 +115,14 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         IPv4Address ip = threat.getForeignIp();
         IpInfo info = ip==null ? null : ip.getIpInfo();
 
-        String stub = "(?)";
+        String stub = "[???]";
         String ipAddr = ip==null ? stub : (ip.toString()==null ? stub : ip.toString());
         String portNo = port==null ? stub : (port.toString()==null ? stub : port.toString());
         String psPid  = process==null ? stub : process.getPid()+"";
         String psName = process==null ? stub : (process.getName()==null ? stub : process.getName());
         String orgName= info==null ? stub : (info.getOrg()==null ? stub : info.getPrettyOrg());
         String hstName= info==null ? stub : (info.getHostname()==null ? stub : info.getHostname());
-        String leakSize = (int)threat.getLeakSize()+"";
+        String leakSize = getPrettyDataSize(threat.getLeakSizeBytes());
         String actTime  = (int)threat.getActivityTime()+"";
 
         return msg
@@ -132,8 +132,19 @@ public class ThreatPattern implements Comparable<ThreatPattern>
                 .replaceAll("\\{processname\\}", psName)
                 .replaceAll("\\{organization\\}", orgName)
                 .replaceAll("\\{hostname\\}", hstName)
-                .replaceAll("\\{kbytes\\}", leakSize)
+                .replaceAll("\\{datasize\\}", leakSize)
                 .replaceAll("\\{timesec\\}", actTime);
+    }
+
+
+    private String getPrettyDataSize(int bytes)
+    {
+        if(bytes < 1024)
+            return String.format("%d B", bytes);
+        if(1024 <= bytes && bytes < 1024*1024)
+            return String.format("%d KB", bytes/1024);
+
+        return String.format("%d MB", bytes/(1024*1024));
     }
 
 

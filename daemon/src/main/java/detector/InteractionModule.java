@@ -26,6 +26,9 @@ public class InteractionModule
     }
 
 
+    /*
+    * Available means that it was binded to port in ports range
+    * */
     public boolean isAvailable()
     {
         return portIntervalStart <= serverPort && serverPort <=getPortIntervalEnd;
@@ -50,7 +53,7 @@ public class InteractionModule
     {
         IOException error = null;
 
-        for(int port = portIntervalStart; port < getPortIntervalEnd; port++)
+        for(int port = portIntervalStart; port <= getPortIntervalEnd; port++)
         {
             try
             {
@@ -98,8 +101,8 @@ public class InteractionModule
 
                 BufferedReader clientInput = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 PrintWriter clientOutput = new PrintWriter(client.getOutputStream(), true);
-                clientOutput.println(":::daemon_protocol_start:::");
 
+                clientOutput.println(":::daemon_protocol_start:::");
                 while(true) {
                     if(!HandleClientQuery(clientInput, clientOutput)) {
                         LogHandler.Log("Client terminated: "+client.toString());
@@ -143,7 +146,13 @@ public class InteractionModule
         if(command.equalsIgnoreCase("get_alert"))
         {
             ThreatMessage message = GUIWrapper.getInstance().takeMessageForGui();
-            clientOutput.println(message==null ? ":::daemon_protocol_no_msg:::" : message.produceClientMessage());
+            if(message != null)
+            {
+                clientOutput.println(message.produceGuiMessage());
+                LogHandler.Log("Client have read the message.");
+            }else{
+                clientOutput.println(":::daemon_protocol_no_msg:::");
+            }
         }
         else
         {
