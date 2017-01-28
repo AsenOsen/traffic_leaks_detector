@@ -1,6 +1,10 @@
 package detector.ThreatPattern;
 
+import detector.LogHandler;
 import org.json.JSONObject;
+
+import java.util.Calendar;
+
 
 /**
  * Describes a high-level userMessage about threat
@@ -16,13 +20,15 @@ public class ThreatMessage
 
     private ThreatType type;
     private String userMessage;
+    private String title;
     private String lowLvlMessage;
     private String pattern;
+    private long utcTimestamp;
 
 
     public ThreatMessage()
     {
-
+        utcTimestamp = Calendar.getInstance().getTime().getTime() / 1000;
     }
 
 
@@ -44,6 +50,12 @@ public class ThreatMessage
     }
 
 
+    public void setShortMessage(String msg)
+    {
+        this.title = msg;
+    }
+
+
     public void setLowLevelMessage(String msg)
     {
         this.lowLvlMessage = msg;
@@ -54,9 +66,10 @@ public class ThreatMessage
     {
         JSONObject json = new JSONObject();
         json.put("user_message", userMessage);
-        json.put("label", getThreatType());
+        json.put("label", title);
+        json.put("utc_timestamp", utcTimestamp);
 
-        System.out.println(json.toString());
+        LogHandler.Log("Gui message: "+json.toString());
         return json.toString();
     }
 
@@ -66,7 +79,7 @@ public class ThreatMessage
     * */
     public void Dump()
     {
-        System.out.println(getDump());
+        LogHandler.Log(getDump());
     }
 
 

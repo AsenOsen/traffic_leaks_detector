@@ -3,8 +3,12 @@ package detector.NetwPrimitives.TrafficTable.TrafficSelectors;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 
 /**
- * Selects the traffic which leaks somewhere continuously during N seconds
- * (typically when someone steals the data in real-time -- micro or camera)
+ * Selects the traffic which:
+ * 1) leaks continuously to somewhere during N seconds
+ * 2) AND overflowed bytes limit
+ * 3) AND is targeted
+ *
+ * (typically when someone steals the data in real-time mode - micro or camera)
  */
 public class StableLeakSelector implements TrafficSelector
 {
@@ -24,9 +28,13 @@ public class StableLeakSelector implements TrafficSelector
     @Override
     public boolean select(TrafficFlow trafficFlow)
     {
-        return isNonFading(trafficFlow) &&
+        boolean isTargeted  // specific remote IP detected or single port
+                = (trafficFlow.getDominantDstAddr()!=null || trafficFlow.getDominantSrcPort()!=null);
+
+        return
+                isNonFading(trafficFlow) &&
                 isOverflowed(trafficFlow) &&
-                (trafficFlow.getDominantDstAddr() != null || trafficFlow.getDominantSrcPort() != null);
+                isTargeted;
     }
 
 

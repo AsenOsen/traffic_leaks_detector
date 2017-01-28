@@ -89,7 +89,7 @@ public class TimedTrafficFlow extends TrafficFlow
     @Override
     public float getActivityTimeSec()
     {
-        return observingTimeSecCount;
+        return Math.min(super.getActivityTimeSec(), observingTimeSecCount);
     }
 
 

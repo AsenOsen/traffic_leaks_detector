@@ -4,7 +4,9 @@ import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TrafficSelector;
 
 /**
- * Selects the traffic which exists too long but not active enough
+ * Selects the traffic which:
+ * 1) exists too long
+ * 2) AND not active enough
  */
 public class SlowLongLivingSelector implements TrafficSelector {
 
@@ -24,9 +26,9 @@ public class SlowLongLivingSelector implements TrafficSelector {
     {
         boolean isLongLiver =
                 trafficFlow.getActivityTimeSec() >= limitLifeTimeSec;
-        boolean notSoActive =
+        boolean notActiveEnough =
                 trafficFlow.getBytes() < limitTrafficSizeBytes;
 
-        return isLongLiver && notSoActive;
+        return isLongLiver && notActiveEnough;
     }
 }

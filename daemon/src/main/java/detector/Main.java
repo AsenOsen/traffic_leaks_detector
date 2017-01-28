@@ -6,7 +6,6 @@ import detector.ThreatPattern.DB_KnownPatterns;
 
 public class Main {
 
-
     private static Thread interceptorThread =
             new InterceptorThread();
     private static Thread analyzerThread =
@@ -22,7 +21,8 @@ public class Main {
         // Load traffic patterns databases
         DB_KnownPatterns.getInstance().loadDB();
         DB_HarmlessPatterns.getInstance().loadDB();
-        // Lazy load GUI
+
+        // Load GUI wrapper
         GUIWrapper.getInstance();
 
         // Start interceptor lifecycle monitor

@@ -57,53 +57,23 @@ public class Analyzer
 
     public void analyze()
     {
-        cleanTraffic();
-        analyzeStableLeaks();
-        analyzeSuddenLeaks();
-        analyzeStableSlowLeaks();
+        analyzeAlgorithmStableLeaks();
+        analyzeAlgorithmSuddenLeaks();
+        analyzeAlgorithmStableSlowLeaks();
     }
 
 
-    public void register(Packet netPacket)
+    public void registerPacket(Packet netPacket)
     {
         int payloadSize = netPacket.getPayloadSize();
 
-        // Accept packet if has payload
+        // Accept packet if it has payload inside
         if (payloadSize > 0)
         {
             active2secTrafficCollector.add(netPacket);
             last10secCollector.add(netPacket);
             stable60secCollector.add(netPacket);
         }
-    }
-
-
-    private void cleanTraffic()
-    {
-        last10secCollector.removeInactive(10f);
-        active2secTrafficCollector.removeInactive(2f);
-        stable60secCollector.removeInactive(15f);
-
-        // garbage cleaner runs each minute
-        boolean isTimeToClean = (System.currentTimeMillis() - lastCleaningTime) > 60000L;
-        if(isTimeToClean)
-        {
-            runGarbageCleaners();
-            lastCleaningTime = System.currentTimeMillis();
-        }
-    }
-
-
-    private void runGarbageCleaners()
-    {
-        // remove garbage from @last10secCollector
-        TrafficTable leaks = last10secCollector.selectSubset(slowLongLivingSelector);
-        last10secCollector.removeIrrelevantSubset(leaks, false);
-        // remove garbage from @stable60secCollector
-        leaks = stable60secCollector.selectSubset(slowLongLivingSelector);
-        stable60secCollector.removeIrrelevantSubset(leaks, false);
-        // @active2secTrafficCollector contains no garbage for default
-        // ...
     }
 
 
@@ -115,8 +85,15 @@ public class Analyzer
     }
 
 
-    private void analyzeSuddenLeaks()
+    /*
+    * This algorithm:
+    * 1) tracks all traffic for last N seconds
+    * 2) detects if during last N second the bytes limit was overflowed
+    * */
+    private void analyzeAlgorithmSuddenLeaks()
     {
+        last10secCollector.removeInactive(10f);
+
         TrafficTable leaks = last10secCollector.selectSubset(suddenLeakSelector);
         leaks = leaks.selectSubset(blackListSelector);
         leaks.raiseComplaints(new BigTrafficLeakAlerter());
@@ -124,9 +101,15 @@ public class Analyzer
     }
 
 
-
-    private void analyzeStableLeaks()
+    /*
+    * This algorithm:
+    * 1) tracks active traffic
+    * 2) detects if limit was overflowed
+    * */
+    private void analyzeAlgorithmStableLeaks()
     {
+        active2secTrafficCollector.removeInactive(2f);
+
         TrafficTable leaks = active2secTrafficCollector.selectSubset(stableLeakSelector);
         leaks = leaks.selectSubset(blackListSelector);
         leaks.raiseComplaints(new LeakageAlerter());
@@ -134,8 +117,24 @@ public class Analyzer
     }
 
 
-    private void analyzeStableSlowLeaks()
+    /*
+    * This algorithm:
+    * 1) tracks passive traffic
+    * 2) which overflowed the limit
+    * */
+    private void analyzeAlgorithmStableSlowLeaks()
     {
+        stable60secCollector.removeInactive(15f);
+        // garbage cleaner runs each minute
+        boolean isTimeToClean = (System.currentTimeMillis() - lastCleaningTime) > 60000L;
+        if(isTimeToClean)
+        {
+            // remove garbage from @stable60secCollector
+            TrafficTable leaks = stable60secCollector.selectSubset(slowLongLivingSelector);
+            stable60secCollector.removeIrrelevantSubset(leaks, false);
+            lastCleaningTime = System.currentTimeMillis();
+        }
+
         TrafficTable leaks = stable60secCollector.selectSubset(slowStableSelector);
         leaks = leaks.selectSubset(blackListSelector);
         leaks.raiseComplaints(new SlowStableTrafficAlerter());

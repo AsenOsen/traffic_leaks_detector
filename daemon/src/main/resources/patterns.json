@@ -2,44 +2,58 @@
   "Pattern.Undefined":{
     "comment": "Normally, this situation is impossible.",
     "msg": "Неустановленный источник утечки.",
+    "msg_short": "Неизвестно",
     "priority": 0
   },
 
   "Pattern.Port":{
     "srcport": "^[0-9]{1,5}$",
-    "msg": "В системе обнаружена утечка данных по сети = {datasize} за последние {timesec} секунд.\nВсе что известо - источникм является порт {srcport}",
+    "msg": "В системе обнаружена утечка данных по сети = {leaksize} за последние {timesec} секунд. Все что известо - источникм является порт {srcport}.",
+    "msg_short": "Утечка с неизвестного открытого порта",
     "priority": 10
   },
 
   "Pattern.IP":{
     "dstip": "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$",
-    "msg": "На IP адрес {dstip} утекло подозрительно много данных - {datasize} за последние {timesec} секунд.\nИсточник утечки установить не удалось.",
+    "msg": "На IP адрес {dstip}, принадлежащий компании \"{orgname}\", утекло подозрительно много данных - {leaksize} за последние {timesec} секунд. Источник утечки установить не удалось.",
+    "msg_short": "Ha неизвестный IP утекают данные",
     "priority": 20
   },
 
   "Pattern.Process":{
     "pid": "^[0-9]{1,5}$",
-    "msg": "Процесс {processname} отправил уже {datasize} данных за последние {timesec} секунд,\nпреимущественно на хост {hostname}(ip={dstip}),\nкоторый принадлежит компании \"{organization}\"",
+    "msg": "Процесс {processname} отправил уже {leaksize} данных за последние {timesec} секунд, преимущественно на хост {hostname} (IP={dstip}), который принадлежит компании \"{orgname}\".",
+    "msg_short": "Неизвестный процесс передает данные",
     "priority": 30
   },
 
   "Pattern.Yandex":{
     "comment": "data leaks somewhere to Yandex internals",
-    "organization": ".*yandex.*",
-    "msg": "На сервера Яндекса утекло {datasize} данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}",
+    "orgname": ".*yandex.*",
+    "msg": "На сервера Яндекса утекло {leaksize} данных за последние {timesec} секунд. Процесс, который инициировал отправку - {processname}.",
+    "msg_short": "Отправка в Яндекс",
     "priority": 40
   },
 
   "Pattern.Google":{
     "comment": "data leaks somewhere to Google internals",
-    "organization": "^AS15169.*google.*",
-    "msg": "На сервера Google утекло {datasize} данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}",
+    "orgname": ".*google.*",
+    "msg": "На сервера Google утекло {leaksize} данных за последние {timesec} секунд. Процесс, который инициировал отправку - {processname}.",
+    "msg_short": "Отправка в Google",
     "priority": 40
   },
 
   "Pattern.Amazon":{
-    "organization": ".*Amazon\\.Com.*",
-    "msg": "В Amazon с вашего компьютера было отправлено {datasize} данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}\nХост, на который отправлялись данные - {hostname}",
+    "orgname": ".*Amazon\\.Com.*",
+    "msg": "В Amazon с вашего компьютера было отправлено {leaksize} данных за последние {timesec} секунд. Процесс, который инициировал отправку - {processname}. Хост, на который отправлялись данные - {hostname}.",
+    "msg_short": "Отправка в Amazon",
+    "priority": 40
+  },
+
+  "Pattern.VKontakte":{
+    "orgname": ".*VKontakte\\sLtd.*",
+    "msg": "На сервера соцсети VK с вашего компьютера было отправлено {leaksize} данных за последние {timesec} секунд. Процесс, который инициировал отправку - {processname}. Хост, на который отправлялись данные - {hostname}.",
+    "msg_short": "Отправка на сервера VK",
     "priority": 40
   },
 
@@ -47,107 +61,130 @@
     "comment": "This pattern is also used by SlowStableLeakSelector.java",
     "related-patterns": "Pattern\\.StdApp\\.([a-zA-Z0-9]+)$",
     "relation-mode": "any",
-    "msg": "Одно из стандартных приложений {processname} отправило уже {datasize} данных за последние {timesec} секунд,\nпреимущественно на хост {hostname}(ip={dstip}),\nкоторый принадлежит компании \"{organization}\"",
+    "msg": "Одно из стандартных приложений {processname} отправило уже {leaksize} данных за последние {timesec} секунд, преимущественно на хост {hostname}(ip={dstip}), который принадлежит компании \"{orgname}\".",
+    "msg_short": "Стандартное приложение",
     "priority": 41
   },
 
   "Pattern.Amazon.Aws":{
     "related-patterns": "Pattern\\.(Amazon)",
     "hostname": ".*amazonaws.*",
-    "organization": ".*Amazon\\.Com.*",
-    "msg": "В облака Amazon с вашего компьютера утекло уже {datasize} данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}\nХост, на который отправлялись данные - {hostname}",
+    "orgname": ".*Amazon\\.Com.*",
+    "msg": "В облака Amazon с вашего компьютера утекло уже {leaksize} данных за последние {timesec} секунд. Процесс, который инициировал отправку - {processname}. Хост, на который отправлялись данные - {hostname}.",
+    "msg_short": "Отправка в Amazon",
     "priority": 50
   },
 
   "Pattern.Google.Cache":{
     "related-patterns": "Pattern\\.(Google)",
-    "hostname": ".*cache.google.com.*",
-    "msg": "В кэш Google утекло {datasize} данных за последние {timesec} секунд.\nПроцесс, который инициировал отправку - {processname}",
+    "hostname": ".*cache.google.com$",
+    "msg": "В кэш Google утекло {leaksize} данных за последние {timesec} секунд. Процесс, который инициировал отправку - {processname}.",
+    "msg_short": "Отправка в кэш Google",
     "priority": 50
   },
 
   "Pattern.StdApp.Skype":{
     "processname": ".*skype.*"  ,
-    "msg": "Skype отправил {datasize} данных за последние {timesec} секунд.\nПреимущественно на хост {hostname}(ip={dstip}).",
+    "msg": "Skype отправил {leaksize} данных за последние {timesec} секунд. Преимущественно на хост {hostname} (IP={dstip}).",
+    "msg_short": "Skype передает данные",
     "priority": 51
   },
 
   "Pattern.StdApp.Steam":{
     "processname" : ".*steam.*"  ,
-    "organization": ".*Valve\\sCorporation$",
-    "msg": "Steam отправил {datasize} данных за последние {timesec} секунд.\nПреимущественно на хост {hostname}(ip={dstip}).",
+    "orgname": ".*Valve\\sCorporation$",
+    "msg": "Steam отправил {leaksize} данных за последние {timesec} секунд. Преимущественно на хост {hostname} (IP={dstip}).",
+    "msg_short": "Steam передает данные",
     "priority": 51
   },
 
   "Pattern.StdApp.TorrentClient":{
     "processname" : ".*torrent.*"  ,
-    "msg": "В системе обнаружен Torrent-клиент, который за последние {timesec} секунд отправил {datasize}.\nИмя торрент-клиента - {processname}",
+    "msg": "В системе обнаружен Torrent-клиент, который за последние {timesec} секунд отправил {leaksize}. Имя торрент-клиента - {processname}.",
+    "msg_short": "Torrent клиент передает данные",
     "priority": 51
   },
 
   "Pattern.StdApp.Dropbox":{
     "processname" : "^dropbox.*"  ,
-    "organization": ".*Dropbox.*",
-    "msg": "Dropbox за последние {timesec} секунд отправил {datasize} на хост\n{hostname}(ip={dstip})",
+    "orgname": ".*Dropbox.*",
+    "msg": "Dropbox за последние {timesec} секунд отправил {leaksize} на хост {hostname} (IP={dstip}).",
+    "msg_short": "Dropbox передает данные",
     "priority": 51
   },
 
   "Pattern.StdApp.Browser":{
     "comment": "Only top-5 known browsers",
     "processname" : ".*(chrome|firefox|mozilla|iexplore|opera|safari|browser|iceweasel).*"  ,
-    "msg": "Одна из вкладок браузера отправила {datasize} данных за последние {timesec} секунд на хост\n{hostname} (IP={dstip}), \nкоторый принадлежит компании \"{organization}\"",
+    "msg": "Одна из открытых вкладок браузера отправила {leaksize} данных за последние {timesec} секунд на хост {hostname} (IP={dstip}), который принадлежит компании \"{orgname}\".",
+    "msg_short": "Браузер передает данные",
     "priority": 51
   },
 
   "Pattern.Microsoft.Updates":{
     "processname": "^svchost.*",
-    "organization": ".*Microsoft\\sCorporation.*",
-    "msg": "В Microsoft за последние {timesec} секунд утекло {datasize} данных на IP {dstip}.\nВероятнее всего, отправленные данные были связаны с обновлением системы Windows.\nПроцесс, который отправлял данные - {processname}",
+    "orgname": ".*Microsoft\\sCorporation.*",
+    "msg": "В Microsoft за последние {timesec} секунд утекло {leaksize} данных на IP {dstip}. Вероятнее всего, отправленные данные были связаны с обновлениями Windows. Процесс, который отправлял данные - {processname}.",
+    "msg_short": "Microsoft загружает обновления",
     "priority": 52
   },
 
   "Pattern.StdApp.Browser.Google":{
     "related-patterns": "Pattern\\.((StdApp\\.Browser)|(Google))",
     "relation-mode": "all",
-    "msg": "Какая-то из вкладок браузера отправляет большой объем данных в облака Google.\nЗа последние {timesec} секунд было отправлено {datasize}\nIP, на который отправлялись данные - {dstip}",
+    "msg": "Какая-то из вкладок браузера отправила в облака Google {leaksize} за последние {timesec} секунд.",
+    "msg_short": "Отправка в Google",
     "priority": 60
   },
 
   "Pattern.StdApp.Browser.Yandex":{
     "related-patterns": "Pattern\\.StdApp\\.(Browser)",
-    "organization": ".*yandex.*",
-    "msg": "Какая-то из вкладок браузера отправила на сервера Яндекса {datasize} за последние {timesec} секунд.",
+    "orgname": ".*yandex.*",
+    "msg": "Какая-то из вкладок браузера отправила на сервера Яндекса {leaksize} за последние {timesec} секунд.",
+    "msg_short": "Отправка в Яндекс",
+    "priority": 60
+  },
+
+  "Pattern.StdApp.Browser.VKontakte":{
+    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
+    "orgname": ".*VKontakte\\sLtd.*",
+    "msg": "Сайт Vkontake отправил из браузера на свои сервера уже {leaksize} за последние {timesec} секунд.",
+    "msg_short": "Отправка на сервера VK",
     "priority": 60
   },
 
   "Pattern.StdApp.Browser.Yandex.Statica":{
     "related-patterns": "Pattern\\.StdApp\\.(Browser)",
     "hostname": ".*((st\\.kp)|(static)|(front\\.kp)).*yandex.*",
-    "organization": "^AS13238.*yandex\\sllc$",
-    "msg": "Яндекс подгружает данные с возможным сбором метрики браузера.\nЗа последние {timesec} секунд на сервера статики было отправлено {datasize}",
+    "orgname": ".*yandex\\sllc$",
+    "msg": "Яндекс подгружает данные с возможным сбором метрик браузера. За последние {timesec} секунд на сервера статики было отправлено {leaksize}.",
+    "msg_short": "Отправка в Yandex",
     "priority": 70
   },
 
   "Pattern.StdApp.Browser.Metrica.Yandex":{
     "related-patterns": "Pattern\\.StdApp\\.(Browser)",
     "hostname": ".*(bs|mc|awaps|metrica).*yandex.*",
-    "organization": "^AS13238.*yandex\\sllc$",
-    "msg": "Яндекс метрика собирает данные о вас из вашего браузера.\nЗа последние {timesec} секунд было отправлено {datasize}",
+    "orgname": ".*yandex\\sllc$",
+    "msg": "Яндекс Метрика собирает данные вашего браузера. За последние {timesec} секунд было отправлено {leaksize}.",
+    "msg_short": "Отправка в Yandex",
     "priority": 70
   },
 
   "Pattern.StdApp.Browser.Metrica.Mailru":{
     "related-patterns": "Pattern\\.StdApp\\.(Browser)",
     "hostname": ".*((smailru\\.net)|(mail\\.ru))$",
-    "organization": "^AS47764.*Mail\\.Ru.*",
-    "msg": "Метрика Mail.RU собирает данные о вас из вашего браузера.\nЗа последние {timesec} секунд было отправлено {datasize}",
+    "orgname": ".*Mail\\.Ru.*",
+    "msg": "Метрика Mail.RU собирает данные о вас из вашего браузера. За последние {timesec} секунд было отправлено {leaksize}.",
+    "msg_short": "Отправка в Mail.ru",
     "priority": 70
   },
 
   "Pattern.StdApp.Browser.Amazon.Aws":{
     "related-patterns": "Pattern\\.((StdApp\\.Browser)|(Amazon\\.Aws))",
     "relation-mode": "all",
-    "msg": "Какая-то из вкладок браузера отправляет большой объем данных в облака Amazon.\nЗа последние {timesec} секунд было отправлено {datasize}\nХост, на который отправлялись данные - {hostname}",
+    "msg": "Какая-то из вкладок браузера отправляет большой объем данных в облака Amazon. За последние {timesec} секунд было отправлено {leaksize}. Хост, на который отправлялись данные - {hostname}.",
+    "msg_short": "Отправка в Amazon",
     "priority": 70
   }
 

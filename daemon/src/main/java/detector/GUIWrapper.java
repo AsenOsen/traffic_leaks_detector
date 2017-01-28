@@ -1,11 +1,16 @@
 package detector;
 
 import com.sun.istack.internal.Nullable;
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import detector.ThreatPattern.ThreatMessage;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Queue;
 
 /**
@@ -16,10 +21,9 @@ public class GUIWrapper
 {
     private static GUIWrapper instance = new GUIWrapper();
 
-    private static String guiExecutable;
-    private static long guiHashSum;
-    private static boolean isGuiPresented;
-
+    private String guiAbsolutePath;
+    private String guiHashSum;
+    private boolean isGuiPresented;
     private Queue<ThreatMessage> messagesForGui = new ArrayDeque<ThreatMessage>();
 
 
@@ -36,10 +40,10 @@ public class GUIWrapper
 
         try
         {
-            if(new File(guiExecutable).length() != guiHashSum)
-                LogHandler.Warn("Security error: cant run gui because its file was modified.");
+            if(!isGuiUntouched())
+                LogHandler.Warn("Security error: cant run gui because its file was modified!");
             else
-                Runtime.getRuntime().exec(guiExecutable);
+                Runtime.getRuntime().exec(guiAbsolutePath);
         } catch (IOException e)
         {
             LogHandler.Warn("Gui presented, but error when run it.");
@@ -68,14 +72,14 @@ public class GUIWrapper
 
     private void initGui()
     {
-        guiExecutable = System.getProperty("gui", null);
+        guiAbsolutePath = System.getProperty("gui", null);
 
-        if(guiExecutable == null) {
+        if(guiAbsolutePath == null) {
             guiFail();
             return;
         }
 
-        if(new File(guiExecutable).exists())
+        if(new File(guiAbsolutePath).exists())
             guiSuccess();
         else
             guiFail();
@@ -84,19 +88,52 @@ public class GUIWrapper
 
     private void guiSuccess()
     {
-        assert guiExecutable!=null : "Gui path cannot be null here.";
-
-        guiHashSum = new File(guiExecutable).length();
+        guiHashSum = getGuiHash();
         isGuiPresented = true;
-        LogHandler.Log("Daemon is accompanied with GUI - "+guiExecutable);
+        LogHandler.Log("Daemon is accompanied with GUI - "+ guiAbsolutePath + ". Hash: "+guiHashSum);
     }
 
 
     private void guiFail()
     {
-        guiHashSum = 0;
+        guiHashSum = null;
         isGuiPresented = false;
-        LogHandler.Log("No GUI specified for daemon.");
+        LogHandler.Log("No GUI specified for daemon - GUI not specified or not exists.");
+    }
+
+
+    private String getGuiHash()
+    {
+        assert guiAbsolutePath != null : "Gui path cannot be null here.";
+
+        try
+        {
+            MessageDigest md5 = MessageDigest.getInstance("md5");
+            FileInputStream fileStream = new FileInputStream(guiAbsolutePath);
+            DigestInputStream digestStream = new DigestInputStream(fileStream, md5);
+
+            int read;
+            byte[] bytes = new byte[4096];
+            while((read = digestStream.read(bytes)) != -1)
+                md5.update(bytes, 0, read);
+
+            fileStream.close();
+            return HexBin.encode(md5.digest());
+        }
+        catch (Exception e)
+        {
+            LogHandler.Warn("Securty error! Could not get the hashsum of GUI.");
+            LogHandler.Err(e);
+        }
+
+        return null;
+    }
+
+
+    private boolean isGuiUntouched()
+    {
+        String currentHashSum = getGuiHash();
+        return guiHashSum!=null && currentHashSum!=null && currentHashSum.equals(guiHashSum);
     }
 
 }

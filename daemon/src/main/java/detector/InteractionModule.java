@@ -14,10 +14,18 @@ public class InteractionModule
 {
     private static InteractionModule instance = new InteractionModule();
 
-    private ServerSocket communicationServer;
-    private int portIntervalStart = 5000;
-    private int getPortIntervalEnd = 5025;
+    // Server`s contract:
+    private static final int SERVER_PORT_RANGE_START = 5000;
+    private static final int SERVER_PORT_RANGE_END = 5025;
+    private static final String SERVER_PROTOCOL_START = ":::daemon_protocol_start:::";
+    private static final String SERVER_PROTOCOL_NO_MSG = ":::daemon_protocol_no_msg:::";
+    private static final String SERVER_PROTOCOL_FINISH = ":::daemon_protocol_finish:::";
+    private static final String SERVER_PROTOCOL_UNK_CMD = ":::daemon_protocol_unknown_command:::";
+
     private int serverPort = -1;
+    private ServerSocket communicationServer;
+    private BufferedReader clientInput = null;
+    private PrintWriter clientOutput = null;
 
 
     public static InteractionModule getInstance()
@@ -31,7 +39,7 @@ public class InteractionModule
     * */
     public boolean isAvailable()
     {
-        return portIntervalStart <= serverPort && serverPort <=getPortIntervalEnd;
+        return SERVER_PORT_RANGE_START <= serverPort && serverPort <= SERVER_PORT_RANGE_END;
     }
 
 
@@ -53,7 +61,7 @@ public class InteractionModule
     {
         IOException error = null;
 
-        for(int port = portIntervalStart; port <= getPortIntervalEnd; port++)
+        for(int port = SERVER_PORT_RANGE_START; port <= SERVER_PORT_RANGE_END; port++)
         {
             try
             {
@@ -70,7 +78,8 @@ public class InteractionModule
 
         if(serverPort == -1)
             LogHandler.Warn("Could not find any available port in range: " +
-                    portIntervalStart + ".." + getPortIntervalEnd+"\nError: "+(error==null ? "": error.getMessage()));
+                    SERVER_PORT_RANGE_START + ".." + SERVER_PORT_RANGE_END +
+                    "\nError: " + (error==null ? "": error.getMessage()));
     }
 
 
@@ -99,14 +108,16 @@ public class InteractionModule
                 Socket client = communicationServer.accept();
                 LogHandler.Log("New communication client: "+client.toString());
 
-                BufferedReader clientInput = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                PrintWriter clientOutput = new PrintWriter(client.getOutputStream(), true);
+                clientInput = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                clientOutput = new PrintWriter(client.getOutputStream(), true);
 
-                clientOutput.println(":::daemon_protocol_start:::");
+                clientOutput.println(SERVER_PROTOCOL_START);
                 while(true) {
-                    if(!HandleClientQuery(clientInput, clientOutput)) {
+                    if(!HandleClientQuery()) {
                         LogHandler.Log("Client terminated: "+client.toString());
                         client.close();
+                        clientInput.close();
+                        clientOutput.close();
                         break;
                     }
                 }
@@ -126,21 +137,21 @@ public class InteractionModule
     }
 
 
-    private boolean HandleClientQuery(BufferedReader clientInput, PrintWriter clientOutput)
+    private boolean HandleClientQuery()
     {
-        String command = getClientLine(clientInput);
+        String command = getClientLine();
         String param;
 
         if(isQuitCommand(command))
         {
-            clientOutput.println(":::daemon_protocol_finish:::");
+            sendToClient(SERVER_PROTOCOL_FINISH);
             return false;
         }
         else
         if(command.equalsIgnoreCase("test"))
         {
-            param = getClientLine(clientInput);
-            clientOutput.println("Tested. Param: " + param);
+            param = getClientLine();
+            sendToClient("Tested. Param: " + param);
         }
         else
         if(command.equalsIgnoreCase("get_alert"))
@@ -148,15 +159,15 @@ public class InteractionModule
             ThreatMessage message = GUIWrapper.getInstance().takeMessageForGui();
             if(message != null)
             {
-                clientOutput.println(message.produceGuiMessage());
-                LogHandler.Log("Client have read the message.");
+                sendToClient(message.produceGuiMessage());
+                LogHandler.Log("Message was sent to client through socket.");
             }else{
-                clientOutput.println(":::daemon_protocol_no_msg:::");
+                sendToClient(SERVER_PROTOCOL_NO_MSG);
             }
         }
         else
         {
-            clientOutput.println(command+":::daemon_protocol_unknown_command:::");
+            sendToClient(SERVER_PROTOCOL_UNK_CMD);
         }
 
         return true;
@@ -164,15 +175,28 @@ public class InteractionModule
 
 
     @Nullable
-    private String getClientLine(BufferedReader clientInput)
+    private String getClientLine()
     {
         try
         {
             return clientInput.readLine().trim();
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             return null;
+        }
+    }
+
+
+    private void sendToClient(String data)
+    {
+        try
+        {
+            clientOutput.println(data);
+        }
+        catch (Exception e)
+        {
+            return;
         }
     }
 

@@ -195,7 +195,7 @@ public class NetInterceptor implements PcapPacketHandler {
                     catch (InterruptedException e) { continue; }
 
                     if(rawPacket != null) {
-                        Analyzer.getInstance().register(new Packet(rawPacket));
+                        Analyzer.getInstance().registerPacket(new Packet(rawPacket));
                         //b++;
                         //System.out.println(a+" --- "+b);
                     }

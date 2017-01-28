@@ -1,5 +1,7 @@
 package detector;
 
+import java.util.Date;
+
 public class LogHandler {
 
 
@@ -39,7 +41,10 @@ public class LogHandler {
     * */
     public static synchronized void Log(String log)
     {
-        System.out.println(log);
+        String fmt = "[%s]\n::: %s";
+        String time = new Date(System.currentTimeMillis()).toString();
+        String msg = String.format(fmt, time, log);
+        System.out.println(msg);
     }
 
 }

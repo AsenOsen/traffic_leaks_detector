@@ -81,10 +81,10 @@ public class Threat
             msg.append("[process]\n"+process+" => "+ traffic+"\n");
         else
         if(ip != null)
-            msg.append("[ip]\n"+ip + " => " + traffic+"\n");
+            msg.append("[ip]\n"+ip + " <= " + traffic+"\n");
         else
         if(port != null)
-            msg.append("[port]\n:"+port + " => " + traffic+"\n");
+            msg.append("[src port]\n:"+port + " => " + traffic+"\n");
 
         return msg.toString();
     }

@@ -55,6 +55,6 @@ public class NetProcess {
     @Override
     public String toString()
     {
-        return String.format("[%s|%s]", getName(), getPid());
+        return String.format("[%s|pid=%s]", getName(), getPid());
     }
 }

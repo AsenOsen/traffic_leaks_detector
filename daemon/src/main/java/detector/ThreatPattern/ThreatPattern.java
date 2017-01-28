@@ -31,8 +31,8 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     private String srcport;
     @JsonProperty("processname")
     private String processName;
-    @JsonProperty("organization")
-    private String organization;
+    @JsonProperty("orgname")
+    private String orgName;
     @JsonProperty("hostname")
     private String hostname;
     @JsonProperty("related-patterns")
@@ -41,6 +41,8 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     private String relationMode;
     @JsonProperty("msg")
     private String msg;
+    @JsonProperty("msg_short")
+    private String shortMsg;
 
     private Set<ThreatPattern> dependencies = new HashSet<ThreatPattern>();
 
@@ -63,7 +65,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
         // at least 1 rule convention
         if(pid==null && dstip==null && srcport==null &&
-                processName==null && organization==null && hostname==null &&
+                processName==null && orgName ==null && hostname==null &&
                 relatedPatterns ==null && isAllowedEmptyPattern
                 )
             LogHandler.Err(new Exception("Pattern '"+codeName+"' SHOULD have at least 1 rule!"));
@@ -97,6 +99,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         ThreatMessage threatMessage = new ThreatMessage();
         threatMessage.setUserMessage(getMessageByThreatPattern(threat));
+        threatMessage.setShortMessage(shortMsg);
         threatMessage.setPatternName(this.codeName);
         return threatMessage;
     }
@@ -120,10 +123,11 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         String portNo = port==null ? stub : (port.toString()==null ? stub : port.toString());
         String psPid  = process==null ? stub : process.getPid()+"";
         String psName = process==null ? stub : (process.getName()==null ? stub : process.getName());
-        String orgName= info==null ? stub : (info.getOrg()==null ? stub : info.getPrettyOrg());
-        String hstName= info==null ? stub : (info.getHostname()==null ? stub : info.getHostname());
+        String orgName= info==null ? stub : (info.getOrgName()==null ? stub : info.getOrgName());
+        String geo = info==null ? stub : (info.getGeo()==null ? stub : info.getGeo());
+        String hstName= info==null ? stub : (info.getHostName()==null ? stub : info.getHostName());
         String leakSize = getPrettyDataSize(threat.getLeakSizeBytes());
-        String actTime  = (int)threat.getActivityTime()+"";
+        String actTime  = String.format("%.1f", threat.getActivityTime());
 
         return msg
                 .replaceAll("\\{dstip\\}", ipAddr)
@@ -131,8 +135,9 @@ public class ThreatPattern implements Comparable<ThreatPattern>
                 .replaceAll("\\{pid\\}", psPid)
                 .replaceAll("\\{processname\\}", psName)
                 .replaceAll("\\{organization\\}", orgName)
+                .replaceAll("\\{geo\\}", geo)
                 .replaceAll("\\{hostname\\}", hstName)
-                .replaceAll("\\{datasize\\}", leakSize)
+                .replaceAll("\\{leaksize\\}", leakSize)
                 .replaceAll("\\{timesec\\}", actTime);
     }
 
@@ -142,9 +147,9 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         if(bytes < 1024)
             return String.format("%d B", bytes);
         if(1024 <= bytes && bytes < 1024*1024)
-            return String.format("%d KB", bytes/1024);
+            return String.format("%.1f KB", bytes/1024f);
 
-        return String.format("%d MB", bytes/(1024*1024));
+        return String.format("%.1f MB", bytes/(1024f*1024f));
     }
 
 
@@ -245,10 +250,10 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
     private boolean matchOrganization(IpInfo info)
     {
-        if(this.organization != null)
+        if(this.orgName != null)
         {
-            String orgName = String.valueOf(info == null ? null : info.getOrg());
-            return isStringMatches(this.organization, orgName);
+            String orgName = String.valueOf(info == null ? null : info.getOrgName());
+            return isStringMatches(this.orgName, orgName);
         }
         return true;
     }
@@ -258,7 +263,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         if(this.hostname != null)
         {
-            String host = String.valueOf(info == null ? null : info.getHostname());
+            String host = String.valueOf(info == null ? null : info.getHostName());
             return isStringMatches(this.hostname, host);
         }
         return true;
@@ -318,7 +323,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
             dependencies += th.codeName;
 
         return priority+" - "+codeName+": "+
-                pid+" | "+ dstip +" | "+ srcport +" | "+processName+" | "+hostname+" | "+organization+
+                pid+" | "+ dstip +" | "+ srcport +" | "+processName+" | "+hostname+" | "+ orgName +
                 " | "+msg+" | Dependencies: "+dependencies;
     }
 

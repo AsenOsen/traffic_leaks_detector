@@ -169,21 +169,21 @@ public class TrafficTable
     /*
     * Removes each traffic record which exists so long(not active enough)
     * */
-    public void removeInactive(float downTime)
+    public void removeInactive(float downTimeSec)
     {
         Iterator<Map.Entry<IPv4Address, TrafficFlow>> ipItr = ipTraffic.entrySet().iterator();
         while(ipItr.hasNext())
-            if(ipItr.next().getValue().getInactivityTimeSec() >= downTime)
+            if(ipItr.next().getValue().getInactivityTimeSec() >= downTimeSec)
                 ipItr.remove();
 
         Iterator<Map.Entry<Port, TrafficFlow>> portItr = portTraffic.entrySet().iterator();
         while(portItr.hasNext())
-            if(portItr.next().getValue().getInactivityTimeSec() >= downTime)
+            if(portItr.next().getValue().getInactivityTimeSec() >= downTimeSec)
                 portItr.remove();
 
         Iterator<Map.Entry<NetProcess, TrafficFlow>> processItr = processTraffic.entrySet().iterator();
         while(processItr.hasNext())
-            if(processItr.next().getValue().getInactivityTimeSec() >= downTime)
+            if(processItr.next().getValue().getInactivityTimeSec() >= downTimeSec)
                 processItr.remove();
     }
 

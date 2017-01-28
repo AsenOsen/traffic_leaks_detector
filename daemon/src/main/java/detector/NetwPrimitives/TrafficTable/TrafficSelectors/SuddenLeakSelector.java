@@ -3,7 +3,11 @@ package detector.NetwPrimitives.TrafficTable.TrafficSelectors;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 
 /**
- * Selects traffic which leaked size is too big and activity time small
+ * Selects traffic which:
+ * 1) overflowed bytes limit(usually big ~ 100kB)
+ * 2) AND during short time
+ * 3) AND is targeted
+ *
  * (typically when someone steals files from local computer)
  */
 public class SuddenLeakSelector implements TrafficSelector
@@ -22,13 +26,17 @@ public class SuddenLeakSelector implements TrafficSelector
     @Override
     public boolean select(TrafficFlow trafficFlow)
     {
-        return !isTimeRateExceeded(trafficFlow) &&
-                isTrafficSizeExceeded(trafficFlow) &&
-                (trafficFlow.getDominantDstAddr() != null || trafficFlow.getDominantSrcPort() != null);
+        boolean isTargeted  // specific remote IP detected or single port
+                = (trafficFlow.getDominantDstAddr() != null || trafficFlow.getDominantSrcPort() != null);
+
+        return
+                isTrafficBig(trafficFlow) &&
+                isShortTime(trafficFlow) &&
+                isTargeted;
     }
 
 
-    private boolean isTrafficSizeExceeded(TrafficFlow trafficFlow)
+    private boolean isTrafficBig(TrafficFlow trafficFlow)
     {
         boolean isExceeded =
                 trafficFlow.getBytes() >= limitSizeBytes;
@@ -37,10 +45,10 @@ public class SuddenLeakSelector implements TrafficSelector
     }
 
 
-    private boolean isTimeRateExceeded(TrafficFlow trafficFlow)
+    private boolean isShortTime(TrafficFlow trafficFlow)
     {
         boolean isExceeded =
-                trafficFlow.getActivityTimeSec() > limitTimeSec;
+                trafficFlow.getActivityTimeSec() <= limitTimeSec;
 
         return isExceeded;
     }

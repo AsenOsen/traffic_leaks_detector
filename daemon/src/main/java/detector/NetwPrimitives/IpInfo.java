@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class IpInfo {
 
-    private String dump;
+    private String jsonDump;
 
     private String ip;
     private String hostname;
@@ -17,12 +17,12 @@ public class IpInfo {
     private String region;
     private String country;
     private String location;
-    private String organization;
+    private String orgName;
 
 
     public IpInfo(String jsonData)
     {
-        dump = jsonData;
+        jsonDump = jsonData;
 
         try
         {
@@ -31,7 +31,11 @@ public class IpInfo {
             if(json.has("ip"))
                 ip = json.getString("ip");
             if(json.has("hostname"))
+            {
                 hostname = json.getString("hostname");
+                if(hostname.compareToIgnoreCase("No Hostname")==0)
+                    hostname = null;
+            }
             if(json.has("city"))
                 city = json.getString("city");
             if(json.has("region"))
@@ -41,37 +45,43 @@ public class IpInfo {
             if(json.has("loc"))
                 location = json.getString("loc");
             if(json.has("org"))
-                organization = json.getString("org");
+            {
+                orgName = json.getString("org");
+                Pattern pattern = Pattern.compile("^AS[0-9]{3,}\\s(.*)$");
+                Matcher matcher = pattern.matcher(orgName);
+                if(matcher.find())
+                    orgName = matcher.group(1);
+            }
         }
         catch (JSONException e)
         {
-            LogHandler.Warn("Error parsing json object: "+e.getMessage()+", JSON: "+dump);
+            LogHandler.Warn("Error parsing json object: "+e.getMessage()+", JSON: "+ jsonDump);
         }
 
     }
 
 
-    public String getOrg()
+    public String getOrgName()
     {
-        return organization;
+        return orgName;
     }
 
-    public String getPrettyOrg()
+
+    public String getHostName()
     {
-        Pattern pattern = Pattern.compile("^AS[0-9]{3,}\\s(.*)$");
-        Matcher matcher = pattern.matcher(organization);
-        return matcher.find() ? matcher.group(1) : organization;
+        return hostname;
     }
 
-    public String getHostname()
+
+    public String getGeo()
     {
-        return hostname==null ? null :
-                (hostname.compareToIgnoreCase("No Hostname")==0 ? null : hostname);
+        return String.format("%s,%s,%s", country, region, city);
     }
 
 
     @Override
-    public String toString() {
-        return dump;
+    public String toString()
+    {
+        return jsonDump;
     }
 }

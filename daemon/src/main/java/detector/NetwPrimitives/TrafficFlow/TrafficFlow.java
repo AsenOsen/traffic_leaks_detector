@@ -212,19 +212,15 @@ public class TrafficFlow {
                 meanPorts.append(port+"("+ portPayload.get(port)+"b)"+
                         DB_ProcessInfo.getInstance().getProcessOfPort(port)+", ");
 
-        float speedKbPerSec = (totalPayload / getActivityTimeSec()) / 1024f;
-        //String type = speedKbPerSec > 30f ? "Отправка накопленных данных" : "Real-Time отправка";
-
         IPv4Address dominant = getDominantDstAddr();
 
-        return "KBytes: "+(totalPayload/1024d)+" | "+
+        return "Total KBytes: "+(totalPayload/1024d)+" | "+
                 "AvgPacketSize(b): "+((float)totalPayload/ totalPackets)+" | "+
                 "Uptime(s): "+ getActivityTimeSec()+" | "+
-                //"\nType: "+type+
-                "\nDst's: "+meanIps+
-                "\nSrc's: "+meanPorts+
-                "\nDstDom: "+ (dominant == null ? "null" : dominant.getIpInfo())+
-                "\nSrcDom: "+ getDominantSrcPort();
+                "\nDestinations: "+meanIps+
+                "\nSources: "+meanPorts+
+                "\nDominant destination: "+ (dominant == null ? "null" : dominant.getIpInfo())+
+                "\nDominant source: "+ getDominantSrcPort();
     }
 
 }
