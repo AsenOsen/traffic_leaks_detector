@@ -134,7 +134,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
                 .replaceAll("\\{srcport\\}", portNo)
                 .replaceAll("\\{pid\\}", psPid)
                 .replaceAll("\\{processname\\}", psName)
-                .replaceAll("\\{organization\\}", orgName)
+                .replaceAll("\\{orgname\\}", orgName)
                 .replaceAll("\\{geo\\}", geo)
                 .replaceAll("\\{hostname\\}", hstName)
                 .replaceAll("\\{leaksize\\}", leakSize)

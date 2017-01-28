@@ -28,10 +28,9 @@ public class NetInterceptor implements PcapPacketHandler {
     private List<Pcap> channels = null;
     private BlockingQueue<PcapPacket> packetQueue = new LinkedBlockingQueue<PcapPacket>();
 
-    private ExecutorService packetReceiverService = null;
+    private ExecutorService packetReceiverService = Executors.newCachedThreadPool();;
     private Thread queueThread = null;
 
-    // time in millis of last successfully processed packet from queue
     private volatile boolean isInterceptorActive = false;
     // amount of failed interceptor runs
     private int connFailedAttempts = 0;
@@ -121,7 +120,7 @@ public class NetInterceptor implements PcapPacketHandler {
             return false;
         }
 
-        // 2) kill each channel in case of restarting
+        // 2) close each loop sniffing channel (in case of restarting)
         if(channels!=null) {
             for (Pcap channel : channels) {
                 channel.breakloop();
@@ -153,9 +152,6 @@ public class NetInterceptor implements PcapPacketHandler {
     * */
     private void startPacketReceivers()
     {
-        if(packetReceiverService == null)
-            packetReceiverService = Executors.newCachedThreadPool();
-
         for(final Pcap channel : channels)
         {
             packetReceiverService.submit(new Runnable() {
