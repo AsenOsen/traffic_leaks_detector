@@ -22,7 +22,7 @@
 
   "Pattern.Process":{
     "pid": "^[0-9]{1,5}$",
-    "msg": "Процесс {processname} отправил уже {leaksize} данных за последние {timesec} секунд, преимущественно на хост {hostname} (IP={dstip}), который принадлежит компании \"{orgname}\".",
+    "msg": "Процесс {processname} отправил уже {leaksize} данных за последние {timesec} секунд, преимущественно на хост {hostname} (IP={dstip}), который принадлежит компании \"{orgname}\". {geo}",
     "msg_short": "Неизвестный процесс передает данные",
     "priority": 30
   },

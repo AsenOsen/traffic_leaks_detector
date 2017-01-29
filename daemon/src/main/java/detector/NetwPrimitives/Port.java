@@ -1,7 +1,7 @@
 package detector.NetwPrimitives;
 
 
-import detector.DB_ProcessInfo;
+import detector.Db.DB_ProcessInfo;
 import detector.OsProcessesPrimitives.NetProcess;
 
 public class Port {

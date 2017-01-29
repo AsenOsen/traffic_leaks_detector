@@ -1,13 +1,12 @@
-package detector.ThreatPattern;
+package detector.Db;
 
 import com.sun.istack.internal.Nullable;
 import detector.LogHandler;
 import detector.ThreatPattern.PatternParser.FiltersDbParser;
-import detector.ThreatPattern.PatternParser.PatternsDbParser;
+import detector.ThreatPattern.Threat;
+import detector.ThreatPattern.ThreatPattern;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**

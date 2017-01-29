@@ -1,7 +1,9 @@
 package detector;
 
-import detector.ThreatPattern.DB_HarmlessPatterns;
-import detector.ThreatPattern.DB_KnownPatterns;
+import detector.Analyzer.Analyzer;
+import detector.Db.DB_HarmlessPatterns;
+import detector.Db.DB_KnownPatterns;
+import detector.Db.DB_ProcessInfo;
 
 
 public class Main {

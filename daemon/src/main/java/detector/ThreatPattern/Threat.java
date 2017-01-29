@@ -1,5 +1,6 @@
 package detector.ThreatPattern;
 
+import detector.Db.DB_KnownPatterns;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;

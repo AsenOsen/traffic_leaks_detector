@@ -37,13 +37,18 @@ namespace gui
             objectListView1.Sort();
 
             /*List<ServerMessage> messages = new List<ServerMessage>();
-            messages.Add(new ServerMessage("{\"user_message\":\"Chpock1Ch pock1Chpock1Chpo ck1Chpock1Chpock1Chpock1Chpo ck1Chpock1Chpock1CChpock1Ch pock1Chpock1Chpo ck1Chpock1Chpock1Chpock1Chpo ck1Chpock1Chpock1CChpock1Ch pock1Chpock1Chpo ck1Chpock1Chpock1Chpock1Chpo ck1Chpock1Chpock1C hpock1Chpock1Chpo ck1Chpock1Ch pock1Chpock1Chpock1Chpock 1Chpock1Ch pock1Chpock1Chpock1Chpock1\", \"label\":\"Chpock_Label1\", \"utc_timestamp\":\"1231314334\"}"));
-            messages.Add(new ServerMessage("{\"user_message\":\"Chpock2\", \"label\":\"Chpock_Label2\", \"utc_timestamp\":\"1233131434\"}"));
-            messages.Add(new ServerMessage("{\"user_message\":\"Chpock3\", \"label\":\"Chpock_Label3\", \"utc_timestamp\":\"1233131434\"}"));
-            messages.Add(new ServerMessage("{\"user_message\":\"Chpock3\", \"label\":\"Chpock_Label3\", \"utc_timestamp\":\"1433131434\"}"));
-            messages.Add(new ServerMessage("{\"user_message\":\"Chpock3\", \"label\":\"Chpock_Label3\", \"utc_timestamp\":\"1433131424\"}"));
-            messages.Add(new ServerMessage("{\"user_message\":\"Chpock3\", \"label\":\"Chpock_Label3\", \"utc_timestamp\":\"1433131444\"}"));
-            objectListView1.SetObjects(messages); */
+            for (int i = 0; i < 10; i++)
+            {
+                messages.Add(new ServerMessage("{\"user_message\":\"Chpock1Ch pock1Chpock1Chpo ck1Chpock1Chpock1Chpock1Chpo ck1Chpock1Chpock1CChpock1Ch pock1Chpock1Chpo ck1Chpock1Chpock1Chpock1Chpo ck1Chpock1Chpock1CChpock1Ch pock1Chpock1Chpo ck1Chpock1Chpock1Chpock1Chpo ck1Chpock1Chpock1C hpock1Chpock1Chpo ck1Chpock1Ch pock1Chpock1Chpock1Chpock 1Chpock1Ch pock1Chpock1Chpock1Chpock1\", \"label\":\"Chpock_Label1\", \"utc_timestamp\":\"1231314334\"}"));
+                messages.Add(new ServerMessage("{\"user_message\":\"Chpock2\", \"label\":\"Chpock_Label2\", \"utc_timestamp\":\"1233131434\"}"));
+                messages.Add(new ServerMessage("{\"user_message\":\"Chpock3\", \"label\":\"Chpock_Label3\", \"utc_timestamp\":\"1233131434\"}"));
+                messages.Add(new ServerMessage("{\"user_message\":\"Chpock3\", \"label\":\"Chpock_Label3\", \"utc_timestamp\":\"1433131434\"}"));
+                messages.Add(new ServerMessage("{\"user_message\":\"Chpock3\", \"label\":\"Chpock_Label3\", \"utc_timestamp\":\"1433131424\"}"));
+                messages.Add(new ServerMessage("{\"user_message\":\"Chpock3\", \"label\":\"Chpock_Label3\", \"utc_timestamp\":\"1433131444\"}"));
+            }
+            objectListView1.Freeze();
+            objectListView1.SetObjects(messages);
+            objectListView1.Unfreeze();*/
         }
 
 
@@ -168,16 +173,6 @@ namespace gui
         }
 
 
-        private void objectListView1_FormatRow(object sender, FormatRowEventArgs e)
-        {
-
-        }
-
-        private void notifier_MouseClick(object sender, MouseEventArgs e)
-        {
-            
-        }
-
         private void notifier_DoubleClick(object sender, EventArgs e)
         {
             ShowForm();
@@ -198,8 +193,28 @@ namespace gui
             e.SecondarySortOrder = SortOrder.Descending;
         }
 
-        private void AlertForm_Load(object sender, EventArgs e)
+
+        private void AlertForm_Resize(object sender, EventArgs e)
         {
+            moreInfoColumn.Width = 100;
+            ignoreBtnColumn.Width = 100;
+
+            int leftWidth = Width - (moreInfoColumn.Width + ignoreBtnColumn.Width);
+
+            msgColumn.Width = (int)(leftWidth * 0.5);
+            labelColumn.Width = (int)(leftWidth * 0.25);
+            timeColumn.Width = (int)(leftWidth * 0.20);
+
+        }
+
+
+        private void objectListView1_CellOver(object sender, CellOverEventArgs e)
+        {
+            if (e != null && e.Item != null) 
+            { 
+                e.Item.BackColor = Color.White;
+                objectListView1.RedrawItems(0, objectListView1.Items.Count - 1, false);
+            }
         }
 
 

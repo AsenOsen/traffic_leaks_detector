@@ -1,6 +1,7 @@
-package detector;
+package detector.Db;
 
 
+import detector.LogHandler;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 
@@ -27,6 +28,20 @@ public class DB_IpInfo {
     }
 
 
+    /*
+   * This is synchronous method.
+   * */
+    public synchronized IpInfo getIpInfo(IPv4Address ip)
+    {
+        // check existence first and if missing, find info for this IP.
+        if(!ipTable.containsKey(ip))
+            findInfo(ip);
+
+        // return the info value from table after while
+        return ipTable.get(ip);
+    }
+
+
     private void findInfo(IPv4Address ip)
     {
         if(ip == null || !ip.isValid())
@@ -46,7 +61,7 @@ public class DB_IpInfo {
         }
         catch (MalformedURLException e)
         {
-            LogHandler.Err(e);
+            assert false;
         }
         catch (IOException e)
         {
@@ -59,20 +74,5 @@ public class DB_IpInfo {
             ipTable.putIfAbsent(ip, infoObject);
         }
     }
-
-
-    /*
-    * This is synchronous method.
-    * */
-    public IpInfo getIpInfo(IPv4Address ip)
-    {
-        // check existence first and if missing, find info for this IP.
-        if(!ipTable.containsKey(ip))
-            findInfo(ip);
-
-        // return the info value from table after while
-        return ipTable.get(ip);
-    }
-
 
 }

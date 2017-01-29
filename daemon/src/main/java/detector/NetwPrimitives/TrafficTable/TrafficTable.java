@@ -6,7 +6,7 @@ import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TrafficSelector;
-import detector.DB_ProcessInfo;
+import detector.Db.DB_ProcessInfo;
 import detector.OsProcessesPrimitives.NetProcess;
 
 import java.util.*;

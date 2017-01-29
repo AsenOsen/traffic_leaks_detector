@@ -1,12 +1,11 @@
 package detector.NetwPrimitives.TrafficFlow;
 
-import detector.DB_ProcessInfo;
+import detector.Db.DB_ProcessInfo;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

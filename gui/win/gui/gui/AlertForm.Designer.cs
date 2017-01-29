@@ -139,10 +139,11 @@
             this.objectListView1.TabIndex = 1;
             this.objectListView1.UseCompatibleStateImageBehavior = false;
             this.objectListView1.UseFilterIndicator = true;
+            this.objectListView1.UseHotControls = false;
             this.objectListView1.View = System.Windows.Forms.View.Details;
             this.objectListView1.BeforeSorting += new System.EventHandler<BrightIdeasSoftware.BeforeSortingEventArgs>(this.objectListView1_BeforeSorting);
             this.objectListView1.ButtonClick += new System.EventHandler<BrightIdeasSoftware.CellClickEventArgs>(this.objectListView1_ButtonClick);
-            this.objectListView1.FormatRow += new System.EventHandler<BrightIdeasSoftware.FormatRowEventArgs>(this.objectListView1_FormatRow);
+            this.objectListView1.CellOver += new System.EventHandler<BrightIdeasSoftware.CellOverEventArgs>(this.objectListView1_CellOver);
             // 
             // msgColumn
             // 
@@ -152,7 +153,6 @@
             this.msgColumn.HeaderForeColor = System.Drawing.Color.Black;
             this.msgColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.msgColumn.Hideable = false;
-            this.msgColumn.MaximumWidth = 500;
             this.msgColumn.MinimumWidth = 500;
             this.msgColumn.Searchable = false;
             this.msgColumn.Sortable = false;
@@ -169,6 +169,7 @@
             this.timeColumn.HeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.timeColumn.HeaderForeColor = System.Drawing.Color.Black;
             this.timeColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.timeColumn.MinimumWidth = 150;
             this.timeColumn.Text = "Time";
             this.timeColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.timeColumn.Width = 219;
@@ -181,6 +182,7 @@
             this.labelColumn.HeaderForeColor = System.Drawing.Color.Black;
             this.labelColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.labelColumn.IsEditable = false;
+            this.labelColumn.MinimumWidth = 150;
             this.labelColumn.Text = "Kind";
             this.labelColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.labelColumn.Width = 155;
@@ -191,6 +193,8 @@
             this.moreInfoColumn.AspectName = "More...";
             this.moreInfoColumn.AspectToStringFormat = "More...";
             this.moreInfoColumn.IsButton = true;
+            this.moreInfoColumn.MaximumWidth = 100;
+            this.moreInfoColumn.MinimumWidth = 100;
             this.moreInfoColumn.Searchable = false;
             this.moreInfoColumn.ShowTextInHeader = false;
             this.moreInfoColumn.Sortable = false;
@@ -206,6 +210,8 @@
             this.ignoreBtnColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.ignoreBtnColumn.IsButton = true;
             this.ignoreBtnColumn.IsEditable = false;
+            this.ignoreBtnColumn.MaximumWidth = 100;
+            this.ignoreBtnColumn.MinimumWidth = 100;
             this.ignoreBtnColumn.Searchable = false;
             this.ignoreBtnColumn.ShowTextInHeader = false;
             this.ignoreBtnColumn.Sortable = false;
@@ -240,6 +246,7 @@
             this.Opacity = 0.01D;
             this.Text = "Alert Log";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AlertForm_FormClosing);
+            this.Resize += new System.EventHandler(this.AlertForm_Resize);
             this.notifierMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.objectListView1)).EndInit();
             this.ResumeLayout(false);

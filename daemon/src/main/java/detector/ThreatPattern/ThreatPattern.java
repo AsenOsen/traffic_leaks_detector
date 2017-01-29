@@ -1,5 +1,6 @@
 package detector.ThreatPattern;
 
+import detector.Db.DB_KnownPatterns;
 import com.fasterxml.jackson.annotation.*;
 
 import detector.LogHandler;

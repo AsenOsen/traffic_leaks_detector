@@ -1,7 +1,7 @@
 package detector.NetwPrimitives;
 
 
-import detector.DB_IpInfo;
+import detector.Db.DB_IpInfo;
 
 public class IPv4Address {
 

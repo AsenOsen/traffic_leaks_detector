@@ -1,4 +1,4 @@
-package detector;
+package detector.Analyzer;
 
 import detector.Alerter.BigTrafficLeakAlerter;
 import detector.Alerter.LeakageAlerter;

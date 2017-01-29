@@ -1,12 +1,9 @@
 package detector.NetwPrimitives.TrafficTable.TrafficSelectors;
 
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
-import detector.ThreatPattern.DB_HarmlessPatterns;
+import detector.Db.DB_HarmlessPatterns;
 import detector.ThreatPattern.Threat;
 import detector.ThreatPattern.ThreatPattern;
-
-
-import java.util.Iterator;
 
 /**
  * Selects only those trafficFlows which ARE NOT in white-list

@@ -65,7 +65,7 @@ namespace gui
                     if (protocolStart.CompareTo(SERVER_PROTOCOL_START) == 0)
                         break;                  
                 }
-                catch (SocketException e)
+                catch (SocketException)
                 {
                     continue;
                 }
