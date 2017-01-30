@@ -52,6 +52,7 @@
             // messageChecker
             // 
             this.messageChecker.Enabled = true;
+            this.messageChecker.Interval = 1000;
             this.messageChecker.Tick += new System.EventHandler(this.messageChecker_Tick);
             // 
             // notifier

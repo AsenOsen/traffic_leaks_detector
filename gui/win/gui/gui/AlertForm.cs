@@ -103,10 +103,15 @@ namespace gui
             // logging
             if (newMessage.isValid())
             {
+                Point scrollPos = objectListView1.LowLevelScrollPosition;
+
                 objectListView1.AddObject(newMessage);
                 //objectListView1.Sort(timeColumn, SortOrder.Descending);
                 objectListView1.FindItemWithText(userMessage).BackColor = Color.FromArgb(255, 255, 229, 229);
                 objectListView1.RedrawItems(0, objectListView1.Items.Count - 1, false);
+
+                if(scrollPos.Y > 0)
+                    objectListView1.LowLevelScroll(scrollPos.X, scrollPos.Y + objectListView1.RowHeightEffective);
             }
         }
 
