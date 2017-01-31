@@ -94,8 +94,8 @@ public class Analyzer
     {
         last10secCollector.removeInactive(10f);
 
-        TrafficTable leaks = last10secCollector.selectSubset(suddenLeakSelector);
-        leaks = leaks.selectSubset(blackListSelector);
+        TrafficTable leaks = last10secCollector.select(suddenLeakSelector);
+        leaks = leaks.select(blackListSelector);
         leaks.raiseComplaints(new BigTrafficLeakAlerter());
         removeDetectedTraffic(leaks);
     }
@@ -110,8 +110,8 @@ public class Analyzer
     {
         active2secTrafficCollector.removeInactive(2f);
 
-        TrafficTable leaks = active2secTrafficCollector.selectSubset(stableLeakSelector);
-        leaks = leaks.selectSubset(blackListSelector);
+        TrafficTable leaks = active2secTrafficCollector.select(stableLeakSelector);
+        leaks = leaks.select(blackListSelector);
         leaks.raiseComplaints(new LeakageAlerter());
         removeDetectedTraffic(leaks);
     }
@@ -130,13 +130,13 @@ public class Analyzer
         if(isTimeToClean)
         {
             // remove garbage from @stable60secCollector
-            TrafficTable leaks = stable60secCollector.selectSubset(slowLongLivingSelector);
+            TrafficTable leaks = stable60secCollector.select(slowLongLivingSelector);
             stable60secCollector.removeIrrelevantSubset(leaks, false);
             lastCleaningTime = System.currentTimeMillis();
         }
 
-        TrafficTable leaks = stable60secCollector.selectSubset(slowStableSelector);
-        leaks = leaks.selectSubset(blackListSelector);
+        TrafficTable leaks = stable60secCollector.select(slowStableSelector);
+        leaks = leaks.select(blackListSelector);
         leaks.raiseComplaints(new SlowStableTrafficAlerter());
         removeDetectedTraffic(leaks);
     }

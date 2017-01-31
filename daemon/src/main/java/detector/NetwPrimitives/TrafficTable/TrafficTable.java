@@ -5,6 +5,7 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
+import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficExcluder;
 import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TrafficSelector;
 import detector.Db.DB_ProcessInfo;
 import detector.OsProcessesPrimitives.NetProcess;
@@ -169,21 +170,21 @@ public class TrafficTable
     /*
     * Removes each traffic record which exists so long(not active enough)
     * */
-    public void removeInactive(float downTimeSec)
+    public void exclude(TrafficExcluder excluder)
     {
         Iterator<Map.Entry<IPv4Address, TrafficFlow>> ipItr = ipTraffic.entrySet().iterator();
         while(ipItr.hasNext())
-            if(ipItr.next().getValue().getInactivityTimeSec() >= downTimeSec)
+            if(excluder.exclude(ipItr.next().getValue()))
                 ipItr.remove();
 
         Iterator<Map.Entry<Port, TrafficFlow>> portItr = portTraffic.entrySet().iterator();
         while(portItr.hasNext())
-            if(portItr.next().getValue().getInactivityTimeSec() >= downTimeSec)
+            if(excluder.exclude(ipItr.next().getValue()))
                 portItr.remove();
 
         Iterator<Map.Entry<NetProcess, TrafficFlow>> processItr = processTraffic.entrySet().iterator();
         while(processItr.hasNext())
-            if(processItr.next().getValue().getInactivityTimeSec() >= downTimeSec)
+            if(excluder.exclude(ipItr.next().getValue()))
                 processItr.remove();
     }
 
@@ -191,7 +192,7 @@ public class TrafficTable
     /*
     * This method returns a subset from traffic tables which desires the @selector`s condition
     * */
-    public TrafficTable selectSubset(TrafficSelector selector)
+    public TrafficTable select(TrafficSelector selector)
     {
         TrafficTable selectedTable = new TrafficTable();
 
