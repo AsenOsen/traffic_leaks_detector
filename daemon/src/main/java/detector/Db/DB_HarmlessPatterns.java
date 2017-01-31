@@ -9,9 +9,10 @@ import detector.ThreatPattern.ThreatPattern;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by SAMSUNG on 20.01.2017.
- */
+/************************************************
+ * Provides a white-list of traffic patterns
+ * (white filters).
+ ************************************************/
 public class DB_HarmlessPatterns
 {
     private static final DB_HarmlessPatterns ourInstance =

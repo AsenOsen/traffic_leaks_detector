@@ -3,15 +3,15 @@ package detector.Db;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
 import detector.OsProcessesPrimitives.ProcessTable;
-import detector.OsProcessesPrimitives.platforms.routine.ProcessTableExtractor;
 import detector.OsProcessesPrimitives.platforms.routine.LinuxProcessTableExtractor;
+import detector.OsProcessesPrimitives.platforms.routine.ProcessTableExtractor;
 import detector.OsProcessesPrimitives.platforms.routine.WindowsProcessTableExtractor;
 
-/*****************************************************************************
+/**********************************************************
 * This is a singleton.
-* Its instance suppose to accomplish in different thread.
-* The aim pf class: keep actual info about each process`s open ports
-* ****************************************************************************/
+ *
+* Keeps actual info about each process`s open ports
+* *********************************************************/
 public class DB_ProcessInfo
 {
 

@@ -1,11 +1,11 @@
 package detector.Alerter;
 
-import detector.ThreatPattern.ThreatMessage;
 import detector.ThreatPattern.Threat;
+import detector.ThreatPattern.ThreatMessage;
 
-/**
+/***************************************************
  * Alerts about big outgoing traffic leaks
- */
+ **************************************************/
 public class BigTrafficLeakAlerter extends Alerter
 {
     @Override

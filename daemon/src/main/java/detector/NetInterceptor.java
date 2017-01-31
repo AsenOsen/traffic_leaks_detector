@@ -1,7 +1,7 @@
 package detector;
 
-import detector.Analyzer.Analyzer;
 import com.sun.istack.internal.Nullable;
+import detector.Analyzer.Analyzer;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import org.jetbrains.annotations.NotNull;

@@ -6,9 +6,9 @@ import org.json.JSONObject;
 import java.util.Calendar;
 
 
-/**
- * Describes a high-level userMessage about threat
- */
+/***************************************************
+ * Describes a high-level user message about threat
+ **************************************************/
 public class ThreatMessage
 {
     public enum ThreatType

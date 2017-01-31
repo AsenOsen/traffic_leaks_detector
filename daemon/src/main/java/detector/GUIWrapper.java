@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Queue;
 
-/**
+/************************************************
  * This is a singleton.
+ *
  * Wraps the logic for calling GUI messages
- */
+ ***********************************************/
 public class GUIWrapper
 {
     private static GUIWrapper instance = new GUIWrapper();

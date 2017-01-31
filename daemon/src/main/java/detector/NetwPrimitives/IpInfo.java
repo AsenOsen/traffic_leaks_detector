@@ -7,6 +7,10 @@ import org.json.JSONObject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+/************************************************
+* Contains info about concrete IP address
+* ***********************************************/
 public class IpInfo {
 
     private String jsonDump;

@@ -1,8 +1,9 @@
 package detector.ThreatPattern;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import detector.Db.DB_KnownPatterns;
-import com.fasterxml.jackson.annotation.*;
-
 import detector.LogHandler;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
@@ -13,9 +14,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-/**
- *
- */
+/********************************************************
+ * Describes concrete known traffic pattern.
+ * Patters stores in JSON format
+ *******************************************************/
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ThreatPattern implements Comparable<ThreatPattern>
 {

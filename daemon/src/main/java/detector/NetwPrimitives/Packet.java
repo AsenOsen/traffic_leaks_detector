@@ -5,10 +5,10 @@ import org.jnetpcap.protocol.network.Ip4;
 import org.jnetpcap.protocol.tcpip.Tcp;
 import org.jnetpcap.protocol.tcpip.Udp;
 
-/******************************************************************************
+/****************************************************************
  *   This class is a wrapper for @PcapPacket instance.
  *   It parses the PcapPacket and stores its data in fields.
-* ****************************************************************************/
+* ***************************************************************/
 public class Packet {
 
 

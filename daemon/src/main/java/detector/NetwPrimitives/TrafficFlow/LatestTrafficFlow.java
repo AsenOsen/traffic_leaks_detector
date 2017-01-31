@@ -10,11 +10,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
-/**
+/***************************************************
  * This class contains a single traffic flow
  * which was detected during last N seconds ONLY
- */
-public class TimedTrafficFlow extends TrafficFlow
+ *
+ * This is a decorator over TrafficFlow class
+ **************************************************/
+public class LatestTrafficFlow extends TrafficFlow
 {
 
     private int observingTimeSecCount = 0;
@@ -22,7 +24,7 @@ public class TimedTrafficFlow extends TrafficFlow
     private Map<MomentaryTrafficFlow, MomentaryTrafficFlow> momentSearchTable = null;
 
 
-    public TimedTrafficFlow(int observingTimeSec)
+    public LatestTrafficFlow(int observingTimeSec)
     {
         super();
 
@@ -71,9 +73,9 @@ public class TimedTrafficFlow extends TrafficFlow
     {
         super.mergeWith(traffic);
 
-        if(traffic instanceof TimedTrafficFlow)
+        if(traffic instanceof LatestTrafficFlow)
         {
-            TimedTrafficFlow timedTraffic = (TimedTrafficFlow)traffic;
+            LatestTrafficFlow timedTraffic = (LatestTrafficFlow)traffic;
             if (observingTimeSecCount > 0)
                 for (MomentaryTrafficFlow moment : momentTraffic)
                 {

@@ -8,9 +8,10 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.List;
 
-/**
- * Created by SAMSUNG on 20.01.2017.
- */
+/*************************************************************
+ * Parses all known traffic patterns
+ * from some outer resource
+ ************************************************************/
 public class PatternsDbParser extends ResourcePatternParser
 {
 

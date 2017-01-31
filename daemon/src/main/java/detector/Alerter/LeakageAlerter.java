@@ -1,11 +1,11 @@
 package detector.Alerter;
 
-import detector.ThreatPattern.ThreatMessage;
 import detector.ThreatPattern.Threat;
+import detector.ThreatPattern.ThreatMessage;
 
-/**
- * Alerts about constant leakage in foreign servers
- */
+/*******************************************************
+ * Alerts about constant leakage on foreign servers
+ ******************************************************/
 public class LeakageAlerter extends Alerter
 {
     @Override

@@ -1,26 +1,29 @@
 package detector.NetwPrimitives.TrafficTable;
 
 import detector.Alerter.Alerter;
+import detector.Db.DB_ProcessInfo;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
-import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficExcluder;
-import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TrafficSelector;
-import detector.Db.DB_ProcessInfo;
+import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficCleaner;
+import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficSelector;
 import detector.OsProcessesPrimitives.NetProcess;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**************************************************************
 * This class represents the tables of different traffic flows:
- * 1) TrafficFlow on concrete remote IP
+ * 1) TrafficFlow to concrete remote IP
  * 2) TrafficFlow from concrete source PORT
  * 3) TrafficFlow from concrete PROCESS
  *
- * This is a thread safe class.
 * ************************************************************/
 public class TrafficTable
 {
@@ -47,11 +50,13 @@ public class TrafficTable
     * */
     public void add(Packet packet)
     {
+        assert packet!=null;
+
         // Increases payload of destination IP
         IPv4Address ip = packet.getDestinationAddress();
         if(ip!=null && ip.isValid())
         {
-            ipTraffic.putIfAbsent(ip, createNewFlow());
+            ipTraffic.putIfAbsent(ip, createTrafficFlow());
             ipTraffic.get(ip).addPayload(packet);
         }
 
@@ -59,7 +64,7 @@ public class TrafficTable
         Port port = packet.getSourcePort();
         if(port!=null && port.isValid())
         {
-            portTraffic.putIfAbsent(port, createNewFlow());
+            portTraffic.putIfAbsent(port, createTrafficFlow());
             portTraffic.get(port).addPayload(packet);
         }
 
@@ -67,12 +72,12 @@ public class TrafficTable
         NetProcess portOwnerProcess = DB_ProcessInfo.getInstance().getProcessOfPort(port);
         if(portOwnerProcess != null)
         {
-            processTraffic.putIfAbsent(portOwnerProcess, createNewFlow());
+            processTraffic.putIfAbsent(portOwnerProcess, createTrafficFlow());
             processTraffic.get(portOwnerProcess).addPayload(packet);
         }
         /*else
         {
-            _undefinedProcessTraffic.putIfAbsent(port, createNewFlow());
+            _undefinedProcessTraffic.putIfAbsent(port, createTrafficFlow());
             _undefinedProcessTraffic.get(port).addPayload(packet);
         }
 
@@ -95,7 +100,7 @@ public class TrafficTable
             NetProcess portOwner = DB_ProcessInfo.getInstance().getProcessOfPort(port);
             if(portOwner != null) // port owner is found
             {
-                processTraffic.putIfAbsent(portOwner, createNewFlow());
+                processTraffic.putIfAbsent(portOwner, createTrafficFlow());
                 processTraffic.get(portOwner).mergeWith(portTraffic);
 
                 undProcess.remove();
@@ -113,7 +118,8 @@ public class TrafficTable
     /*
     * Just produces the new traffic flow
     * */
-    protected TrafficFlow createNewFlow()
+    @NotNull
+    protected TrafficFlow createTrafficFlow()
     {
         return new TrafficFlow();
     }
@@ -123,8 +129,10 @@ public class TrafficTable
     * Removes each traffic record which exists in @sub
     * And remove all related to it if @removeRelated==true
     * */
-    public void removeIrrelevantSubset(TrafficTable sub, boolean removeRelated)
+    public void removeSubset(TrafficTable sub, boolean removeRelated)
     {
+        assert sub!=null;
+
         for(Map.Entry<NetProcess, TrafficFlow> entry : sub.processTraffic.entrySet())
         {
             processTraffic.remove(entry.getKey());
@@ -154,6 +162,8 @@ public class TrafficTable
     * */
     private void removeRelatedElements(TrafficFlow trafficFlow)
     {
+        assert trafficFlow!=null;
+
         NetProcess dominantProcess = trafficFlow.getDominantProcess();
         IPv4Address dominantIp = trafficFlow.getDominantDstAddr();
         Port dominantPort = trafficFlow.getDominantSrcPort();
@@ -168,32 +178,36 @@ public class TrafficTable
 
 
     /*
-    * Removes each traffic record which exists so long(not active enough)
+    * Cleans traffic via some cleaning rule
     * */
-    public void exclude(TrafficExcluder excluder)
+    public void clean(TrafficCleaner cleaner)
     {
+        assert cleaner!=null;
+
         Iterator<Map.Entry<IPv4Address, TrafficFlow>> ipItr = ipTraffic.entrySet().iterator();
         while(ipItr.hasNext())
-            if(excluder.exclude(ipItr.next().getValue()))
+            if(cleaner.isGarbage(ipItr.next().getValue()))
                 ipItr.remove();
 
         Iterator<Map.Entry<Port, TrafficFlow>> portItr = portTraffic.entrySet().iterator();
         while(portItr.hasNext())
-            if(excluder.exclude(ipItr.next().getValue()))
+            if(cleaner.isGarbage(portItr.next().getValue()))
                 portItr.remove();
 
         Iterator<Map.Entry<NetProcess, TrafficFlow>> processItr = processTraffic.entrySet().iterator();
         while(processItr.hasNext())
-            if(excluder.exclude(ipItr.next().getValue()))
+            if(cleaner.isGarbage(processItr.next().getValue()))
                 processItr.remove();
     }
 
 
     /*
-    * This method returns a subset from traffic tables which desires the @selector`s condition
+    * Select traffic via some selection rule
     * */
     public TrafficTable select(TrafficSelector selector)
     {
+        assert selector!=null;
+
         TrafficTable selectedTable = new TrafficTable();
 
         for(IPv4Address ip : ipTraffic.keySet())
@@ -218,11 +232,13 @@ public class TrafficTable
     * */
     public void raiseComplaints(Alerter alerter)
     {
+        assert alerter!=null;
+
         Set<NetProcess> alertedProcess = new HashSet<NetProcess>(processTraffic.size());
         Set<IPv4Address> alertedIp = new HashSet<IPv4Address>(ipTraffic.size());
         Set<Port> alertedPort = new HashSet<Port>(portTraffic.size());
 
-        // OS Processes has the highest alerting priority
+        // OS Processes first - they has the highest alerting priority
         for(Map.Entry<NetProcess, TrafficFlow> entry : processTraffic.entrySet())
         {
             IPv4Address dominantIp = entry.getValue().getDominantDstAddr();
@@ -235,7 +251,7 @@ public class TrafficTable
             alerter.complainAboutFlow(entry.getValue());
         }
 
-        // Destination IPs has the middle alerting priority
+        // Destination IPs next - they has the middle alerting priority
         for(Map.Entry<IPv4Address, TrafficFlow> entry : ipTraffic.entrySet())
         {
             NetProcess dominantProcess = entry.getValue().getDominantProcess();
@@ -251,7 +267,7 @@ public class TrafficTable
             }
         }
 
-        // The lowest alerting priority belongs to PORTs
+        // Ports after everything - they has the lowest alerting priority
         for(Map.Entry<Port, TrafficFlow> entry : portTraffic.entrySet())
         {
             IPv4Address dominantIp = entry.getValue().getDominantDstAddr();

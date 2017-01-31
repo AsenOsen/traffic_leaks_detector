@@ -4,6 +4,10 @@ package detector.NetwPrimitives;
 import detector.Db.DB_ProcessInfo;
 import detector.OsProcessesPrimitives.NetProcess;
 
+
+/********************************
+* Contains info about open port
+* ******************************/
 public class Port {
 
 

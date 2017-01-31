@@ -1,29 +1,16 @@
 package detector.Analyzer.Algorithms;
 
-import detector.NetwPrimitives.Packet;
-import detector.NetwPrimitives.TrafficTable.TrafficTable;
+import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficCleaner;
+import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficSelector;
 
-/**
- * Created by SAMSUNG on 29.01.2017.
- */
-public interface Algorithm
+/***********************************************
+ * Encapsulates multiple selection rules and
+ * rules of traffic obsolescense
+ ***********************************************/
+public abstract class Algorithm
+    implements TrafficSelector, TrafficCleaner
 {
 
-    /*
-    * Cleans some algorithm`s data
-    * */
-    void cleanData();
 
-    
-    /*
-    * Offers to algorithm a new piece of data
-    * */
-    void offerData(Packet packet);
-
-
-    /*
-    * Returns traffic table with potential threats
-    * */
-    TrafficTable processData();
 
 }

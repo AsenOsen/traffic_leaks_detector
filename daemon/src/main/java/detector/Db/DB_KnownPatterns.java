@@ -8,11 +8,12 @@ import detector.ThreatPattern.ThreatPattern;
 
 import java.util.*;
 
-/**
+/**************************************************************************
  * This is a singleton.
+ *
  * Stores all known traffic patterns in ordered(by its priority) way.
  * Patterns with higher priority goes first.
- */
+ **************************************************************************/
 public class DB_KnownPatterns
 {
 

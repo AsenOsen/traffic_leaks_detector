@@ -9,9 +9,10 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.List;
 
-/**
- * Created by SAMSUNG on 20.01.2017.
- */
+/*************************************************************
+ * Parses white-list(filters) traffic patterns
+ * from some outer resource
+************************************************************/
 public class FiltersDbParser extends ResourcePatternParser
 {
     private enum Mode{

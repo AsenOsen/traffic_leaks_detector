@@ -1,14 +1,16 @@
 package detector.Alerter;
 
 import detector.GUIWrapper;
-import detector.ThreatPattern.ThreatMessage;
-import detector.ThreatPattern.Threat;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
+import detector.ThreatPattern.Threat;
+import detector.ThreatPattern.ThreatMessage;
 
-/**
+/**********************************************************
  * Alerts potential traffic leak.
- * Abstract class which describes common logic for all specific alert types.
- */
+ *
+ * Abstract class which describes common logic
+ * for all algorithm-specific alert types.
+ *********************************************************/
 public abstract class Alerter
 {
 

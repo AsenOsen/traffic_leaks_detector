@@ -1,6 +1,5 @@
 package detector.ThreatPattern.PatternParser;
 
-import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import detector.LogHandler;
 import detector.ThreatPattern.ThreatPattern;
@@ -12,10 +11,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-/*
-* Class encapsulates all the logic about resource format.
-* If fills the passed List with java objects.
-* */
+/*************************************************************
+* Class encapsulates all the logic about outer resource format.
+* It fills the passed List with java objects.
+*********************************************************** */
 public abstract class ResourcePatternParser
 {
     private String resourceData;

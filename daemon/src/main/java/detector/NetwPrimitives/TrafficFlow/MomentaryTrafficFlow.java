@@ -6,9 +6,9 @@ import detector.NetwPrimitives.Port;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-/**
+/*************************************************
  * Describes the traffic during 1 second
- */
+ ************************************************/
 public class MomentaryTrafficFlow
 {
 

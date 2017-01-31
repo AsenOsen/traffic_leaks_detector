@@ -3,13 +3,19 @@ package detector;
 import com.sun.istack.internal.Nullable;
 import detector.ThreatPattern.ThreatMessage;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-/**
- * Lets another applications to communicate with this app (daemon)
- */
+/******************************************************
+ * Provides an interface for other applications
+ * to communicate with this app (daemon)
+ *
+ * Describes communication protocol.
+ ******************************************************/
 public class InteractionModule
 {
     private static InteractionModule instance = new InteractionModule();

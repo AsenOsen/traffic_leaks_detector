@@ -11,13 +11,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-/*************************************************************************
+/**********************************************************
  * This class contains a single traffic flow.
- * TrafficFlow - is a traffic attached to the concrete:
- *    1) IP
- *    2) Port
- *    3) Process
-* ***********************************************************************/
+ * TrafficFlow - is a traffic attached to some entity,
+ * defined by traffic tables.
+* ********************************************************/
 public class TrafficFlow {
 
     protected volatile int totalPayload = 0;

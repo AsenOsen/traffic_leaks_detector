@@ -1,9 +1,13 @@
-package detector.NetwPrimitives.TrafficTable.TrafficSelectors;
+package detector.NetwPrimitives.TrafficTable.TrafficOperations;
 
 
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 
-public interface TrafficSelector {
+/***************************************
+* Describes traffic selection rule
+* **************************************/
+public interface TrafficSelector
+{
 
     boolean select(TrafficFlow trafficFlow);
 

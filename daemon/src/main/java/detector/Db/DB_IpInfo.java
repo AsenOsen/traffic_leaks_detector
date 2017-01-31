@@ -13,6 +13,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ConcurrentHashMap;
 
+
+/************************************************
+ * Contains information about all IP addresses
+ ***********************************************/
 public class DB_IpInfo {
 
     private static final DB_IpInfo instance = new DB_IpInfo();

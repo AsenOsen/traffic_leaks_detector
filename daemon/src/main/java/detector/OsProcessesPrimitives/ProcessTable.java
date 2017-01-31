@@ -1,7 +1,6 @@
 package detector.OsProcessesPrimitives;
 
 
-import detector.LogHandler;
 import detector.NetwPrimitives.Port;
 
 import java.util.Iterator;

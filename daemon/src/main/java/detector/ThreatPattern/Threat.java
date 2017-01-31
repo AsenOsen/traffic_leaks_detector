@@ -8,9 +8,9 @@ import detector.OsProcessesPrimitives.NetProcess;
 
 import java.util.Date;
 
-/**
+/*********************************************
  * Describes a potential leakage threat
- */
+ *********************************************/
 public class Threat
 {
 

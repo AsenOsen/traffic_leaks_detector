@@ -1,11 +1,11 @@
 package detector.Alerter;
 
-import detector.ThreatPattern.ThreatMessage;
 import detector.ThreatPattern.Threat;
+import detector.ThreatPattern.ThreatMessage;
 
-/**
- * Alerts about long-active but slow traffic flows
- */
+/*******************************************************
+ * Alerts about long-active but slow(passive) traffic flows
+ ******************************************************/
 public class SlowStableTrafficAlerter extends Alerter
 {
     @Override
