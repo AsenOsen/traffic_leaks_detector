@@ -1,7 +1,7 @@
 package detector.NetwPrimitives;
 
 
-import detector.Db.DB_IpInfo;
+import detector.Data.IpInfoDB;
 
 public class IPv4Address {
 
@@ -59,7 +59,7 @@ public class IPv4Address {
 
     public IpInfo getIpInfo()
     {
-        return DB_IpInfo.getInstance().getIpInfo(this);
+        return IpInfoDB.getInstance().getIpInfo(this);
     }
 
 

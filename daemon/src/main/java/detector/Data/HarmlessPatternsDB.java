@@ -1,11 +1,11 @@
-package detector.Db;
+package detector.Data;
 
-import com.sun.istack.internal.Nullable;
 import detector.LogHandler;
 import detector.ThreatPattern.PatternParser.FiltersDbParser;
 import detector.ThreatPattern.Threat;
 import detector.ThreatPattern.ThreatPattern;
 
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,15 +13,15 @@ import java.util.List;
  * Provides a white-list of traffic patterns
  * (white filters).
  ************************************************/
-public class DB_HarmlessPatterns
+public class HarmlessPatternsDB
 {
-    private static final DB_HarmlessPatterns ourInstance =
-            new DB_HarmlessPatterns();
-    private List<ThreatPattern> harmlessList =
+    private static final HarmlessPatternsDB ourInstance =
+            new HarmlessPatternsDB();
+    private volatile List<ThreatPattern> harmlessList =
             new ArrayList<ThreatPattern>();
 
 
-    public static DB_HarmlessPatterns getInstance()
+    public static HarmlessPatternsDB getInstance()
     {
         return ourInstance;
     }
@@ -39,7 +39,7 @@ public class DB_HarmlessPatterns
     }
 
 
-    private DB_HarmlessPatterns()
+    private HarmlessPatternsDB()
     {
 
     }
@@ -57,7 +57,7 @@ public class DB_HarmlessPatterns
             pattern.loadDependencies();
         }*/
 
-        LogHandler.Log("Filter patterns database loaded "+harmlessList.size()+" patterns...");
+        LogHandler.Log("Filter patterns database loaded "+harmlessList.size()+" patterns.");
     }
 
 }

@@ -52,8 +52,8 @@ public class PassiveLeakAlgorithm extends Algorithm
     @Override
     public boolean isGarbage(TrafficFlow trafficFlow)
     {
-        return  trafficFlow.getInactivityTimeSec() > Config.getInstance().PASSIVE_LEAKAGE_ALLOWED_IDLE_TIME_SEC ||
-                trafficFlow.getActivityTimeSec() > garbageTimeSec;
+        return  trafficFlow.getIdleTimeSec() > Config.getInstance().PASSIVE_LEAKAGE_ALLOWED_IDLE_TIME_SEC ||
+                trafficFlow.getLifeTimeSec() > garbageTimeSec;
     }
 
 }

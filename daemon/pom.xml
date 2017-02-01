@@ -58,7 +58,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>detector.Main</mainClass>
+                            <mainClass>detector._AppStartt.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -78,7 +78,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>detector.Main</mainClass>
+                            <mainClass>detector.AppStart.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

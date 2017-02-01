@@ -1,4 +1,4 @@
-package detector.Db;
+package detector.Data;
 
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
@@ -12,15 +12,15 @@ import detector.OsProcessesPrimitives.platforms.routine.WindowsProcessTableExtra
  *
 * Keeps actual info about each process`s open ports
 * *********************************************************/
-public class DB_ProcessInfo
+public class ProcessInfoDB
 {
 
-    private static final DB_ProcessInfo instance = new DB_ProcessInfo();
-    private ProcessTable processTable = new ProcessTable();
+    private static final ProcessInfoDB instance = new ProcessInfoDB();
+    private volatile ProcessTable processTable = new ProcessTable();
     private ProcessTableExtractor platformProcessTable = null;
 
 
-    public static DB_ProcessInfo getInstance()
+    public static ProcessInfoDB getInstance()
     {
         return instance;
     }
@@ -43,7 +43,7 @@ public class DB_ProcessInfo
     }
 
 
-    private DB_ProcessInfo()
+    private ProcessInfoDB()
     {
         String osName = System.getProperty("os.name");
         if(osName != null)

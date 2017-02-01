@@ -62,19 +62,19 @@ public class Analyzer
     }
 
 
-    private void removeDetectedTraffic(TrafficTable detected)
-    {
-        latestCollector.removeSubset(detected, true);
-        activeCollector.removeSubset(detected, true);
-        passiveCollector.removeSubset(detected, true);
-    }
-
-
     public void analyze()
     {
         analyzeActiveLeaks();
         analyzeSuddenLeaks();
         analyzePassiveLeaks();
+    }
+
+
+    private void removeDetectedTraffic(TrafficTable detected)
+    {
+        latestCollector.removeSubset(detected, true);
+        activeCollector.removeSubset(detected, true);
+        passiveCollector.removeSubset(detected, true);
     }
 
 

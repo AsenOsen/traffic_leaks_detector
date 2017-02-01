@@ -23,7 +23,7 @@ public class IntervalActivitySelector implements TrafficSelector
     @Override
     public boolean select(TrafficFlow trafficFlow)
     {
-        float activityTime = trafficFlow.getActivityTimeSec();
+        float activityTime = trafficFlow.getLifeTimeSec();
         return  minActivityTimeSec <= activityTime && activityTime <= maxActivityTimeSec;
     }
 }

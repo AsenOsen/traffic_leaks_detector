@@ -1,6 +1,6 @@
 package detector.NetwPrimitives.TrafficFlow;
 
-import detector.Db.DB_ProcessInfo;
+import detector.Data.ProcessInfoDB;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
@@ -107,7 +107,7 @@ public class TrafficFlow {
     /*
     * Returns the time of monitoring specific traffic
     * */
-    public float getInactivityTimeSec()
+    public float getIdleTimeSec()
     {
         return (System.currentTimeMillis() - lastActMillis) / 1000f;
     }
@@ -116,7 +116,7 @@ public class TrafficFlow {
     /*
     * Return time in seconds during which traffic have been collected
     * */
-    public float getActivityTimeSec()
+    public float getLifeTimeSec()
     {
         return (lastActMillis - firstActMillis) / 1000f;
     }
@@ -207,13 +207,13 @@ public class TrafficFlow {
                 meanIps.append(ip+"("+ ipPayload.get(ip)+"b), ");
         for(Port port : portPayload.keySet())
                 meanPorts.append(port+"("+ portPayload.get(port)+"b)"+
-                        DB_ProcessInfo.getInstance().getProcessOfPort(port)+", ");
+                        ProcessInfoDB.getInstance().getProcessOfPort(port)+", ");
 
         IPv4Address dominant = getDominantDstAddr();
 
         return "Total KBytes: "+(totalPayload/1024d)+" | "+
                 "AvgPacketSize(b): "+((float)totalPayload/ totalPackets)+" | "+
-                "Uptime(s): "+ getActivityTimeSec()+" | "+
+                "Uptime(s): "+ getLifeTimeSec()+" | "+
                 "\nDestinations: "+meanIps+
                 "\nSources: "+meanPorts+
                 "\nDominant destination: "+ (dominant == null ? "null" : dominant.getIpInfo())+

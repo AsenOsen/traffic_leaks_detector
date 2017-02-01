@@ -1,7 +1,7 @@
 package detector.NetwPrimitives.TrafficTable;
 
 import detector.Alerter.Alerter;
-import detector.Db.DB_ProcessInfo;
+import detector.Data.ProcessInfoDB;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;
@@ -69,7 +69,7 @@ public class TrafficTable
         }
 
         // Increases payload of a process which owns this port
-        NetProcess portOwnerProcess = DB_ProcessInfo.getInstance().getProcessOfPort(port);
+        NetProcess portOwnerProcess = ProcessInfoDB.getInstance().getProcessOfPort(port);
         if(portOwnerProcess != null)
         {
             processTraffic.putIfAbsent(portOwnerProcess, createTrafficFlow());
@@ -97,7 +97,7 @@ public class TrafficTable
             Map.Entry<Port, TrafficFlow> entry = undProcess.next();
             Port port = entry.getKey();
             TrafficFlow portTraffic = entry.getValue();
-            NetProcess portOwner = DB_ProcessInfo.getInstance().getProcessOfPort(port);
+            NetProcess portOwner = ProcessInfoDB.getInstance().getProcessOfPort(port);
             if(portOwner != null) // port owner is found
             {
                 processTraffic.putIfAbsent(portOwner, createTrafficFlow());
@@ -108,7 +108,7 @@ public class TrafficTable
             else // port owner still unknown
             {
                 // if owner is undefined during long time than throw it away
-                if(portTraffic.getInactivityTimeSec() >= 10f)
+                if(portTraffic.getIdleTimeSec() >= 10f)
                     undProcess.remove();
             }
         }

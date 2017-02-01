@@ -19,6 +19,6 @@ public class AliveSelector implements TrafficSelector
     @Override
     public boolean select(TrafficFlow trafficFlow)
     {
-        return trafficFlow.getInactivityTimeSec() < limitSleepTimeSec;
+        return trafficFlow.getIdleTimeSec() < limitSleepTimeSec;
     }
 }

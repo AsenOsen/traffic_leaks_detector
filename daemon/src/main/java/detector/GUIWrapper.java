@@ -1,8 +1,8 @@
 package detector;
 
-import com.sun.istack.internal.Nullable;
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import detector.ThreatPattern.ThreatMessage;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +24,7 @@ public class GUIWrapper
     private String guiAbsolutePath;
     private String guiHashSum;
     private boolean isGuiPresented;
-    private Queue<ThreatMessage> messagesForGui = new ArrayDeque<ThreatMessage>();
+    private volatile Queue<ThreatMessage> messagesForGui = new ArrayDeque<ThreatMessage>();
 
 
     public static GUIWrapper getInstance()

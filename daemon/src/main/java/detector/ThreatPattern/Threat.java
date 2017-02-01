@@ -1,6 +1,6 @@
 package detector.ThreatPattern;
 
-import detector.Db.DB_KnownPatterns;
+import detector.Data.KnownPatternsDB;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
@@ -31,7 +31,7 @@ public class Threat
 
     public ThreatMessage createReport()
     {
-        ThreatPattern pattern = DB_KnownPatterns.getInstance().findMatchingPattern(this);
+        ThreatPattern pattern = KnownPatternsDB.getInstance().findMatchingPattern(this);
         if(pattern != null)
         {
             ThreatMessage msg = pattern.createMessage(this);
@@ -68,7 +68,7 @@ public class Threat
 
     public float getActivityTime()
     {
-        return traffic.getActivityTimeSec();
+        return traffic.getLifeTimeSec();
     }
 
 

@@ -49,7 +49,7 @@ public class ActiveLeakAlgorithm extends Algorithm
     @Override
     public boolean isGarbage(TrafficFlow trafficFlow)
     {
-        return trafficFlow.getInactivityTimeSec() > Config.getInstance().ACTIVE_LEAKAGE_ALLOWED_IDLE_TIME_SEC;
+        return trafficFlow.getIdleTimeSec() > Config.getInstance().ACTIVE_LEAKAGE_ALLOWED_IDLE_TIME_SEC;
     }
 
 }

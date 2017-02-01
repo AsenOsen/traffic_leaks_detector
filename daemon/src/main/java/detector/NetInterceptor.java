@@ -1,10 +1,10 @@
 package detector;
 
-import com.sun.istack.internal.Nullable;
 import detector.Analyzer.Analyzer;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jnetpcap.*;
 import org.jnetpcap.packet.PcapPacket;
 import org.jnetpcap.packet.PcapPacketHandler;
@@ -139,7 +139,7 @@ public class NetInterceptor implements PcapPacketHandler {
         }
         else
         {
-            String msg = "%d loops started at %s..."+(++reconnectsCount);
+            String msg = "%d loops started at %s. ReconnectNo: "+(++reconnectsCount);
             LogHandler.Log(String.format(msg, channels.size(), new Date(System.currentTimeMillis()).toString()));
             connFailedAttempts = 0;
             return true;

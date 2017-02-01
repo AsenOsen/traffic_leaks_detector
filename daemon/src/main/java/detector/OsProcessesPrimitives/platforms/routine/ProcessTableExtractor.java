@@ -27,7 +27,7 @@ public abstract class ProcessTableExtractor {
         Process process;
         try {
             process = Runtime.getRuntime().exec(cmd);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LogHandler.Err(e);
             return output;
         }

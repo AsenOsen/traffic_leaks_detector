@@ -1,4 +1,4 @@
-package detector.Db;
+package detector.Data;
 
 
 import detector.LogHandler;
@@ -17,16 +17,16 @@ import java.util.concurrent.ConcurrentHashMap;
 /************************************************
  * Contains information about all IP addresses
  ***********************************************/
-public class DB_IpInfo {
+public class IpInfoDB {
 
-    private static final DB_IpInfo instance = new DB_IpInfo();
+    private static final IpInfoDB instance = new IpInfoDB();
     private static final String IP_INFO_SOURCE = "http://ipinfo.io/%s/json";
 
-    private static ConcurrentHashMap<IPv4Address, IpInfo> ipTable =
+    private static volatile ConcurrentHashMap<IPv4Address, IpInfo> ipTable =
             new ConcurrentHashMap<IPv4Address, IpInfo>();
 
 
-    public static DB_IpInfo getInstance()
+    public static IpInfoDB getInstance()
     {
         return instance;
     }

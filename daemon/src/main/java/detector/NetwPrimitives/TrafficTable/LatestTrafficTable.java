@@ -2,6 +2,7 @@ package detector.NetwPrimitives.TrafficTable;
 
 import detector.NetwPrimitives.TrafficFlow.LatestTrafficFlow;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
+import org.jetbrains.annotations.NotNull;
 
 /*******************************************************
  * Traffic table which stores the traffic during
@@ -17,6 +18,7 @@ public class LatestTrafficTable extends TrafficTable
     }
 
     @Override
+    @NotNull
     protected TrafficFlow createTrafficFlow()
     {
         return new LatestTrafficFlow(watchTimeSec);

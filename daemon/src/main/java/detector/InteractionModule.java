@@ -1,7 +1,7 @@
 package detector;
 
-import com.sun.istack.internal.Nullable;
 import detector.ThreatPattern.ThreatMessage;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -73,7 +73,7 @@ public class InteractionModule
             {
                 communicationServer = new ServerSocket(port);
                 serverPort = port;
-                LogHandler.Log("Communication server is successfully started on localhost:"+serverPort+"...");
+                LogHandler.Log("Communication server is successfully started on localhost:"+serverPort);
                 break;
             } catch (IOException e)
             {

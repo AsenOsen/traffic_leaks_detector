@@ -43,7 +43,7 @@ public class SuddenLeakAlgorithm extends Algorithm
     @Override
     public boolean isGarbage(TrafficFlow trafficFlow)
     {
-        return trafficFlow.getInactivityTimeSec() > Config.getInstance().OBSERVING_TRAFFIC_TIME_SEC;
+        return trafficFlow.getIdleTimeSec() > Config.getInstance().OBSERVING_TRAFFIC_TIME_SEC;
     }
 
 }

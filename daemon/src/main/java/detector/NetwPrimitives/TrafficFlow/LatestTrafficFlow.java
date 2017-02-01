@@ -89,9 +89,9 @@ public class LatestTrafficFlow extends TrafficFlow
 
 
     @Override
-    public float getActivityTimeSec()
+    public float getLifeTimeSec()
     {
-        return Math.min(super.getActivityTimeSec(), observingTimeSecCount);
+        return Math.min(super.getLifeTimeSec(), observingTimeSecCount);
     }
 
 

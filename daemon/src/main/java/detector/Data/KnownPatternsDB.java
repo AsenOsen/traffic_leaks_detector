@@ -1,10 +1,10 @@
-package detector.Db;
+package detector.Data;
 
-import com.sun.istack.internal.Nullable;
 import detector.LogHandler;
 import detector.ThreatPattern.PatternParser.PatternsDbParser;
 import detector.ThreatPattern.Threat;
 import detector.ThreatPattern.ThreatPattern;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -14,18 +14,18 @@ import java.util.*;
  * Stores all known traffic patterns in ordered(by its priority) way.
  * Patterns with higher priority goes first.
  **************************************************************************/
-public class DB_KnownPatterns
+public class KnownPatternsDB
 {
 
-    private static final DB_KnownPatterns ourInstance =
-            new DB_KnownPatterns();
-    private List<ThreatPattern> priorityPatternList =  // Patters stores strictly in ordered way!
+    private static final KnownPatternsDB ourInstance =
+            new KnownPatternsDB();
+    private volatile List<ThreatPattern> priorityPatternList =  // Patters stores strictly in ordered way!
             new ArrayList<ThreatPattern>();
-    private HashMap<String, ThreatPattern> patternDB =
+    private volatile HashMap<String, ThreatPattern> patternDB =
             new HashMap<String, ThreatPattern>();
 
 
-    public static DB_KnownPatterns getInstance()
+    public static KnownPatternsDB getInstance()
     {
         return ourInstance;
     }
@@ -56,7 +56,7 @@ public class DB_KnownPatterns
     }
 
 
-    private DB_KnownPatterns()
+    private KnownPatternsDB()
     {
 
     }
@@ -78,7 +78,7 @@ public class DB_KnownPatterns
             pattern.loadDependencies();
         }*/
 
-        LogHandler.Log("Threats patterns database loaded "+priorityPatternList.size()+" patterns...");
+        LogHandler.Log("Threats patterns database loaded "+priorityPatternList.size()+" patterns.");
     }
 
 }

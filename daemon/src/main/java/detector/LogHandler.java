@@ -41,7 +41,7 @@ public class LogHandler {
     * */
     public static synchronized void Log(String log)
     {
-        String fmt = "[%s]\n::: %s";
+        String fmt = "[%s]   %s";
         String time = new Date(System.currentTimeMillis()).toString();
         String msg = String.format(fmt, time, log);
         System.out.println(msg);

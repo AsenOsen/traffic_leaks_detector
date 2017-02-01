@@ -3,12 +3,13 @@ package detector.ThreatPattern;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import detector.Db.DB_KnownPatterns;
+import detector.Data.KnownPatternsDB;
 import detector.LogHandler;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -160,10 +161,10 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         if(relatedPatterns != null)
         {
-            for(String patternName : DB_KnownPatterns.getInstance().getNames())
+            for(String patternName : KnownPatternsDB.getInstance().getNames())
             {
                 if (isStringMatches(relatedPatterns, patternName)) {
-                    ThreatPattern dependency = DB_KnownPatterns.getInstance().getPatternByName(patternName);
+                    ThreatPattern dependency = KnownPatternsDB.getInstance().getPatternByName(patternName);
                     dependencies.add(dependency);
                 }
             }
@@ -304,7 +305,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
 
     @Override
-    public int compareTo(ThreatPattern o)
+    public int compareTo(@NotNull ThreatPattern o)
     {
         if(o == null)
             return -1;
