@@ -3,13 +3,10 @@
   "ignores": [
 
     {
-      "comment": "Ignore all standard apps",
-      "related-patterns": "Pattern\\.StdApps"
-    },
-
-    {
-      "comment": "Ignore microsoft updating activity",
-      "related-patterns": "Pattern\\.Microsoft\\.Updates"
+      "name": "Ignore.All",
+      "comment": "Ignore all except Ip, Port, Process and Undefined",
+      "related-patterns": "^(?!Pattern\\.((Port)|(IP)|(Process)|(Undefined))).*$",
+      "relation-mode": "any"
     }
 
   ]

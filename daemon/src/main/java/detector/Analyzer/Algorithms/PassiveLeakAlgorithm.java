@@ -3,10 +3,7 @@ package detector.Analyzer.Algorithms;
 import detector.Analyzer.Config;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficSelector;
-import detector.NetwPrimitives.TrafficTable.TrafficSelectors.AliveSelector;
-import detector.NetwPrimitives.TrafficTable.TrafficSelectors.IntervalActivitySelector;
-import detector.NetwPrimitives.TrafficTable.TrafficSelectors.OverflowSelector;
-import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TargetedSelector;
+import detector.NetwPrimitives.TrafficTable.TrafficSelectors.*;
 
 /****************************************************
  * This algorithm searches for passive continuous leaks
@@ -14,9 +11,10 @@ import detector.NetwPrimitives.TrafficTable.TrafficSelectors.TargetedSelector;
 public class PassiveLeakAlgorithm extends Algorithm
 {
     private final TrafficSelector overflowed;
-    private final TrafficSelector targeted;
     private final TrafficSelector overactive;
     private final TrafficSelector alive;
+    private final TrafficSelector targeted;
+    private final TrafficSelector unusualApp;
     private final int garbageTimeSec;
 
 
@@ -36,6 +34,8 @@ public class PassiveLeakAlgorithm extends Algorithm
         );
         targeted =
                 new TargetedSelector();
+        unusualApp =
+                new UnusualAppSelector();
     }
 
 
@@ -45,7 +45,8 @@ public class PassiveLeakAlgorithm extends Algorithm
         return  overflowed.select(trafficFlow) &&
                 overactive.select(trafficFlow) &&
                 alive.select(trafficFlow) &&
-                targeted.select(trafficFlow);
+                targeted.select(trafficFlow) &&
+                unusualApp.select(trafficFlow);
     }
 
 

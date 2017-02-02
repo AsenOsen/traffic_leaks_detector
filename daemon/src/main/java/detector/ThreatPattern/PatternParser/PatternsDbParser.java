@@ -50,7 +50,7 @@ public class PatternsDbParser extends ResourcePatternParser
         }
         catch (JSONException e)
         {
-            LogHandler.Err(e);
+            LogHandler.Warn("Patterns file JSON format error: "+e.getMessage());
         }
     }
 }

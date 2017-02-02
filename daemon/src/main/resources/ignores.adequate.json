@@ -3,15 +3,17 @@
   "ignores": [
 
     {
-      "comment": "Ignore all standard apps",
-      "related-patterns": "Pattern\\.StdApps"
+      "name": "Ignore.Browser.Everything",
+      "comment": "Ignore everything related to browser",
+      "related-patterns": "Pattern\\.StdApp\\.Browser\\..*",
+      "relation-mode": "all"
     },
 
     {
-      "name": "Ignore.Browser.GoogleOrAmazone",
-      "comment": "Ignore browsers and other stuffy apps",
-      "related-patterns": "Pattern\\.StdApp\\.Browser\\.(Google|AmazonAws)",
-      "relation-mode": "any"
+      "name": "Ignore.StdApps.Everything",
+      "comment": "Ignore all standard apps`s traffic",
+      "related-patterns": "Pattern\\.StdApps$",
+      "relation-mode": "all"
     }
 
   ]

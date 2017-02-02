@@ -26,15 +26,20 @@ namespace gui
 
         ServerConnection client = new ServerConnection();
         Thread connectionThread = null;
+
         SoundPlayer notificationSound = new SoundPlayer(Resources.notify);
+        DetailedViewForm detailedView = new DetailedViewForm();
+
+        Boolean isAlertFormOpened = false;
 
 
         public AlertForm()
         {
             InitializeComponent();
-            objectListView1.PrimarySortColumn = timeColumn;
-            objectListView1.PrimarySortOrder = SortOrder.Descending;
-            objectListView1.Sort();
+            alertsTable.PrimarySortColumn = timeColumn;
+            alertsTable.PrimarySortOrder = SortOrder.Descending;
+            alertsTable.Sort();
+
 
             /*List<ServerMessage> messages = new List<ServerMessage>();
             for (int i = 0; i < 10; i++)
@@ -94,24 +99,24 @@ namespace gui
             String userLabel = newMessage.getLabel();
 
             // notification
-            if (userLabel != null && userMessage != null && newMessage.isActual())
+            if (newMessage.isValid() && newMessage.isActual() && !isAlertFormOpened)
             {
                 notifier.ShowBalloonTip(5000, userLabel, userMessage, ToolTipIcon.Info);              
                 notificationSound.Play();
             }
 
-            // logging
+            // addition to table
             if (newMessage.isValid())
             {
-                Point scrollPos = objectListView1.LowLevelScrollPosition;
+                Point scrollPos = alertsTable.LowLevelScrollPosition;
 
-                objectListView1.AddObject(newMessage);
+                alertsTable.AddObject(newMessage);
                 //objectListView1.Sort(timeColumn, SortOrder.Descending);
-                objectListView1.FindItemWithText(userMessage).BackColor = Color.FromArgb(255, 255, 229, 229);
-                objectListView1.RedrawItems(0, objectListView1.Items.Count - 1, false);
+                alertsTable.FindItemWithText(userMessage).BackColor = Color.FromArgb(255, 255, 229, 229);
+                alertsTable.RedrawItems(0, alertsTable.Items.Count - 1, false);
 
                 if(scrollPos.Y > 0)
-                    objectListView1.LowLevelScroll(scrollPos.X, scrollPos.Y + objectListView1.RowHeightEffective);
+                    alertsTable.LowLevelScroll(scrollPos.X, scrollPos.Y + alertsTable.RowHeightEffective);
             }
         }
 
@@ -121,7 +126,8 @@ namespace gui
             this.Show();
             this.Opacity = 100;
             this.WindowState = FormWindowState.Normal;
-            this.TopMost = true;         
+            this.TopMost = true;
+            this.isAlertFormOpened = true;
         }
 
 
@@ -130,7 +136,8 @@ namespace gui
             this.Hide();
             this.Opacity = 100;
             this.WindowState = FormWindowState.Minimized;
-            this.TopMost = false;           
+            this.TopMost = false;
+            this.isAlertFormOpened = false;
         }
 
 
@@ -174,7 +181,7 @@ namespace gui
 
         private void button1_Click(object sender, EventArgs e)
         {
-            objectListView1.Items.Clear();
+            alertsTable.Items.Clear();
         }
 
 
@@ -185,9 +192,20 @@ namespace gui
 
         private void objectListView1_ButtonClick(object sender, CellClickEventArgs e)
         {
+            // "More" button
             if (e.ColumnIndex == moreInfoColumn.Index)
-                MessageBox.Show(((ServerMessage)e.Model).getMessage());
+            {
+                if(detailedView==null || detailedView.IsDisposed || detailedView.Disposing)
+                    detailedView = new DetailedViewForm();
 
+                if (detailedView != null && !detailedView.IsDisposed && !detailedView.Disposing)
+                {
+                    detailedView.Hide();
+                    detailedView.ShowDetailsFor(((ServerMessage)e.Model));
+                }
+            }
+
+            // "Ignore" button
             if (e.ColumnIndex == ignoreBtnColumn.Index)
                 MessageBox.Show("We will!", "Surely", MessageBoxButtons.OK, MessageBoxIcon.Hand);
         }
@@ -201,15 +219,17 @@ namespace gui
 
         private void AlertForm_Resize(object sender, EventArgs e)
         {
+            // table resize
             moreInfoColumn.Width = 100;
             ignoreBtnColumn.Width = 100;
-
             int leftWidth = Width - (moreInfoColumn.Width + ignoreBtnColumn.Width);
-
             msgColumn.Width = (int)(leftWidth * 0.5);
             labelColumn.Width = (int)(leftWidth * 0.25);
             timeColumn.Width = (int)(leftWidth * 0.20);
 
+            // hiding
+            if (WindowState == FormWindowState.Minimized)
+                HideForm();
         }
 
 
@@ -218,7 +238,7 @@ namespace gui
             if (e != null && e.Item != null) 
             { 
                 e.Item.BackColor = Color.White;
-                objectListView1.RedrawItems(0, objectListView1.Items.Count - 1, false);
+                alertsTable.RedrawItems(0, alertsTable.Items.Count - 1, false);
             }
         }
 

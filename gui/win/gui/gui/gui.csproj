@@ -58,6 +58,12 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DetailedViewForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DetailedViewForm.Designer.cs">
+      <DependentUpon>DetailedViewForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ServerConnection.cs" />
     <Compile Include="AlertForm.cs">
       <SubType>Form</SubType>
@@ -71,6 +77,9 @@
     <Compile Include="ServerUnreachableException.cs" />
     <EmbeddedResource Include="AlertForm.resx">
       <DependentUpon>AlertForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DetailedViewForm.resx">
+      <DependentUpon>DetailedViewForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

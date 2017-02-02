@@ -9,7 +9,7 @@ import detector.Analyzer.Algorithms.Algorithm;
 import detector.Analyzer.Algorithms.PassiveLeakAlgorithm;
 import detector.Analyzer.Algorithms.SuddenLeakAlgorithm;
 import detector.NetwPrimitives.TrafficTable.LatestTrafficTable;
-import detector.NetwPrimitives.TrafficTable.TrafficSelectors.BlackListSelector;
+import detector.NetwPrimitives.TrafficTable.TrafficSelectors.UserFilterSelector;
 import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficSelector;
 import detector.NetwPrimitives.TrafficTable.TrafficTable;
 
@@ -33,7 +33,7 @@ public class Analyzer
     private Algorithm passiveCollectorAlgorithm = new PassiveLeakAlgorithm();
     private Algorithm suddenLeakAlgorithm = new SuddenLeakAlgorithm();
 
-    private TrafficSelector blackListSelector = new BlackListSelector();
+    private TrafficSelector blackListSelector = new UserFilterSelector();
 
 
     private Analyzer()

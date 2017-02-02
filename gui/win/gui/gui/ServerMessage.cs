@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace gui
 {
-    class ServerMessage
+    public class ServerMessage
     {
 
         JObject msgObject = null;

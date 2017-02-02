@@ -13,7 +13,7 @@ namespace gui
     {
         // Server`s contract:
         private const int SERVER_PORT_RANGE_START = 5000;
-        private const int SERVER_PORT_RANGE_END = 5025;
+        private const int SERVER_PORT_RANGE_END = 5010;
         private const string SERVER_PROTOCOL_START = ":::daemon_protocol_start:::";
         private const string SERVER_PROTOCOL_NO_MSG = ":::daemon_protocol_no_msg:::";
         private const string SERVER_PROTOCOL_FINISH = ":::daemon_protocol_finish:::";

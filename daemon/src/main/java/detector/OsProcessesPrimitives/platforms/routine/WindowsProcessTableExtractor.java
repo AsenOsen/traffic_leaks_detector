@@ -62,7 +62,7 @@ public class WindowsProcessTableExtractor
         }
 
         // System processes (not important)
-        winProcessesTable.addInfo(new NetProcess(0), "System-Idle-Process");
+        //winProcessesTable.addInfo(new NetProcess(0), "System-Idle-Process");
         winProcessesTable.addInfo(new NetProcess(4), "System");
     }
 

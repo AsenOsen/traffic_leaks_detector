@@ -53,8 +53,8 @@ public class HarmlessPatternsDB
         new FiltersDbParser().fillListWithData(harmlessList);
 
         /*for(ThreatPattern pattern : harmlessList) {
-            System.out.println("==="+pattern.getName());
             pattern.loadDependencies();
+            System.out.println("==="+pattern);
         }*/
 
         LogHandler.Log("Filter patterns database loaded "+harmlessList.size()+" patterns.");

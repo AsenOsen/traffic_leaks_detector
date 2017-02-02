@@ -101,7 +101,7 @@ public class FiltersDbParser extends ResourcePatternParser
         }
         catch (JSONException e)
         {
-            LogHandler.Err(e);
+            LogHandler.Warn("Filter file JSON format error: "+e.getMessage());
         }
     }
 
