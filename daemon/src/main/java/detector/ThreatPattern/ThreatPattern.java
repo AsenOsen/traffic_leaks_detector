@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import detector.Data.KnownPatternsDB;
-import detector.LogHandler;
+import detector.LogModule;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 import detector.NetwPrimitives.Port;
@@ -45,8 +45,8 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     private String relationMode;
     @JsonProperty("msg")
     private String msg;
-    @JsonProperty("msg_short")
-    private String shortMsg;
+    @JsonProperty("msg_exciter")
+    private String msgExciter;
 
     private Set<ThreatPattern> dependencies = new HashSet<ThreatPattern>();
 
@@ -72,7 +72,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
                 processName==null && orgName ==null && hostname==null &&
                 relatedPatterns ==null && isAllowedEmptyPattern
                 )
-            LogHandler.Err(new Exception("Pattern '"+codeName+"' SHOULD have at least 1 rule!"));
+            LogModule.Err(new Exception("Pattern '"+codeName+"' SHOULD have at least 1 rule!"));
     }
 
 
@@ -103,7 +103,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         ThreatMessage threatMessage = new ThreatMessage();
         threatMessage.setUserMessage(getMessageByThreatPattern(threat));
-        threatMessage.setShortMessage(shortMsg);
+        threatMessage.setExciter(msgExciter);
         threatMessage.setPatternName(this.codeName);
         return threatMessage;
     }
@@ -113,7 +113,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         if(msg == null)
         {
-            LogHandler.Warn("ThreatPattern message is null!");
+            LogModule.Warn("ThreatPattern message is null!");
             return null;
         }
 
@@ -173,7 +173,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
             //    System.out.println(dep);
 
             if(dependencies.size() == 0)
-                LogHandler.Warn("No related patterns found for "+codeName+" pattern!");
+                LogModule.Warn("No related patterns found for "+codeName+" pattern!");
         }
     }
 

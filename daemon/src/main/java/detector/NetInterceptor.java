@@ -49,7 +49,7 @@ public class NetInterceptor implements PcapPacketHandler {
         }
         catch (UnsatisfiedLinkError e)
         {
-            LogHandler.Err(e);
+            LogModule.Err(e);
         }
     }
 
@@ -108,16 +108,16 @@ public class NetInterceptor implements PcapPacketHandler {
         // if too much connection connFailedAttempts
         if(connFailedAttempts > 5)
         {
-            LogHandler.Err(new Exception("Network interfaces not found on this computer. Or could not access them."));
+            LogModule.Err(new Exception("Network interfaces not found on this computer. Or could not access them."));
             return false;
         }
 
         // 1) network interfaces discovering : IP4 ONLY
-        LogHandler.Log("Looking for network interfaces...");
+        LogModule.Log("Looking for network interfaces...");
         List<PcapIf> interfaces = getIPv4Interfaces();
         if(interfaces == null || interfaces.size()==0) {
             connFailedAttempts++;
-            LogHandler.Warn("Could not find any interface! Try number: "+ connFailedAttempts +"...");
+            LogModule.Warn("Could not find any interface! Try number: "+ connFailedAttempts +"...");
             return false;
         }
 
@@ -134,13 +134,13 @@ public class NetInterceptor implements PcapPacketHandler {
         channels = new ArrayList<Pcap>(getChannels(interfaces));
         if(channels.size()==0)
         {
-            LogHandler.Err(new Exception("Cant open any interface. Do app have root rights?"));
+            LogModule.Err(new Exception("Cant open any interface. Do app have root rights?"));
             return false;
         }
         else
         {
             String msg = "%d loops started at %s. ReconnectNo: "+(++reconnectsCount);
-            LogHandler.Log(String.format(msg, channels.size(), new Date(System.currentTimeMillis()).toString()));
+            LogModule.Log(String.format(msg, channels.size(), new Date(System.currentTimeMillis()).toString()));
             connFailedAttempts = 0;
             return true;
         }
@@ -216,7 +216,7 @@ public class NetInterceptor implements PcapPacketHandler {
         int ifaceDiscover = Pcap.findAllDevs(interfaces, errorBuffer);
         if ( ifaceDiscover != Pcap.OK ) {
             String errorMsg = String.format("Error during interfaces discover! Error: %s", errorBuffer);
-            LogHandler.Err(new Exception(errorMsg));
+            LogModule.Err(new Exception(errorMsg));
             return null;
         }
 
@@ -255,7 +255,7 @@ public class NetInterceptor implements PcapPacketHandler {
 
             if(pcap == null){
                 String errorMsg = String.format("Error during openLive call: %s", errorBuffer);
-                LogHandler.Err(new Exception(errorMsg));
+                LogModule.Err(new Exception(errorMsg));
             }
             else {
 
@@ -266,7 +266,7 @@ public class NetInterceptor implements PcapPacketHandler {
                 // Add interface to list only if filter got set
                 if(filterSet) {
                     channelList.add(pcap);
-                    LogHandler.Log(String.format("Filter '%s' set for channel '%s'", filterExpr, iface.getName()));
+                    LogModule.Log(String.format("Filter '%s' set for channel '%s'", filterExpr, iface.getName()));
                 }
             }
         }
@@ -290,7 +290,7 @@ public class NetInterceptor implements PcapPacketHandler {
         IPv4Address ipAddress = getInterfaceIPv4Address(iface);
         if(ipAddress == null)
         {
-            LogHandler.Err(new Exception("Cant get mac address of interface!"));
+            LogModule.Err(new Exception("Cant get mac address of interface!"));
             return null;
         }
 
@@ -311,7 +311,7 @@ public class NetInterceptor implements PcapPacketHandler {
     {
         if(filterExpr == null)
         {
-            LogHandler.Err(new Exception("Null filter expression for: "+channel.toString()));
+            LogModule.Err(new Exception("Null filter expression for: "+channel.toString()));
             return false;
         }
 
@@ -320,12 +320,12 @@ public class NetInterceptor implements PcapPacketHandler {
         int network = 0xFFFFFF00;
 
         if (channel.compile(filter, filterExpr, optimize, network) != Pcap.OK) {
-            LogHandler.Err(new Exception("Error setting filter(1): "+channel.getErr()));
+            LogModule.Err(new Exception("Error setting filter(1): "+channel.getErr()));
             return false;
         }
 
         if (channel.setFilter(filter) != Pcap.OK){
-            LogHandler.Err(new Exception("Error setting filter(2): "+channel.getErr()));
+            LogModule.Err(new Exception("Error setting filter(2): "+channel.getErr()));
             return false;
         }
 

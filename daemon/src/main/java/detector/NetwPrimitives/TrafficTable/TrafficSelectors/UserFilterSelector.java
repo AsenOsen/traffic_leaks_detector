@@ -1,8 +1,8 @@
 package detector.NetwPrimitives.TrafficTable.TrafficSelectors;
 
-import detector.LogHandler;
-import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.Data.HarmlessPatternsDB;
+import detector.LogModule;
+import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficSelector;
 import detector.ThreatPattern.Threat;
 import detector.ThreatPattern.ThreatPattern;
@@ -21,8 +21,8 @@ public class UserFilterSelector implements TrafficSelector
 
         boolean isHarmless = harmless != null; // pattern in harmless list
 
-        if(isHarmless)
-            LogHandler.Log("Ignored: "+harmless.getName());
+        //if(isHarmless)
+        //    LogModule.Log("Ignored: "+harmless.getName());
 
         return isHarmless ? false : true;      // if so, then do not select
     }

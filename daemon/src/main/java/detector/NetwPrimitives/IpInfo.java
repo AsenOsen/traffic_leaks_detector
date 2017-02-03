@@ -1,6 +1,6 @@
 package detector.NetwPrimitives;
 
-import detector.LogHandler;
+import detector.LogModule;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,7 +59,7 @@ public class IpInfo {
         }
         catch (JSONException e)
         {
-            LogHandler.Warn("Error parsing json object: "+e.getMessage()+", JSON: "+ jsonDump);
+            LogModule.Warn("Error parsing json object: "+e.getMessage()+", JSON: "+ jsonDump);
         }
 
     }

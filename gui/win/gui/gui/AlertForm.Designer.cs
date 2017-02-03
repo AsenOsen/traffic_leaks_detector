@@ -41,7 +41,8 @@
             this.alertsTable = new BrightIdeasSoftware.ObjectListView();
             this.msgColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.timeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.labelColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.leakCauseColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.leakTypeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.moreInfoColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.ignoreBtnColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.simpleItemStyle1 = new BrightIdeasSoftware.SimpleItemStyle();
@@ -70,20 +71,20 @@
             this.closeToolStripMenuItem,
             this.showToolStripMenuItem});
             this.notifierMenu.Name = "contextMenuStrip1";
-            this.notifierMenu.Size = new System.Drawing.Size(153, 70);
+            this.notifierMenu.Size = new System.Drawing.Size(104, 48);
             this.notifierMenu.Text = "dg";
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
             // 
             // showToolStripMenuItem
             // 
             this.showToolStripMenuItem.Name = "showToolStripMenuItem";
-            this.showToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.showToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.showToolStripMenuItem.Text = "Show";
             this.showToolStripMenuItem.Click += new System.EventHandler(this.showToolStripMenuItem_Click);
             // 
@@ -122,7 +123,8 @@
             // 
             this.alertsTable.AllColumns.Add(this.msgColumn);
             this.alertsTable.AllColumns.Add(this.timeColumn);
-            this.alertsTable.AllColumns.Add(this.labelColumn);
+            this.alertsTable.AllColumns.Add(this.leakCauseColumn);
+            this.alertsTable.AllColumns.Add(this.leakTypeColumn);
             this.alertsTable.AllColumns.Add(this.moreInfoColumn);
             this.alertsTable.AllColumns.Add(this.ignoreBtnColumn);
             this.alertsTable.AlternateRowBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
@@ -136,7 +138,8 @@
             this.alertsTable.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.msgColumn,
             this.timeColumn,
-            this.labelColumn,
+            this.leakCauseColumn,
+            this.leakTypeColumn,
             this.moreInfoColumn,
             this.ignoreBtnColumn});
             this.alertsTable.Cursor = System.Windows.Forms.Cursors.Default;
@@ -144,7 +147,7 @@
             this.alertsTable.HeaderWordWrap = true;
             this.alertsTable.Location = new System.Drawing.Point(0, 0);
             this.alertsTable.Name = "alertsTable";
-            this.alertsTable.RowHeight = 50;
+            this.alertsTable.RowHeight = 65;
             this.alertsTable.SelectAllOnControlA = false;
             this.alertsTable.SelectColumnsOnRightClick = false;
             this.alertsTable.SelectColumnsOnRightClickBehaviour = BrightIdeasSoftware.ObjectListView.ColumnSelectBehaviour.None;
@@ -165,49 +168,62 @@
             // 
             this.msgColumn.AspectName = "getMessage";
             this.msgColumn.Groupable = false;
-            this.msgColumn.HeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.msgColumn.HeaderFont = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.msgColumn.HeaderForeColor = System.Drawing.Color.Black;
             this.msgColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.msgColumn.Hideable = false;
-            this.msgColumn.MinimumWidth = 500;
+            this.msgColumn.MinimumWidth = 400;
             this.msgColumn.Searchable = false;
             this.msgColumn.Sortable = false;
             this.msgColumn.Text = "Leak Message";
             this.msgColumn.ToolTipText = "";
             this.msgColumn.UseFiltering = false;
-            this.msgColumn.Width = 500;
+            this.msgColumn.Width = 400;
             this.msgColumn.WordWrap = true;
             // 
             // timeColumn
             // 
             this.timeColumn.AspectName = "getMessageTime";
             this.timeColumn.CellVerticalAlignment = System.Drawing.StringAlignment.Center;
-            this.timeColumn.HeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.timeColumn.HeaderFont = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.timeColumn.HeaderForeColor = System.Drawing.Color.Black;
             this.timeColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.timeColumn.MinimumWidth = 150;
+            this.timeColumn.MinimumWidth = 100;
             this.timeColumn.Text = "Time";
             this.timeColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.timeColumn.Width = 219;
+            this.timeColumn.Width = 100;
             this.timeColumn.WordWrap = true;
             // 
-            // labelColumn
+            // leakCauseColumn
             // 
-            this.labelColumn.AspectName = "getLabel";
-            this.labelColumn.HeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelColumn.HeaderForeColor = System.Drawing.Color.Black;
-            this.labelColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.labelColumn.IsEditable = false;
-            this.labelColumn.MinimumWidth = 150;
-            this.labelColumn.Text = "Kind";
-            this.labelColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.labelColumn.Width = 155;
-            this.labelColumn.WordWrap = true;
+            this.leakCauseColumn.AspectName = "getCause";
+            this.leakCauseColumn.HeaderFont = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.leakCauseColumn.HeaderForeColor = System.Drawing.Color.Black;
+            this.leakCauseColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.leakCauseColumn.IsEditable = false;
+            this.leakCauseColumn.MinimumWidth = 100;
+            this.leakCauseColumn.Text = "Cause";
+            this.leakCauseColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.leakCauseColumn.Width = 180;
+            this.leakCauseColumn.WordWrap = true;
+            // 
+            // leakTypeColumn
+            // 
+            this.leakTypeColumn.AspectName = "getLeakType";
+            this.leakTypeColumn.HeaderFont = new System.Drawing.Font("Arial Narrow", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.leakTypeColumn.HeaderForeColor = System.Drawing.Color.Black;
+            this.leakTypeColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.leakTypeColumn.IsEditable = false;
+            this.leakTypeColumn.MinimumWidth = 100;
+            this.leakTypeColumn.Text = "Kind";
+            this.leakTypeColumn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.leakTypeColumn.Width = 180;
             // 
             // moreInfoColumn
             // 
             this.moreInfoColumn.AspectName = "More...";
             this.moreInfoColumn.AspectToStringFormat = "More...";
+            this.moreInfoColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.moreInfoColumn.IsButton = true;
             this.moreInfoColumn.MaximumWidth = 100;
             this.moreInfoColumn.MinimumWidth = 100;
@@ -225,7 +241,6 @@
             this.ignoreBtnColumn.AspectToStringFormat = "Ignore";
             this.ignoreBtnColumn.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.ignoreBtnColumn.IsButton = true;
-            this.ignoreBtnColumn.IsEditable = false;
             this.ignoreBtnColumn.MaximumWidth = 100;
             this.ignoreBtnColumn.MinimumWidth = 100;
             this.ignoreBtnColumn.Searchable = false;
@@ -267,13 +282,14 @@
         private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;
         private BrightIdeasSoftware.ObjectListView alertsTable;
         private BrightIdeasSoftware.OLVColumn msgColumn;
-        private BrightIdeasSoftware.OLVColumn labelColumn;
+        private BrightIdeasSoftware.OLVColumn leakCauseColumn;
         private BrightIdeasSoftware.OLVColumn timeColumn;
         private BrightIdeasSoftware.OLVColumn ignoreBtnColumn;
         private BrightIdeasSoftware.SimpleItemStyle simpleItemStyle1;
         private System.Windows.Forms.Button button1;
         private BrightIdeasSoftware.OLVColumn moreInfoColumn;
         private System.Windows.Forms.Label errorLabel;
+        private BrightIdeasSoftware.OLVColumn leakTypeColumn;
     }
 }
 

@@ -1,6 +1,6 @@
 package detector.Data;
 
-import detector.LogHandler;
+import detector.LogModule;
 import detector.ThreatPattern.PatternParser.PatternsDbParser;
 import detector.ThreatPattern.Threat;
 import detector.ThreatPattern.ThreatPattern;
@@ -78,7 +78,7 @@ public class KnownPatternsDB
             pattern.loadDependencies();
         }*/
 
-        LogHandler.Log("Threats patterns database loaded "+priorityPatternList.size()+" patterns.");
+        LogModule.Log("Threats patterns database loaded "+priorityPatternList.size()+" patterns.");
     }
 
 }

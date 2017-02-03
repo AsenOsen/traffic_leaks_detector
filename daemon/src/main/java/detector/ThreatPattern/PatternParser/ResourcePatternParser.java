@@ -1,7 +1,7 @@
 package detector.ThreatPattern.PatternParser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import detector.LogHandler;
+import detector.LogModule;
 import detector.ThreatPattern.ThreatPattern;
 import org.json.JSONObject;
 
@@ -56,7 +56,7 @@ public abstract class ResourcePatternParser
         }
         catch (Exception e)
         {
-            LogHandler.Warn("Error while parsing object: "+e.getMessage());
+            LogModule.Warn("Error while parsing object: "+e.getMessage());
             return null;
         }
     }
@@ -65,7 +65,7 @@ public abstract class ResourcePatternParser
     /*
     * Loads the patterns from some outer-resource
     * */
-    protected void readDataFromResource()
+    private void readDataFromResource()
     {
         InputStream stream = getPatternDataInputStream();
         BufferedReader resReader = new BufferedReader(new InputStreamReader(stream));
@@ -79,7 +79,7 @@ public abstract class ResourcePatternParser
         }
         catch (IOException e)
         {
-            LogHandler.Warn("Error read patterns resource: "+e.getMessage());
+            LogModule.Warn("Error read patterns resource: "+e.getMessage());
             return;
         }
 

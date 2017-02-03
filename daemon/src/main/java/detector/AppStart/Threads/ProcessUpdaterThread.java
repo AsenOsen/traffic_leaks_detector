@@ -1,7 +1,7 @@
 package detector.AppStart.Threads;
 
 import detector.Data.ProcessInfoDB;
-import detector.LogHandler;
+import detector.LogModule;
 
 /**************************************************
  * Manages the processes updating
@@ -12,7 +12,7 @@ public class ProcessUpdaterThread extends Thread
     public void run()
     {
         Thread.currentThread().setName("__ProcessesInfoUpdater");
-        LogHandler.Log("Process info updator is started.");
+        LogModule.Log("Process info updator is started.");
 
         while ( true )
         {

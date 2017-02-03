@@ -30,8 +30,6 @@ namespace gui
         SoundPlayer notificationSound = new SoundPlayer(Resources.notify);
         DetailedViewForm detailedView = new DetailedViewForm();
 
-        Boolean isAlertFormOpened = false;
-
 
         public AlertForm()
         {
@@ -96,10 +94,10 @@ namespace gui
         private void DisplayMessage(ServerMessage newMessage)
         {
             String userMessage = newMessage.getMessage();
-            String userLabel = newMessage.getLabel();
+            String userLabel = newMessage.getCause();
 
-            // notification
-            if (newMessage.isValid() && newMessage.isActual() && !isAlertFormOpened)
+            // show notification
+            if (newMessage.isValid() && newMessage.isActual() && !this.Focused)
             {
                 notifier.ShowBalloonTip(5000, userLabel, userMessage, ToolTipIcon.Info);              
                 notificationSound.Play();
@@ -127,7 +125,6 @@ namespace gui
             this.Opacity = 100;
             this.WindowState = FormWindowState.Normal;
             this.TopMost = true;
-            this.isAlertFormOpened = true;
         }
 
 
@@ -137,7 +134,6 @@ namespace gui
             this.Opacity = 100;
             this.WindowState = FormWindowState.Minimized;
             this.TopMost = false;
-            this.isAlertFormOpened = false;
         }
 
 
@@ -223,9 +219,10 @@ namespace gui
             moreInfoColumn.Width = 100;
             ignoreBtnColumn.Width = 100;
             int leftWidth = Width - (moreInfoColumn.Width + ignoreBtnColumn.Width);
-            msgColumn.Width = (int)(leftWidth * 0.5);
-            labelColumn.Width = (int)(leftWidth * 0.25);
-            timeColumn.Width = (int)(leftWidth * 0.20);
+            msgColumn.Width = (int)(leftWidth * 0.45);
+            leakCauseColumn.Width = (int)(leftWidth * 0.2);
+            leakTypeColumn.Width = (int)(leftWidth * 0.2);
+            timeColumn.Width = (int)(leftWidth * 0.1);
 
             // hiding
             if (WindowState == FormWindowState.Minimized)

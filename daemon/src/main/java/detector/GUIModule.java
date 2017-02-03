@@ -17,9 +17,9 @@ import java.util.Queue;
  *
  * Wraps the logic for calling GUI messages
  ***********************************************/
-public class GUIWrapper
+public class GUIModule
 {
-    private static GUIWrapper instance = new GUIWrapper();
+    private static GUIModule instance = new GUIModule();
 
     private String guiAbsolutePath;
     private String guiHashSum;
@@ -27,7 +27,7 @@ public class GUIWrapper
     private volatile Queue<ThreatMessage> messagesForGui = new ArrayDeque<ThreatMessage>();
 
 
-    public static GUIWrapper getInstance()
+    public static GUIModule getInstance()
     {
         return instance;
     }
@@ -41,12 +41,12 @@ public class GUIWrapper
         try
         {
             if(!isGuiUntouched())
-                LogHandler.Warn("Security error: cant run gui because its file was modified!");
+                LogModule.Warn("Security error: cant run gui because its file was modified!");
             else
                 Runtime.getRuntime().exec(guiAbsolutePath);
         } catch (IOException e)
         {
-            LogHandler.Warn("Gui presented, but error when run it.");
+            LogModule.Warn("Gui presented, but error when run it.");
         }
     }
 
@@ -64,7 +64,7 @@ public class GUIWrapper
     }
 
 
-    private GUIWrapper()
+    private GUIModule()
     {
         initGui();
     }
@@ -72,7 +72,7 @@ public class GUIWrapper
 
     private void initGui()
     {
-        guiAbsolutePath = System.getProperty("gui", null);
+        guiAbsolutePath = System.getProperty("daemon.config.gui", null);
 
         if(guiAbsolutePath == null) {
             guiFail();
@@ -90,7 +90,7 @@ public class GUIWrapper
     {
         guiHashSum = getGuiHash();
         isGuiPresented = true;
-        LogHandler.Log("Daemon is accompanied with GUI - "+ guiAbsolutePath + ". Hash: "+guiHashSum);
+        LogModule.Log("Daemon is accompanied with GUI - "+ guiAbsolutePath + ". Hash: "+guiHashSum);
     }
 
 
@@ -98,7 +98,7 @@ public class GUIWrapper
     {
         guiHashSum = null;
         isGuiPresented = false;
-        LogHandler.Log("No GUI specified for daemon - GUI not specified or not exists.");
+        LogModule.Log("No GUI specified for daemon - GUI not specified or not exists.");
     }
 
 
@@ -122,8 +122,8 @@ public class GUIWrapper
         }
         catch (Exception e)
         {
-            LogHandler.Warn("Securty error! Could not get the hashsum of GUI.");
-            LogHandler.Err(e);
+            LogModule.Warn("Securty error! Could not get the hashsum of GUI.");
+            LogModule.Err(e);
         }
 
         return null;

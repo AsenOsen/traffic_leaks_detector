@@ -1,7 +1,7 @@
 package detector.Data;
 
 
-import detector.LogHandler;
+import detector.LogModule;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 
@@ -69,7 +69,7 @@ public class IpInfoDB {
         }
         catch (IOException e)
         {
-            LogHandler.Warn("Cant get info about "+ip+" address.");
+            LogModule.Warn("Cant get info about "+ip+" address.");
         }
 
         if(info.toString().trim().length() > 0)

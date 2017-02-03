@@ -1,11 +1,11 @@
 package detector.Data;
 
-import detector.LogHandler;
+import detector.LogModule;
 import detector.ThreatPattern.PatternParser.FiltersDbParser;
 import detector.ThreatPattern.Threat;
 import detector.ThreatPattern.ThreatPattern;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +57,7 @@ public class HarmlessPatternsDB
             System.out.println("==="+pattern);
         }*/
 
-        LogHandler.Log("Filter patterns database loaded "+harmlessList.size()+" patterns.");
+        LogModule.Log("Filter patterns database loaded "+harmlessList.size()+" patterns.");
     }
 
 }

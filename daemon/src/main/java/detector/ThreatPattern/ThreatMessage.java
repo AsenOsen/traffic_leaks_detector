@@ -1,6 +1,7 @@
 package detector.ThreatPattern;
 
-import detector.LogHandler;
+import detector.AppConfig.LocaleConfig;
+import detector.LogModule;
 import org.json.JSONObject;
 
 import java.util.Calendar;
@@ -20,7 +21,7 @@ public class ThreatMessage
 
     private ThreatType type;
     private String userMessage;
-    private String title;
+    private String exciter;
     private String lowLvlMessage;
     private String pattern;
     private long utcTimestamp;
@@ -50,9 +51,9 @@ public class ThreatMessage
     }
 
 
-    public void setShortMessage(String msg)
+    public void setExciter(String msg)
     {
-        this.title = msg;
+        this.exciter = msg;
     }
 
 
@@ -65,11 +66,12 @@ public class ThreatMessage
     public String produceGuiMessage()
     {
         JSONObject json = new JSONObject();
-        json.put("user_message", userMessage);
-        json.put("label", title);
+        json.put("message_full", userMessage);
+        json.put("message_exciter", exciter);
+        json.put("message_type", getThreatType());
         json.put("utc_timestamp", utcTimestamp);
 
-        LogHandler.Log("Gui message: "+json.toString());
+        LogModule.Log("Gui message: "+json.toString());
         return json.toString();
     }
 
@@ -79,7 +81,7 @@ public class ThreatMessage
     * */
     public void Dump()
     {
-        LogHandler.Log(getDump());
+        LogModule.Log(getDump());
     }
 
 
@@ -88,11 +90,11 @@ public class ThreatMessage
         switch (type)
         {
             case BigTrafficMessage:
-                return "Отправка большого объема данных";
+                return LocaleConfig.getInstance().getLocalizedString("threatmessage.bigleak");
             case LeakageMessage:
-                return "Утечка данных";
+                return LocaleConfig.getInstance().getLocalizedString("threatmessage.activeleak");
             case SlowLeakageMessage:
-                return "Медленная утечка данных";
+                return LocaleConfig.getInstance().getLocalizedString("threatmessage.passiveleak");
             default:
                 assert true : "There is cannot be any other threat types!";
                 return null;

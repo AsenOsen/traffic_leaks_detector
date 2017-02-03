@@ -20,8 +20,9 @@ namespace gui
         public void ShowDetailsFor(ServerMessage messsage)
         {
             messageTable.Text = messsage.getMessage();
-            timeTable.Text = messsage.getMessageTime().ToString();
-            this.Text = messsage.getLabel();
+            this.timeBox.Text = messsage.getMessageTime().ToString();
+            this.causeBox.Text = messsage.getCause();
+            this.Text = messsage.getLeakType();
 
             this.Show();
         }

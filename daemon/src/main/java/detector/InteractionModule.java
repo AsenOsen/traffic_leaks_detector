@@ -73,7 +73,7 @@ public class InteractionModule
             {
                 communicationServer = new ServerSocket(port);
                 serverPort = port;
-                LogHandler.Log("Communication server is successfully started on localhost:"+serverPort);
+                LogModule.Log("Communication server is successfully started on localhost:"+serverPort);
                 break;
             } catch (IOException e)
             {
@@ -83,7 +83,7 @@ public class InteractionModule
         }
 
         if(serverPort == -1)
-            LogHandler.Warn("Could not find any available port in range: " +
+            LogModule.Warn("Could not find any available port in range: " +
                     SERVER_PORT_RANGE_START + ".." + SERVER_PORT_RANGE_END +
                     "\nError: " + (error==null ? "": error.getMessage()));
     }
@@ -112,7 +112,7 @@ public class InteractionModule
             try
             {
                 Socket client = communicationServer.accept();
-                LogHandler.Log("New communication client: "+client.toString());
+                LogModule.Log("New communication client: "+client.toString());
 
                 clientInput = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 clientOutput = new PrintWriter(client.getOutputStream(), true);
@@ -120,7 +120,7 @@ public class InteractionModule
                 clientOutput.println(SERVER_PROTOCOL_START);
                 while(true) {
                     if(!HandleClientQuery()) {
-                        LogHandler.Log("Client terminated: "+client.toString());
+                        LogModule.Log("Client terminated: "+client.toString());
                         client.close();
                         clientInput.close();
                         clientOutput.close();
@@ -131,7 +131,7 @@ public class InteractionModule
             // if some error happened, it because server is down and it SHOULD be restarted
             catch (IOException e)
             {
-                LogHandler.Warn("Server is down.");
+                LogModule.Warn("Server is down.");
                 try
                 {
                     Thread.sleep(1000);
@@ -162,11 +162,11 @@ public class InteractionModule
         else
         if(command.equalsIgnoreCase("get_alert"))
         {
-            ThreatMessage message = GUIWrapper.getInstance().takeMessageForGui();
+            ThreatMessage message = GUIModule.getInstance().takeMessageForGui();
             if(message != null)
             {
                 sendToClient(message.produceGuiMessage());
-                LogHandler.Log("Message was sent to client through socket.");
+                LogModule.Log("Message was sent to client through socket.");
             }else{
                 sendToClient(SERVER_PROTOCOL_NO_MSG);
             }

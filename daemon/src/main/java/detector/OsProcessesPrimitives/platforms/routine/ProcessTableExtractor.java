@@ -1,7 +1,7 @@
 package detector.OsProcessesPrimitives.platforms.routine;
 
 
-import detector.LogHandler;
+import detector.LogModule;
 import detector.OsProcessesPrimitives.ProcessTable;
 
 import java.io.BufferedReader;
@@ -28,7 +28,7 @@ public abstract class ProcessTableExtractor {
         try {
             process = Runtime.getRuntime().exec(cmd);
         } catch (IOException e) {
-            LogHandler.Err(e);
+            LogModule.Err(e);
             return output;
         }
 
@@ -42,7 +42,7 @@ public abstract class ProcessTableExtractor {
             while((line = reader.readLine()) != null)
                 output.append(line + "\n");
         } catch (IOException e) {
-            LogHandler.Warn("Error reading CMD output: "+e.getMessage());
+            LogModule.Warn("Error reading CMD output: "+e.getMessage());
         }
 
         return output;

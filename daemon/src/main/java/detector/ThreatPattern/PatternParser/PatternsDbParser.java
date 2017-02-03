@@ -1,6 +1,6 @@
 package detector.ThreatPattern.PatternParser;
 
-import detector.LogHandler;
+import detector.LogModule;
 import detector.ThreatPattern.ThreatPattern;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,7 +22,7 @@ public class PatternsDbParser extends ResourcePatternParser
         InputStream resStream = classLoader.getResourceAsStream("patterns.json");
 
         if(resStream==null)
-            LogHandler.Warn("No 'patterns.json' resource found.");
+            LogModule.Warn("No 'patterns.json' resource found.");
 
         return resStream;
     }
@@ -39,7 +39,7 @@ public class PatternsDbParser extends ResourcePatternParser
                 JSONObject jsonPattern = json.getJSONObject(name);
                 if(!jsonPattern.has("priority"))
                 {
-                    LogHandler.Err(new Exception("Each pattern in patterns db SHOULD have a 'priority' field!"));
+                    LogModule.Err(new Exception("Each pattern in patterns db SHOULD have a 'priority' field!"));
                     continue;
                 }
 
@@ -50,7 +50,7 @@ public class PatternsDbParser extends ResourcePatternParser
         }
         catch (JSONException e)
         {
-            LogHandler.Warn("Patterns file JSON format error: "+e.getMessage());
+            LogModule.Warn("Patterns file JSON format error: "+e.getMessage());
         }
     }
 }

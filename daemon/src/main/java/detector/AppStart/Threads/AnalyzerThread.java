@@ -1,7 +1,7 @@
 package detector.AppStart.Threads;
 
 import detector.Analyzer.Analyzer;
-import detector.LogHandler;
+import detector.LogModule;
 
 /**************************************************
  * Manages the life cycle of analyzer
@@ -12,7 +12,7 @@ public class AnalyzerThread extends Thread
     public void run()
     {
         Thread.currentThread().setName("__Analyzer");
-        LogHandler.Log("Analyzer is started.");
+        LogModule.Log("Analyzer is started.");
 
         while ( true )
         {

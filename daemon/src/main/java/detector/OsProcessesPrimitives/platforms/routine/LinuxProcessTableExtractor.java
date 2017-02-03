@@ -1,7 +1,7 @@
 package detector.OsProcessesPrimitives.platforms.routine;
 
 
-import detector.LogHandler;
+import detector.LogModule;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
 import detector.OsProcessesPrimitives.ProcessTable;
@@ -62,7 +62,7 @@ public class LinuxProcessTableExtractor
                     }
                     catch (NumberFormatException e)
                     {
-                        LogHandler.Warn("Netstat format error");
+                        LogModule.Warn("Netstat format error");
                         continue;
                     }
                 }

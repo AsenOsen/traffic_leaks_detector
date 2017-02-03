@@ -29,7 +29,8 @@
         private void InitializeComponent()
         {
             this.messageTable = new System.Windows.Forms.RichTextBox();
-            this.timeTable = new System.Windows.Forms.Label();
+            this.timeBox = new System.Windows.Forms.TextBox();
+            this.causeBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // messageTable
@@ -37,30 +38,35 @@
             this.messageTable.BackColor = System.Drawing.SystemColors.Window;
             this.messageTable.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.messageTable.Font = new System.Drawing.Font("Arial", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.messageTable.Location = new System.Drawing.Point(0, 1);
+            this.messageTable.Location = new System.Drawing.Point(-1, 27);
             this.messageTable.Name = "messageTable";
             this.messageTable.ReadOnly = true;
             this.messageTable.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.messageTable.Size = new System.Drawing.Size(390, 283);
             this.messageTable.TabIndex = 0;
-            this.messageTable.Text = "hjfgjhfd fdh fy rey rey rey re";
+            this.messageTable.Text = "";
             // 
-            // timeTable
+            // timeBox
             // 
-            this.timeTable.AutoSize = true;
-            this.timeTable.Location = new System.Drawing.Point(12, 287);
-            this.timeTable.Name = "timeTable";
-            this.timeTable.Size = new System.Drawing.Size(35, 13);
-            this.timeTable.TabIndex = 1;
-            this.timeTable.Text = "label1";
-            this.timeTable.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.timeBox.Location = new System.Drawing.Point(1, 310);
+            this.timeBox.Name = "timeBox";
+            this.timeBox.Size = new System.Drawing.Size(388, 20);
+            this.timeBox.TabIndex = 1;
+            // 
+            // causeBox
+            // 
+            this.causeBox.Location = new System.Drawing.Point(1, 3);
+            this.causeBox.Name = "causeBox";
+            this.causeBox.Size = new System.Drawing.Size(388, 20);
+            this.causeBox.TabIndex = 2;
             // 
             // DetailedViewForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(392, 301);
-            this.Controls.Add(this.timeTable);
+            this.ClientSize = new System.Drawing.Size(392, 335);
+            this.Controls.Add(this.causeBox);
+            this.Controls.Add(this.timeBox);
             this.Controls.Add(this.messageTable);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "DetailedViewForm";
@@ -76,6 +82,7 @@
         #endregion
 
         private System.Windows.Forms.RichTextBox messageTable;
-        private System.Windows.Forms.Label timeTable;
+        private System.Windows.Forms.TextBox timeBox;
+        private System.Windows.Forms.TextBox causeBox;
     }
 }

@@ -1,13 +1,14 @@
 package detector.AppStart;
 
+import detector.AppConfig.AppConfig;
 import detector.AppStart.Threads.AnalyzerThread;
 import detector.AppStart.Threads.CommunicationThread;
 import detector.AppStart.Threads.InterceptorThread;
 import detector.AppStart.Threads.ProcessUpdaterThread;
 import detector.Data.HarmlessPatternsDB;
 import detector.Data.KnownPatternsDB;
-import detector.GUIWrapper;
-import detector.LogHandler;
+import detector.GUIModule;
+import detector.LogModule;
 
 
 public class Main {
@@ -26,29 +27,32 @@ public class Main {
                 @Override
                 public void uncaughtException(Thread t, Throwable e)
                 {
-                    LogHandler.Err(e);
+                    LogModule.Err(e);
                 }
             };
 
 
     public static void main(String[] args)
     {
-        // Load traffic patterns databases
+        // Configure application
+        AppConfig.getInstance().configure(args);
+
+        // Load traffic-patterns database
         KnownPatternsDB.getInstance().loadDB();
         HarmlessPatternsDB.getInstance().loadDB();
-
-        // Load GUI wrapper
-        GUIWrapper.getInstance();
 
         // Start interceptor lifecycle monitor
         interceptorThread.setUncaughtExceptionHandler(exceptionHandler);
         interceptorThread.start();
+
         // Start traffic analyzer
         analyzerThread.setUncaughtExceptionHandler(exceptionHandler);
         analyzerThread.start();
+
         // Start process info updater
         processInfoUpdaterThread.setUncaughtExceptionHandler(exceptionHandler);
         processInfoUpdaterThread.start();
+
         // Start server for interaction with daemon
         communicationModuleThread.setUncaughtExceptionHandler(exceptionHandler);
         communicationModuleThread.start();

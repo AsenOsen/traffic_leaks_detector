@@ -15,9 +15,13 @@ namespace gui
         JObject msgObject = null;
         String serverMessage = null;
 
-        String alertMsg = null;
-        String msgType = null;
+        // start of json object
+        String messageFull = null;
+        String messageExciter = null;
+        String messageType = null;
         DateTime time;
+        // end of json object
+
         int messageLaggingTime = 0;
 
 
@@ -31,19 +35,25 @@ namespace gui
         public bool isValid()
         {
             return
-                alertMsg != null && msgType != null;
+                messageFull != null && messageExciter != null && messageType != null;
         }
 
 
         public String getMessage()
         {
-            return alertMsg;
+            return messageFull;
         }
 
 
-        public String getLabel()
+        public String getCause()
         {
-            return msgType;
+            return messageExciter;
+        }
+
+
+        public String getLeakType()
+        {
+            return messageType;
         }
 
 
@@ -77,15 +87,17 @@ namespace gui
                 return false;
             }
 
-            // parse
-            this.alertMsg = msgObject["user_message"].ToString().Trim();
-            this.msgType = msgObject["label"].ToString().Trim();
+            // parsing...
+            this.messageFull = msgObject["message_full"].ToString().Trim();
+            this.messageExciter = msgObject["message_exciter"].ToString().Trim();
+            this.messageType = msgObject["message_type"].ToString().Trim();
             this.time = getMessageBirthTime(msgObject["utc_timestamp"].ToString().Trim());
 
 
             return
-                alertMsg.Length > 0 &&
-                msgType.Length > 0;
+                this.messageFull.Length > 0 &&
+                this.messageExciter.Length > 0 &&
+                this.messageType.Length > 0;
         }
 
 

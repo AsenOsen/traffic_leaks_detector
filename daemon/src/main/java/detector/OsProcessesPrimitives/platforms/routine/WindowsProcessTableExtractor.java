@@ -1,7 +1,7 @@
 package detector.OsProcessesPrimitives.platforms.routine;
 
 
-import detector.LogHandler;
+import detector.LogModule;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
 import detector.OsProcessesPrimitives.ProcessTable;
@@ -55,7 +55,7 @@ public class WindowsProcessTableExtractor
                 }
                 catch (NumberFormatException e)
                 {
-                    LogHandler.Warn("Tasklist format error");
+                    LogModule.Warn("Tasklist format error");
                     continue;
                 }
             }
@@ -90,7 +90,7 @@ public class WindowsProcessTableExtractor
                     }
                     catch (NumberFormatException e)
                     {
-                        LogHandler.Warn("Netstat format error");
+                        LogModule.Warn("Netstat format error");
                         continue;
                     }
                 }

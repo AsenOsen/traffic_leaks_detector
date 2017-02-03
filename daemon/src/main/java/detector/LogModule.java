@@ -2,7 +2,7 @@ package detector;
 
 import java.util.Date;
 
-public class LogHandler {
+public class LogModule {
 
 
     /*
