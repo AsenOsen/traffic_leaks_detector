@@ -99,7 +99,7 @@ namespace gui
             // show notification
             if (newMessage.isValid() && newMessage.isActual() && !this.Focused)
             {
-                notifier.ShowBalloonTip(5000, userLabel, userMessage, ToolTipIcon.Info);              
+                notifier.ShowBalloonTip(5000, userLabel, userMessage.Length==0 ? "." : userMessage, ToolTipIcon.Info);              
                 notificationSound.Play();
             }
 

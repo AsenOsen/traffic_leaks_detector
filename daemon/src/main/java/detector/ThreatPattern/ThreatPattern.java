@@ -3,6 +3,7 @@ package detector.ThreatPattern;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import detector.AppConfig.AppLocale;
 import detector.Data.KnownPatternsDB;
 import detector.LogModule;
 import detector.NetwPrimitives.IPv4Address;
@@ -22,6 +23,9 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ThreatPattern implements Comparable<ThreatPattern>
 {
+    private static final String FMT_FIELD_MSG = "msg";
+    private static final String FMT_FIELD_EXCITER = "msg_exciter";
+
     @JsonProperty("name")
     private final String codeName;
     @JsonProperty("priority")
@@ -43,10 +47,10 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     private String relatedPatterns;
     @JsonProperty("relation-mode")
     private String relationMode;
-    @JsonProperty("msg")
-    private String msg;
-    @JsonProperty("msg_exciter")
-    private String msgExciter;
+    @JsonProperty(FMT_FIELD_MSG)
+    private String msg;                 // localized field
+    @JsonProperty(FMT_FIELD_EXCITER)
+    private String msgExciter;          // localized field
 
     private Set<ThreatPattern> dependencies = new HashSet<ThreatPattern>();
 
@@ -102,15 +106,36 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     public ThreatMessage createMessage(Threat threat)
     {
         ThreatMessage threatMessage = new ThreatMessage();
-        threatMessage.setUserMessage(getMessageByThreatPattern(threat));
-        threatMessage.setExciter(msgExciter);
-        threatMessage.setPatternName(this.codeName);
+        threatMessage.setMessage(getMessageByPattern(threat));
+        threatMessage.setPatternName(codeName);
+        threatMessage.setExciter(getExciter());
         return threatMessage;
     }
 
 
-    private String getMessageByThreatPattern(Threat threat)
+    private String getExciter()
     {
+        // if 'exciter' was not specified exactly, try to find it in current locale
+        if(msgExciter == null)
+        {
+            String localizedName = String.format("%s.%s", codeName, FMT_FIELD_EXCITER);
+            msgExciter = AppLocale.getInstance().getLocalizedString(localizedName);
+        }
+
+        return msgExciter;
+    }
+
+
+    private String getMessageByPattern(Threat threat)
+    {
+        // if 'message' was not specified exactly, try to find it in current locale
+        if(msg == null)
+        {
+            String localizedName = String.format("%s.%s", codeName, FMT_FIELD_MSG);
+            msg = AppLocale.getInstance().getLocalizedString(localizedName);
+        }
+
+        // ...if it still not specified, then it is not exists
         if(msg == null)
         {
             LogModule.Warn("ThreatPattern message is null!");
@@ -122,7 +147,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         IPv4Address ip = threat.getForeignIp();
         IpInfo info = ip==null ? null : ip.getIpInfo();
 
-        String stub = "[???]";
+        String stub = "[-]";
         String ipAddr = ip==null ? stub : (ip.toString()==null ? stub : ip.toString());
         String portNo = port==null ? stub : (port.toString()==null ? stub : port.toString());
         String psPid  = process==null ? stub : process.getPid()+"";

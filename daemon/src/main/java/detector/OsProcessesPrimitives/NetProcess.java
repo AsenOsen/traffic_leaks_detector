@@ -25,7 +25,7 @@ public class NetProcess {
 
     public String getName()
     {
-        return name==null ? "<undefined_???>" : name;
+        return name==null ? "<undefined_process>" : name;
     }
 
 

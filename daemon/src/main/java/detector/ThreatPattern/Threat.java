@@ -42,7 +42,7 @@ public class Threat
         // if no pattern match found
         assert false : "Impossible situation detected!";
         ThreatMessage report = new ThreatMessage();
-        report.setUserMessage(this.toString());
+        report.setMessage(this.toString());
         return report;
     }
 

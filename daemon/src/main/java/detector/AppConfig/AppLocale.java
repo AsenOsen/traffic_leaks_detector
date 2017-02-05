@@ -30,8 +30,14 @@ public class AppLocale
 
     public String getLocalizedString(String id)
     {
-        assert dictionary != null;
-        assert dictionary.containsKey(id);
+        assert id != null;
+        id = id==null ? null : id.toLowerCase().trim();
+
+        if(id == null)
+            return null;
+
+        //assert dictionary != null;
+        //assert dictionary.containsKey(id);
 
         return dictionary == null ? null : dictionary.getProperty(id);
     }
@@ -57,12 +63,19 @@ public class AppLocale
 
         try
         {
-            String resourceFile = String.format(localeResource, localeCode);
+            String resourceFile =
+                    String.format(localeResource, localeCode);
             InputStream resStream =
                     getClass().getClassLoader().
                     getResourceAsStream(resourceFile);
-            Reader reader = new InputStreamReader(resStream, Charset.forName("UTF-8"));
-            dictionary.load(reader);
+            Reader reader =
+                    new InputStreamReader(resStream, Charset.forName("UTF-8"));
+
+            Properties locProperties = new Properties();
+            locProperties.load(reader);
+            for(String property : locProperties.stringPropertyNames())
+                dictionary.setProperty(property.toLowerCase().trim(), locProperties.getProperty(property));
+
             LogModule.Log("Language was set: "+localeCode);
         }
         catch (Exception e)

@@ -1,6 +1,7 @@
 package detector.AppStart;
 
 import detector.AppConfig.AppConfig;
+import detector.AppConfig.AppLocale;
 import detector.AppStart.Threads.AnalyzerThread;
 import detector.AppStart.Threads.CommunicationThread;
 import detector.AppStart.Threads.InterceptorThread;

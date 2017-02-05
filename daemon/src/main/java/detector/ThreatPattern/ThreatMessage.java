@@ -45,7 +45,7 @@ public class ThreatMessage
     }
 
 
-    public void setUserMessage(String msg)
+    public void setMessage(String msg)
     {
         this.userMessage = msg;
     }
@@ -90,11 +90,11 @@ public class ThreatMessage
         switch (type)
         {
             case BigTrafficMessage:
-                return AppLocale.getInstance().getLocalizedString("threatmessage.bigleak");
+                return AppLocale.getInstance().getLocalizedString("ThreatMessage.BigLeak");
             case LeakageMessage:
-                return AppLocale.getInstance().getLocalizedString("threatmessage.activeleak");
+                return AppLocale.getInstance().getLocalizedString("ThreatMessage.ActiveLeak");
             case SlowLeakageMessage:
-                return AppLocale.getInstance().getLocalizedString("threatmessage.passiveleak");
+                return AppLocale.getInstance().getLocalizedString("ThreatMessage.PassiveLeak");
             default:
                 assert true : "There is cannot be any other threat types!";
                 return null;
