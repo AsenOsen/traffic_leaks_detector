@@ -159,15 +159,21 @@ namespace gui
 
 
         private void formHider_Tick(object sender, EventArgs e)
-        {
-            HideForm();
+        {          
             formHider.Stop();
+            HideForm();
+            notifier.ShowBalloonTip(5000, 
+                "Leaks Table is here", 
+                "You can find GUI window in this tray any time.\nJust click twice!", 
+                ToolTipIcon.Info);  
         }
 
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            Application.ExitThread();
+            if (connectionThread != null && connectionThread.IsAlive)
+                connectionThread.Abort();
+            Application.Exit();
         }
 
         private void showToolStripMenuItem_Click(object sender, EventArgs e)

@@ -19,7 +19,7 @@ namespace gui
         String messageFull = null;
         String messageExciter = null;
         String messageType = null;
-        DateTime time;
+        DateTime time = DateTime.Now;
         // end of json object
 
         int messageLaggingTime = 0;
@@ -35,25 +35,27 @@ namespace gui
         public bool isValid()
         {
             return
-                messageFull != null && messageExciter != null && messageType != null;
+                (messageFull != null && messageFull.Length>0) || 
+                (messageExciter != null && messageExciter.Length>0) || 
+                (messageType != null && messageType.Length>0);
         }
 
 
         public String getMessage()
         {
-            return messageFull;
+            return messageFull == null ? "" : messageFull;
         }
 
 
         public String getCause()
         {
-            return messageExciter;
+            return messageExciter == null ? "" : messageExciter;
         }
 
 
         public String getLeakType()
         {
-            return messageType;
+            return messageType == null ? "" : messageType;
         }
 
 
@@ -70,13 +72,7 @@ namespace gui
         }
 
 
-        public String getDump()
-        {
-            return serverMessage;
-        }
-
-
-        private bool Parse()
+        private void Parse()
         {
             try
             {
@@ -84,20 +80,20 @@ namespace gui
             }
             catch (JsonException)
             {
-                return false;
+                // broken json format
+                return;
             }
 
-            // parsing...
-            this.messageFull = msgObject["message_full"].ToString().Trim();
-            this.messageExciter = msgObject["message_exciter"].ToString().Trim();
-            this.messageType = msgObject["message_type"].ToString().Trim();
-            this.time = getMessageBirthTime(msgObject["utc_timestamp"].ToString().Trim());
+            // parsing... 
+            if (msgObject["message_full"] != null)
+                this.messageFull = msgObject["message_full"].ToString().Trim();
+            if (msgObject["message_exciter"] != null)
+                this.messageExciter = msgObject["message_exciter"].ToString().Trim();
+            if (msgObject["message_type"] != null)
+                this.messageType = msgObject["message_type"].ToString().Trim();
+            if (msgObject["utc_timestamp"] != null)
+                this.time = getMessageBirthTime(msgObject["utc_timestamp"].ToString().Trim());
 
-
-            return
-                this.messageFull.Length > 0 &&
-                this.messageExciter.Length > 0 &&
-                this.messageType.Length > 0;
         }
 
 

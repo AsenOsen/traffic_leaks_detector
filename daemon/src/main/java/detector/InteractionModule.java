@@ -3,12 +3,10 @@ package detector;
 import detector.ThreatPattern.ThreatMessage;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 /******************************************************
  * Provides an interface for other applications
@@ -27,11 +25,12 @@ public class InteractionModule
     private static final String SERVER_PROTOCOL_NO_MSG = ":::daemon_protocol_no_msg:::";
     private static final String SERVER_PROTOCOL_FINISH = ":::daemon_protocol_finish:::";
     private static final String SERVER_PROTOCOL_UNK_CMD = ":::daemon_protocol_unknown_command:::";
+    private static final Charset SERVER_CHARSET = Charset.forName("UTF-8");
 
     private int serverPort = -1;
     private ServerSocket communicationServer;
     private BufferedReader clientInput = null;
-    private PrintWriter clientOutput = null;
+    private OutputStream clientOutput = null;
 
     
     public static InteractionModule getInstance()
@@ -115,9 +114,10 @@ public class InteractionModule
                 LogModule.Log("New communication client: "+client.toString());
 
                 clientInput = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                clientOutput = new PrintWriter(client.getOutputStream(), true);
+                clientOutput = client.getOutputStream();
 
-                clientOutput.println(SERVER_PROTOCOL_START);
+                sendToClient(SERVER_PROTOCOL_START);
+
                 while(true) {
                     if(!HandleClientQuery()) {
                         LogModule.Log("Client terminated: "+client.toString());
@@ -198,7 +198,7 @@ public class InteractionModule
     {
         try
         {
-            clientOutput.println(data);
+            clientOutput.write(data.getBytes(SERVER_CHARSET));
         }
         catch (Exception e)
         {

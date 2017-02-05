@@ -1,6 +1,6 @@
 package detector.ThreatPattern;
 
-import detector.AppConfig.LocaleConfig;
+import detector.AppConfig.AppLocale;
 import detector.LogModule;
 import org.json.JSONObject;
 
@@ -90,11 +90,11 @@ public class ThreatMessage
         switch (type)
         {
             case BigTrafficMessage:
-                return LocaleConfig.getInstance().getLocalizedString("threatmessage.bigleak");
+                return AppLocale.getInstance().getLocalizedString("threatmessage.bigleak");
             case LeakageMessage:
-                return LocaleConfig.getInstance().getLocalizedString("threatmessage.activeleak");
+                return AppLocale.getInstance().getLocalizedString("threatmessage.activeleak");
             case SlowLeakageMessage:
-                return LocaleConfig.getInstance().getLocalizedString("threatmessage.passiveleak");
+                return AppLocale.getInstance().getLocalizedString("threatmessage.passiveleak");
             default:
                 assert true : "There is cannot be any other threat types!";
                 return null;

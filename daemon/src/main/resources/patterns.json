@@ -57,6 +57,13 @@
     "priority": 40
   },
 
+  "Pattern.Mailru":{
+    "orgname": ".*Mail\\.Ru.*",
+    "msg": "На сервера Mail.Ru с вашего компьютера было отправлено {leaksize} данных за последние {timesec} секунд. Процесс, который инициировал отправку - {processname}. Хост, на который отправлялись данные - {hostname}.",
+    "msg_exciter": "Отправка в Mail.ru",
+    "priority": 40
+  },
+
   "Pattern.StdApps": {
     "comment": "This pattern is also used by selector UnusualAppSelector.java",
     "related-patterns": "Pattern\\.StdApp\\.([a-zA-Z0-9]+)$",
@@ -117,8 +124,8 @@
 
   "Pattern.StdApp.Browser":{
     "comment": "Only top-5 known browsers",
-    "processname" : ".*(chrome|firefox|mozilla|iexplore|opera|safari|browser|iceweasel).*"  ,
-    "msg": "Одна из открытых вкладок браузера отправила {leaksize} данных за последние {timesec} секунд на хост {hostname} (IP={dstip}), который принадлежит компании \"{orgname}\".",
+    "processname" : ".*(chrome|firefox|mozilla|iexplore|opera|safari|browser|iceweasel|amigo).*"  ,
+    "msg": "Одна из открытых вкладок браузера {processname} отправила {leaksize} данных за последние {timesec} секунд на хост {hostname} (IP={dstip}), который принадлежит компании \"{orgname}\".",
     "msg_exciter": "Браузер передает данные",
     "priority": 51
   },

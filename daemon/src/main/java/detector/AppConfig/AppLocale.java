@@ -5,26 +5,24 @@ import detector.LogModule;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 /*********************************************************
  * Provides localization logic for application.
  ********************************************************/
-public class LocaleConfig
+public class AppLocale
 {
-    private static LocaleConfig instance = new LocaleConfig();
+    private static AppLocale instance = new AppLocale();
 
     private final String localeResource =
             "locale/locale_%s.properties";
-    private final String[] supportedLocales = new String[]{
-            "ru",
-            "en"
-    };
     private Properties dictionary = new Properties();
 
 
 
-    public static LocaleConfig getInstance()
+    public static AppLocale getInstance()
     {
         return instance;
     }
@@ -39,7 +37,7 @@ public class LocaleConfig
     }
 
 
-    private LocaleConfig()
+    private AppLocale()
     {
         setLocale();
     }
@@ -48,7 +46,8 @@ public class LocaleConfig
     private void setLocale()
     {
         String localeCode =
-                System.getProperty("daemon.config.locale", null);
+                System.getProperty("daemon.config.locale", null)
+                        .trim().toLowerCase();
 
         if(localeCode == null || !isSupportedLocale(localeCode))
         {
@@ -58,18 +57,17 @@ public class LocaleConfig
 
         try
         {
+            String resourceFile = String.format(localeResource, localeCode);
             InputStream resStream =
                     getClass().getClassLoader().
-                    getResourceAsStream(
-                            String.format(localeResource, localeCode)
-                    );
-            Reader reader = new InputStreamReader(resStream, "UTF-8");
+                    getResourceAsStream(resourceFile);
+            Reader reader = new InputStreamReader(resStream, Charset.forName("UTF-8"));
             dictionary.load(reader);
             LogModule.Log("Language was set: "+localeCode);
         }
         catch (Exception e)
         {
-            LogModule.Warn("Could not load language lib!");
+            LogModule.Warn("Could not load locale! Error: "+e.getMessage());
         }
 
     }
@@ -82,11 +80,10 @@ public class LocaleConfig
         if(localeCode==null)
             return false;
 
-        for(String locale : supportedLocales)
-            if(locale.compareToIgnoreCase(localeCode) == 0)
-                return true;
+        String resourceFile = String.format(localeResource, localeCode);
+        URL res = AppLocale.class.getClassLoader().getResource(resourceFile);
 
-        return false;
+        return res != null;
     }
 
 }

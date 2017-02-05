@@ -45,7 +45,6 @@
             this.leakTypeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.moreInfoColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.ignoreBtnColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.simpleItemStyle1 = new BrightIdeasSoftware.SimpleItemStyle();
             this.notifierMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertsTable)).BeginInit();
             this.SuspendLayout();
@@ -60,7 +59,7 @@
             // 
             this.notifier.ContextMenuStrip = this.notifierMenu;
             this.notifier.Icon = ((System.Drawing.Icon)(resources.GetObject("notifier.Icon")));
-            this.notifier.Text = "Traffic Alert";
+            this.notifier.Text = "Traffic Leaks";
             this.notifier.Visible = true;
             this.notifier.BalloonTipClicked += new System.EventHandler(this.notifier_BalloonTipClicked);
             this.notifier.DoubleClick += new System.EventHandler(this.notifier_DoubleClick);
@@ -259,10 +258,11 @@
             this.Controls.Add(this.errorLabel);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.alertsTable);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AlertForm";
             this.Opacity = 0.01D;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Alert Log";
+            this.Text = "Traffic Leaks Logs";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AlertForm_FormClosing);
             this.Resize += new System.EventHandler(this.AlertForm_Resize);
             this.notifierMenu.ResumeLayout(false);
@@ -285,7 +285,6 @@
         private BrightIdeasSoftware.OLVColumn leakCauseColumn;
         private BrightIdeasSoftware.OLVColumn timeColumn;
         private BrightIdeasSoftware.OLVColumn ignoreBtnColumn;
-        private BrightIdeasSoftware.SimpleItemStyle simpleItemStyle1;
         private System.Windows.Forms.Button button1;
         private BrightIdeasSoftware.OLVColumn moreInfoColumn;
         private System.Windows.Forms.Label errorLabel;

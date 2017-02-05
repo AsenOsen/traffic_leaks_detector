@@ -18,6 +18,7 @@ namespace gui
         private const string SERVER_PROTOCOL_NO_MSG = ":::daemon_protocol_no_msg:::";
         private const string SERVER_PROTOCOL_FINISH = ":::daemon_protocol_finish:::";
         private const string SERVER_PROTOCOL_UNK_CMD = ":::daemon_protocol_unknown_command:::";
+        private readonly Encoding SERVER_CHARSET = Encoding.UTF8;
 
         private TcpClient client = new TcpClient();
 
@@ -30,16 +31,21 @@ namespace gui
 
         public String GetMessageFromServer()
         {
+            if (!isConnectionAlive())
+                Connect(); 
+
             SendServerInput("get_alert\n");
             String serverMessage = ReadServerOutput().Replace(SERVER_PROTOCOL_NO_MSG, "").Trim();
             return serverMessage.Length == 0 ? null : serverMessage;
         }
 
 
-        private void ReconnectIfDown()
+        private bool isConnectionAlive()
         {
-            if (client == null || !client.Connected || client.GetStream() == null)
-                Connect();          
+            return 
+                client != null && 
+                client.Connected && 
+                client.GetStream() != null;
         }
 
 
@@ -90,8 +96,10 @@ namespace gui
 
         private String ReadServerOutput()
         {
-            ReconnectIfDown();
             Debug.Assert(client.GetStream().CanRead, "Connection is established, but cant read!");
+
+            if (!isConnectionAlive())
+                return "";
 
             StringBuilder output = new StringBuilder();
             byte[] msgBuffer = new byte[1024];
@@ -101,11 +109,11 @@ namespace gui
                 try
                 {
                     int read = client.GetStream().Read(msgBuffer, 0, 1024);
-                    output.Append(Encoding.UTF8.GetString(msgBuffer, 0, read));
+                    output.Append(SERVER_CHARSET.GetString(msgBuffer, 0, read));
                 }
                 catch (Exception)
                 {
-                    break;
+                    Disconnect();
                 }
             } 
 
@@ -114,7 +122,6 @@ namespace gui
             if(serverResult.Contains(SERVER_PROTOCOL_FINISH))
             {
                 Debug.Assert(false, "Server sent an end-protocol command? It is almost impossible!");
-                ReconnectIfDown();
                 return "";
             }
             if (serverResult.Contains(SERVER_PROTOCOL_UNK_CMD))
@@ -129,19 +136,21 @@ namespace gui
 
         private void SendServerInput(String data)
         {
-            ReconnectIfDown();
             Debug.Assert(data != null, "Why to server`s stream was passed NULL?");
             Debug.Assert(client.GetStream().CanWrite, "Client could not send the message to available server!");
 
+            if (!isConnectionAlive())
+                return;
+
             try
             {
-                byte[] cmd = Encoding.UTF8.GetBytes(data);
+                byte[] cmd = SERVER_CHARSET.GetBytes(data);
                 client.GetStream().Write(cmd, 0, cmd.Length);
                 client.GetStream().Flush();
             }
             catch (Exception)
             {
-                ReconnectIfDown();
+                Disconnect();
             }
         }
 

@@ -9,3 +9,4 @@ like camera observation, wiretapping, theft of local files and so on.
 
 * ./daemon - java code of the daemon process, which runs in background and open socket for communication.
 * ./gui - platform dependant GUI`s for daemon
+* ./launcher - launcher demo script which demonstrates platform-independent configuration

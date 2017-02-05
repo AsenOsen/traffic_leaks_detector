@@ -5,10 +5,8 @@ import detector.LogModule;
 import detector.ThreatPattern.ThreatPattern;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.List;
 
 /*************************************************************
@@ -65,10 +63,11 @@ public abstract class ResourcePatternParser
     /*
     * Loads the patterns from some outer-resource
     * */
-    private void readDataFromResource()
+    private final void readDataFromResource()
     {
-        InputStream stream = getPatternDataInputStream();
-        BufferedReader resReader = new BufferedReader(new InputStreamReader(stream));
+        InputStream inputStream = getPatternDataInputStream();
+        Reader reader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+        BufferedReader resReader = new BufferedReader(reader);
         StringBuilder resData = new StringBuilder();
 
         try
