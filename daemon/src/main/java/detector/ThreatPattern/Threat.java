@@ -5,6 +5,7 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.OsProcessesPrimitives.NetProcess;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
@@ -22,6 +23,8 @@ public class Threat
 
     public Threat(TrafficFlow traffic)
     {
+        assert traffic != null;
+
         this.thrProcess = traffic.getDominantProcess();
         this.thrIp = traffic.getDominantDstAddr();
         this.thrPort = traffic.getDominantSrcPort();
@@ -29,6 +32,7 @@ public class Threat
     }
 
 
+    @NotNull
     public ThreatMessage createReport()
     {
         ThreatPattern pattern = KnownPatternsDB.getInstance().findMatchingPattern(this);
@@ -80,13 +84,13 @@ public class Threat
         msg.append("Time: "+(new Date().toString())+"\n");
 
         if(thrProcess != null)
-            msg.append("[process]\n"+ thrProcess +" => "+ thrTraffic +"\n");
+            msg.append("[process]\n"+ thrProcess +"=>\n"+ thrTraffic +"\n");
         else
         if(thrIp != null)
-            msg.append("[ip]\n"+ thrIp + " <= " + thrTraffic +"\n");
+            msg.append("[ip]\n"+ thrIp + "<=\n" + thrTraffic +"\n");
         else
         if(thrPort != null)
-            msg.append("[port]\n:"+ thrPort + " => " + thrTraffic +"\n");
+            msg.append("[port]\n:"+ thrPort + "=>\n" + thrTraffic +"\n");
 
         return msg.toString();
     }

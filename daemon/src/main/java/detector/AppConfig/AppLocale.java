@@ -76,7 +76,7 @@ public class AppLocale
             for(String property : locProperties.stringPropertyNames())
                 dictionary.setProperty(property.toLowerCase().trim(), locProperties.getProperty(property));
 
-            LogModule.Log("Language was set: "+localeCode);
+            LogModule.Log("SET: Language was set: "+localeCode);
         }
         catch (Exception e)
         {

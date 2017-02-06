@@ -18,13 +18,13 @@ import java.util.Set;
 
 /********************************************************
  * Describes concrete known traffic pattern.
- * Patters stores in JSON format
+ * Patterns store in JSON format
  *******************************************************/
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties({"comment"})
 public class ThreatPattern implements Comparable<ThreatPattern>
 {
-    private static final String FMT_FIELD_MSG = "msg";
-    private static final String FMT_FIELD_EXCITER = "msg_exciter";
+    private static final String FIELD_NAME_MSG     = "msg";
+    private static final String FIELD_NAME_EXCITER = "msg_exciter";
 
     @JsonProperty("name")
     private final String codeName;
@@ -47,9 +47,9 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     private String relatedPatterns;
     @JsonProperty("relation-mode")
     private String relationMode;
-    @JsonProperty(FMT_FIELD_MSG)
+    @JsonProperty(FIELD_NAME_MSG)
     private String msg;                 // localized field
-    @JsonProperty(FMT_FIELD_EXCITER)
+    @JsonProperty(FIELD_NAME_EXCITER)
     private String msgExciter;          // localized field
 
     private Set<ThreatPattern> dependencies = new HashSet<ThreatPattern>();
@@ -68,10 +68,10 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     * */
     public void validate()
     {
-        // only pattern with special name 'Undefined' can have no rules
+        // only pattern with special code name 'Undefined' can have no rules
         boolean isAllowedEmptyPattern = !codeName.equalsIgnoreCase("Pattern.Undefined");
 
-        // at least 1 rule convention
+        // "at least 1 rule" convention
         if(pid==null && dstip==null && srcport==null &&
                 processName==null && orgName ==null && hostname==null &&
                 relatedPatterns ==null && isAllowedEmptyPattern
@@ -88,6 +88,8 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
     public boolean matches(Threat threat)
     {
+        assert threat!=null;
+
         NetProcess process = threat.getInitiatorProcess();
         Port port = threat.getInitiatorPort();
         IPv4Address ip = threat.getForeignIp();
@@ -103,12 +105,14 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     }
 
 
+    @NotNull
     public ThreatMessage createMessage(Threat threat)
     {
         ThreatMessage threatMessage = new ThreatMessage();
         threatMessage.setMessage(getMessageByPattern(threat));
         threatMessage.setPatternName(codeName);
         threatMessage.setExciter(getExciter());
+
         return threatMessage;
     }
 
@@ -118,7 +122,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         // if 'exciter' was not specified exactly, try to find it in current locale
         if(msgExciter == null)
         {
-            String localizedName = String.format("%s.%s", codeName, FMT_FIELD_EXCITER);
+            String localizedName = String.format("%s.%s", codeName, FIELD_NAME_EXCITER);
             msgExciter = AppLocale.getInstance().getLocalizedString(localizedName);
         }
 
@@ -131,14 +135,14 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         // if 'message' was not specified exactly, try to find it in current locale
         if(msg == null)
         {
-            String localizedName = String.format("%s.%s", codeName, FMT_FIELD_MSG);
+            String localizedName = String.format("%s.%s", codeName, FIELD_NAME_MSG);
             msg = AppLocale.getInstance().getLocalizedString(localizedName);
         }
 
         // ...if it still not specified, then it is not exists
         if(msg == null)
         {
-            LogModule.Warn("ThreatPattern message is null!");
+            LogModule.Warn("Field 'msg' SHOULD BE specified for "+codeName+" pattern.");
             return null;
         }
 
@@ -206,7 +210,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     private boolean matchRelations(Threat threat)
     {
         // Lazy dependencies loading
-        if(dependencies.size()==0 && relatedPatterns !=null)
+        if(dependencies.size()==0 && relatedPatterns!=null)
             loadDependencies();
 
         // At least one of related pattern matches -- OR

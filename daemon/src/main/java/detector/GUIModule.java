@@ -90,7 +90,7 @@ public class GUIModule
     {
         guiHashSum = getGuiHash();
         isGuiPresented = true;
-        LogModule.Log("Daemon is accompanied with GUI - "+ guiAbsolutePath + ". Hash: "+guiHashSum);
+        LogModule.Log("SET: Daemon is accompanied with GUI - "+ guiAbsolutePath + ". Hash: "+guiHashSum);
     }
 
 

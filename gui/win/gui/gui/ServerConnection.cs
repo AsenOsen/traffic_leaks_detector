@@ -96,8 +96,6 @@ namespace gui
 
         private String ReadServerOutput()
         {
-            Debug.Assert(client.GetStream().CanRead, "Connection is established, but cant read!");
-
             if (!isConnectionAlive())
                 return "";
 
@@ -126,7 +124,7 @@ namespace gui
             }
             if (serverResult.Contains(SERVER_PROTOCOL_UNK_CMD))
             {
-                Debug.Assert(false, "Server do not know such a command!");
+                Debug.Assert(false, "Server do not know such a command!?");
                 return "";
             }
 
@@ -137,7 +135,6 @@ namespace gui
         private void SendServerInput(String data)
         {
             Debug.Assert(data != null, "Why to server`s stream was passed NULL?");
-            Debug.Assert(client.GetStream().CanWrite, "Client could not send the message to available server!");
 
             if (!isConnectionAlive())
                 return;

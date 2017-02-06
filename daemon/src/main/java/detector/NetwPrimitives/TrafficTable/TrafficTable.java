@@ -234,9 +234,9 @@ public class TrafficTable
     {
         assert alerter!=null;
 
-        Set<NetProcess> alertedProcess = new HashSet<NetProcess>(processTraffic.size());
-        Set<IPv4Address> alertedIp = new HashSet<IPv4Address>(ipTraffic.size());
-        Set<Port> alertedPort = new HashSet<Port>(portTraffic.size());
+        Set <NetProcess>  alertedProcess = new HashSet<NetProcess>(processTraffic.size());
+        Set <IPv4Address> alertedIp      = new HashSet<IPv4Address>(ipTraffic.size());
+        Set <Port>        alertedPort    = new HashSet<Port>(portTraffic.size());
 
         // OS Processes first - they has the highest alerting priority
         for(Map.Entry<NetProcess, TrafficFlow> entry : processTraffic.entrySet())

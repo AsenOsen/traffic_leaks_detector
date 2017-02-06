@@ -3,6 +3,7 @@ package detector.ThreatPattern.PatternParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import detector.LogModule;
 import detector.ThreatPattern.ThreatPattern;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -43,7 +44,8 @@ public abstract class ResourcePatternParser
     /*
     * Creates new java object from json object
     * */
-    protected ThreatPattern createPattern(JSONObject jPattern)
+    @Nullable
+    protected final ThreatPattern createPattern(JSONObject jPattern)
     {
         try
         {

@@ -39,24 +39,9 @@ public class NetInterceptor implements PcapPacketHandler {
     //volatile int a=0, b=0;
 
 
-    static {
-        // Load native library
-        String jreArch = System.getProperty("os.arch");
-        boolean is64bitJRE = jreArch.indexOf("64") != -1;
-        try
-        {
-            System.loadLibrary(is64bitJRE ? "jnetpcap.x64" : "jnetpcap.x86");
-        }
-        catch (UnsatisfiedLinkError e)
-        {
-            LogModule.Err(e);
-        }
-    }
-
-
     private NetInterceptor()
     {
-
+        loadNativeLib();
     }
 
 
@@ -100,6 +85,24 @@ public class NetInterceptor implements PcapPacketHandler {
 
         }
         //a++;
+    }
+
+
+    /*
+    * Loads native library
+    * */
+    private void loadNativeLib()
+    {
+        String jreArch = System.getProperty("os.arch");
+        boolean is64bitJRE = jreArch.indexOf("64") != -1;
+        try
+        {
+            System.loadLibrary(is64bitJRE ? "jnetpcap.x64" : "jnetpcap.x86");
+        }
+        catch (UnsatisfiedLinkError e)
+        {
+            LogModule.Err(e);
+        }
     }
 
 
@@ -186,7 +189,8 @@ public class NetInterceptor implements PcapPacketHandler {
                 while(true)
                 {
                     PcapPacket rawPacket;
-                    try {
+                    try
+                    {
                        rawPacket = packetQueue.take();
                     }
                     catch (InterruptedException e) { continue; }

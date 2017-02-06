@@ -32,8 +32,9 @@ public class Config
     {
         OBSERVING_ALLOWED_LEAK_BYTES = getMaxTraffic10Value();
         MINIMAL_ALLOWED_LEAK_BYTES = getMinTrafficLeakValue();
-        LogModule.Log("Allowed bytes per 10 seconds: " +OBSERVING_ALLOWED_LEAK_BYTES);
-        LogModule.Log("Minimal leak size bytes: " +MINIMAL_ALLOWED_LEAK_BYTES);
+
+        LogModule.Log("SET: Allowed bytes per 10 seconds = " +OBSERVING_ALLOWED_LEAK_BYTES);
+        LogModule.Log("SET: Minimal leak size bytes = " +MINIMAL_ALLOWED_LEAK_BYTES);
     }
 
 
@@ -43,12 +44,12 @@ public class Config
 
         try
         {
-            String maxTraffic10SecStr =
-                    System.getProperty("daemon.config.max-traffic-during-10-sec", defaultValue+"");
+            String maxTraffic10SecStr = System.getProperty("daemon.config.max-traffic-during-10-sec", defaultValue+"");
             return Integer.parseInt(maxTraffic10SecStr);
         }
         catch (NumberFormatException e)
         {
+            LogModule.Warn("argument 'max-traffic-during-10-sec' MUST BE a digit!");
             return defaultValue;
         }
     }
@@ -60,12 +61,12 @@ public class Config
 
         try
         {
-            String maxTraffic10SecStr =
-                    System.getProperty("daemon.config.min-leak-size", defaultValue+"");
+            String maxTraffic10SecStr = System.getProperty("daemon.config.min-leak-size", defaultValue+"");
             return Integer.parseInt(maxTraffic10SecStr);
         }
         catch (NumberFormatException e)
         {
+            LogModule.Warn("argument 'min-leak-size' MUST BE a digit!");
             return defaultValue;
         }
     }

@@ -37,15 +37,16 @@ public class PatternsDbParser extends ResourcePatternParser
             for (String name : json.keySet())
             {
                 JSONObject jsonPattern = json.getJSONObject(name);
+                jsonPattern.put("name", name);
                 if(!jsonPattern.has("priority"))
                 {
                     LogModule.Err(new Exception("Each pattern in patterns db SHOULD have a 'priority' field!"));
                     continue;
                 }
 
-                jsonPattern.put("name", name);
                 ThreatPattern threatPattern = createPattern(jsonPattern);
-                listToFill.add(threatPattern);
+                if(threatPattern != null)
+                    listToFill.add(threatPattern);
             }
         }
         catch (JSONException e)

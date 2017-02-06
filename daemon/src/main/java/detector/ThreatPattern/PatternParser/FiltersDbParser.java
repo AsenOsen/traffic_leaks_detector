@@ -103,7 +103,8 @@ public class FiltersDbParser extends ResourcePatternParser
                 {
                     JSONObject ignorePattern = ignores.getJSONObject(i);
                     ThreatPattern threatPattern = createPattern(ignorePattern);
-                    listToFill.add(threatPattern);
+                    if(threatPattern != null)
+                        listToFill.add(threatPattern);
                 }
             }
             else {

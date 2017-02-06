@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,12 @@ using System.Threading.Tasks;
 
 namespace gui
 {
+    /*
+     * 
+     * Contract:
+     * This class DO NOT return NULL-values.
+     * 
+     */
     public class ServerMessage
     {
 
@@ -81,6 +88,7 @@ namespace gui
             catch (JsonException)
             {
                 // broken json format
+                Debug.Assert(false, "Brokem JSON!");
                 return;
             }
 

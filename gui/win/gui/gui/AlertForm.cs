@@ -30,6 +30,8 @@ namespace gui
         SoundPlayer notificationSound = new SoundPlayer(Resources.notify);
         DetailedViewForm detailedView = new DetailedViewForm();
 
+        bool isFormShown = false;
+
 
         public AlertForm()
         {
@@ -97,9 +99,9 @@ namespace gui
             String userLabel = newMessage.getCause();
 
             // show notification
-            if (newMessage.isValid() && newMessage.isActual() && !this.Focused)
+            if (newMessage.isValid() && newMessage.isActual() && !isFormShown)
             {
-                notifier.ShowBalloonTip(5000, userLabel, userMessage.Length==0 ? "." : userMessage, ToolTipIcon.Info);              
+                notifier.ShowBalloonTip(5000, userLabel, (userMessage.Length==0 ? "." : userMessage), ToolTipIcon.Info);
                 notificationSound.Play();
             }
 
@@ -125,6 +127,7 @@ namespace gui
             this.Opacity = 100;
             this.WindowState = FormWindowState.Normal;
             this.TopMost = true;
+            isFormShown = true;
         }
 
 
@@ -134,6 +137,7 @@ namespace gui
             this.Opacity = 100;
             this.WindowState = FormWindowState.Minimized;
             this.TopMost = false;
+            isFormShown = false;
         }
 
 
@@ -152,7 +156,19 @@ namespace gui
         }
 
 
+        private void notifier_BalloonTipShown(object sender, EventArgs e)
+        {
+            
+        }
+
+
         private void notifier_BalloonTipClicked(object sender, EventArgs e)
+        {
+            ShowForm();
+        }
+
+
+        private void notifier_DoubleClick(object sender, EventArgs e)
         {
             ShowForm();
         }
@@ -163,8 +179,8 @@ namespace gui
             formHider.Stop();
             HideForm();
             notifier.ShowBalloonTip(5000, 
-                "Leaks Table is here", 
-                "You can find GUI window in this tray any time.\nJust click twice!", 
+                "Leaks Table is here",
+                "You will hear a sound each time leak will be detected.\nJust click twice to watch leaks!\n", 
                 ToolTipIcon.Info);  
         }
 
@@ -181,16 +197,12 @@ namespace gui
             ShowForm();
         }
 
+
         private void button1_Click(object sender, EventArgs e)
         {
             alertsTable.Items.Clear();
         }
 
-
-        private void notifier_DoubleClick(object sender, EventArgs e)
-        {
-            ShowForm();
-        }
 
         private void objectListView1_ButtonClick(object sender, CellClickEventArgs e)
         {
@@ -245,6 +257,6 @@ namespace gui
             }
         }
 
-
+        
     }
 }

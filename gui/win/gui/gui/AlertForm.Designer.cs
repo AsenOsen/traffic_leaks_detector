@@ -52,7 +52,7 @@
             // messageChecker
             // 
             this.messageChecker.Enabled = true;
-            this.messageChecker.Interval = 1000;
+            this.messageChecker.Interval = 500;
             this.messageChecker.Tick += new System.EventHandler(this.messageChecker_Tick);
             // 
             // notifier
@@ -62,6 +62,7 @@
             this.notifier.Text = "Traffic Leaks";
             this.notifier.Visible = true;
             this.notifier.BalloonTipClicked += new System.EventHandler(this.notifier_BalloonTipClicked);
+            this.notifier.BalloonTipShown += new System.EventHandler(this.notifier_BalloonTipShown);
             this.notifier.DoubleClick += new System.EventHandler(this.notifier_DoubleClick);
             // 
             // notifierMenu

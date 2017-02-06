@@ -1,6 +1,6 @@
 {
   "Pattern.Undefined":{
-    "comment": "Normally, this situation is impossible.",
+    "comment": "This is default pattern. Using in ThreatPattern.java. Normally, this situation is impossible.",
     "priority": 0
   },
 
