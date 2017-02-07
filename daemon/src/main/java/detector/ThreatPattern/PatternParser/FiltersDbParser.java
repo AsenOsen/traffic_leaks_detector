@@ -7,10 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 import java.util.List;
 
 /*************************************************************
@@ -30,7 +26,7 @@ public class FiltersDbParser extends ResourcePatternParser
 
 
     @Override
-    protected InputStream getPatternDataInputStream()
+    protected InputStream getContentInputStream()
     {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream resStream = classLoader.getResourceAsStream(getResourceNameByMode());
@@ -95,7 +91,7 @@ public class FiltersDbParser extends ResourcePatternParser
     {
         try
         {
-            JSONObject json = new JSONObject(getResourceData());
+            JSONObject json = new JSONObject(getResourceContent());
             if(json.has("ignores"))
             {
                 JSONArray ignores = json.getJSONArray("ignores");

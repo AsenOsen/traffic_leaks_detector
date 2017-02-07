@@ -10,6 +10,7 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
+import detector.ThreatPattern.PatternParser.PatternField;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -20,43 +21,42 @@ import java.util.Set;
  * Describes concrete known traffic pattern.
  * Patterns store in JSON format
  *******************************************************/
-@JsonIgnoreProperties({"comment"})
+@JsonIgnoreProperties({PatternField.COMMENT})
 public class ThreatPattern implements Comparable<ThreatPattern>
 {
-    private static final String FIELD_NAME_MSG     = "msg";
-    private static final String FIELD_NAME_EXCITER = "msg_exciter";
-
-    @JsonProperty("name")
+    @JsonProperty(PatternField.NAME)
     private final String codeName;
-    @JsonProperty("priority")
+    @JsonProperty(PatternField.PRIORITY)
     private final int priority;
 
-    @JsonProperty("pid")
+    @JsonProperty(PatternField.PID)
     private String pid;
-    @JsonProperty("dstip")
-    private String dstip;
-    @JsonProperty("srcport")
-    private String srcport;
-    @JsonProperty("processname")
+    @JsonProperty(PatternField.DST_IP)
+    private String dstIp;
+    @JsonProperty(PatternField.SRC_PORT)
+    private String srcPort;
+    @JsonProperty(PatternField.PROCESS_NAME)
     private String processName;
-    @JsonProperty("orgname")
+    @JsonProperty(PatternField.ORG_NAME)
     private String orgName;
-    @JsonProperty("hostname")
-    private String hostname;
-    @JsonProperty("related-patterns")
+    @JsonProperty(PatternField.HOST_NAME)
+    private String hostName;
+    @JsonProperty(PatternField.RELATED_PATTERNS)
     private String relatedPatterns;
-    @JsonProperty("relation-mode")
+    @JsonProperty(PatternField.RELATION_MODE)
     private String relationMode;
-    @JsonProperty(FIELD_NAME_MSG)
-    private String msg;                 // localized field
-    @JsonProperty(FIELD_NAME_EXCITER)
-    private String msgExciter;          // localized field
+    @JsonProperty(PatternField.MESSAGE)
+    private String msg;
+    @JsonProperty(PatternField.EXCITER)
+    private String msgExciter;
 
     private Set<ThreatPattern> dependencies = new HashSet<ThreatPattern>();
 
 
     @JsonCreator
-    public ThreatPattern(@JsonProperty("name") String name, @JsonProperty("priority") int priorityLevel)
+    public ThreatPattern(
+            @JsonProperty(PatternField.NAME) String name,
+            @JsonProperty(PatternField.PRIORITY) int priorityLevel)
     {
         this.codeName = name==null ? "<unnamed_filter>" : name;
         this.priority = priorityLevel;
@@ -72,9 +72,9 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         boolean isAllowedEmptyPattern = !codeName.equalsIgnoreCase("Pattern.Undefined");
 
         // "at least 1 rule" convention
-        if(pid==null && dstip==null && srcport==null &&
-                processName==null && orgName ==null && hostname==null &&
-                relatedPatterns ==null && isAllowedEmptyPattern
+        if(pid==null && dstIp==null && srcPort==null &&
+                processName==null && orgName==null && hostName==null &&
+                relatedPatterns==null && isAllowedEmptyPattern
                 )
             LogModule.Err(new Exception("Pattern '"+codeName+"' SHOULD have at least 1 rule!"));
     }
@@ -109,8 +109,9 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     public ThreatMessage createMessage(Threat threat)
     {
         ThreatMessage threatMessage = new ThreatMessage();
-        threatMessage.setMessage(getMessageByPattern(threat));
+        threatMessage.setMessage(getMessageByTemplate(threat));
         threatMessage.setPatternName(codeName);
+        //threatMessage.setCallbackFilter(getCallbackFilter());
         threatMessage.setExciter(getExciter());
 
         return threatMessage;
@@ -122,7 +123,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         // if 'exciter' was not specified exactly, try to find it in current locale
         if(msgExciter == null)
         {
-            String localizedName = String.format("%s.%s", codeName, FIELD_NAME_EXCITER);
+            String localizedName = String.format("%s.%s", codeName, PatternField.EXCITER);
             msgExciter = AppLocale.getInstance().getLocalizedString(localizedName);
         }
 
@@ -130,19 +131,19 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     }
 
 
-    private String getMessageByPattern(Threat threat)
+    private String getMessageByTemplate(Threat threat)
     {
         // if 'message' was not specified exactly, try to find it in current locale
         if(msg == null)
         {
-            String localizedName = String.format("%s.%s", codeName, FIELD_NAME_MSG);
+            String localizedName = String.format("%s.%s", codeName, PatternField.MESSAGE);
             msg = AppLocale.getInstance().getLocalizedString(localizedName);
         }
 
         // ...if it still not specified, then it is not exists
         if(msg == null)
         {
-            LogModule.Warn("Field 'msg' SHOULD BE specified for "+codeName+" pattern.");
+            LogModule.Warn("Message SHOULD BE specified for "+codeName+" pattern.");
             return null;
         }
 
@@ -152,26 +153,26 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         IpInfo info = ip==null ? null : ip.getIpInfo();
 
         String stub = "[-]";
-        String ipAddr = ip==null ? stub : (ip.toString()==null ? stub : ip.toString());
-        String portNo = port==null ? stub : (port.toString()==null ? stub : port.toString());
-        String psPid  = process==null ? stub : process.getPid()+"";
-        String psName = process==null ? stub : (process.getName()==null ? stub : process.getName());
-        String orgName= info==null ? stub : (info.getOrgName()==null ? stub : info.getOrgName());
-        String geo = info==null ? stub : (info.getGeo()==null ? stub : info.getGeo());
-        String hstName= info==null ? stub : (info.getHostName()==null ? stub : info.getHostName());
+        String ipAddr   = ip==null ?      stub : (ip.toString()==null      ? stub : ip.toString());
+        String portNo   = port==null ?    stub : (port.toString()==null    ? stub : port.toString());
+        String psPid    = process==null ? stub : (process.getPid()==null   ? stub : process.getPid()+"");
+        String psName   = process==null ? stub : (process.getName()==null  ? stub : process.getName());
+        String orgName  = info==null ?    stub : (info.getOrgName()==null  ? stub : info.getOrgName());
+        String hstName  = info==null ?    stub : (info.getHostName()==null ? stub : info.getHostName());
+        String geoPos   = info==null ?    stub : (info.getGeoInfo());
         String leakSize = getPrettyDataSize(threat.getLeakSizeBytes());
         String actTime  = String.format("%.1f", threat.getActivityTime());
 
         return msg
-                .replaceAll("\\{dstip\\}", ipAddr)
-                .replaceAll("\\{srcport\\}", portNo)
-                .replaceAll("\\{pid\\}", psPid)
-                .replaceAll("\\{processname\\}", psName)
-                .replaceAll("\\{orgname\\}", orgName)
-                .replaceAll("\\{geo\\}", geo)
-                .replaceAll("\\{hostname\\}", hstName)
-                .replaceAll("\\{leaksize\\}", leakSize)
-                .replaceAll("\\{timesec\\}", actTime);
+                .replaceAll("\\{"+PatternField.DST_IP+"\\}",       ipAddr)
+                .replaceAll("\\{"+PatternField.SRC_PORT+"\\}",     portNo)
+                .replaceAll("\\{"+PatternField.PID+"\\}",          psPid)
+                .replaceAll("\\{"+PatternField.PROCESS_NAME+"\\}", psName)
+                .replaceAll("\\{"+PatternField.ORG_NAME+"\\}",     orgName)
+                .replaceAll("\\{"+PatternField.HOST_NAME+"\\}",    hstName)
+                .replaceAll("\\{geo\\}",                           geoPos)
+                .replaceAll("\\{leaksize\\}",                      leakSize)
+                .replaceAll("\\{timesec\\}",                       actTime);
     }
 
 
@@ -252,7 +253,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         if(this.pid != null)
         {
-            String pid = String.valueOf(process == null ? -1 : process.getPid());
+            String pid = process==null ? null : (process.getPid()==null ? null : process.getPid().toString());
             return isStringMatches(this.pid, pid);
         }
         return true;
@@ -261,10 +262,10 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
     private boolean matchDstIp(IPv4Address ip)
     {
-        if(this.dstip != null)
+        if(this.dstIp != null)
         {
-            String ipAddress = String.valueOf(ip == null ? null : ip.toString());
-            return isStringMatches(this.dstip, ipAddress);
+            String ipAddress = ip==null ? null : ip.toString();
+            return isStringMatches(this.dstIp, ipAddress);
         }
         return true;
     }
@@ -272,10 +273,10 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
     private boolean matchSrcPort(Port port)
     {
-        if(this.srcport != null)
+        if(this.srcPort != null)
         {
-            String portNum = String.valueOf(port == null ? null : port.toString());
-            return isStringMatches(this.srcport, portNum);
+            String portNum = port==null ? null : port.toString();
+            return isStringMatches(this.srcPort, portNum);
         }
         return true;
     }
@@ -285,7 +286,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         if(this.orgName != null)
         {
-            String orgName = String.valueOf(info == null ? null : info.getOrgName());
+            String orgName = info==null ? null : info.getOrgName();
             return isStringMatches(this.orgName, orgName);
         }
         return true;
@@ -294,10 +295,10 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
     private boolean matchHostname(IpInfo info)
     {
-        if(this.hostname != null)
+        if(this.hostName != null)
         {
-            String host = String.valueOf(info == null ? null : info.getHostName());
-            return isStringMatches(this.hostname, host);
+            String host = info==null ? null : info.getHostName();
+            return isStringMatches(this.hostName, host);
         }
         return true;
     }
@@ -305,7 +306,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
 
     private boolean isStringMatches(String pattern, String str)
     {
-        assert pattern!=null : "Pattern cant be NULL!";
+        assert pattern!=null : "Pattern can`t be NULL!";
 
         if(str == null)
             return false;
@@ -356,7 +357,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
             dependencies += th.codeName;
 
         return priority+" - "+codeName+": "+
-                pid+" | "+ dstip +" | "+ srcport +" | "+processName+" | "+hostname+" | "+ orgName +
+                pid+" | "+ dstIp +" | "+ srcPort +" | "+processName+" | "+ hostName +" | "+ orgName +
                 " | "+msg+" | Dependencies: "+dependencies;
     }
 

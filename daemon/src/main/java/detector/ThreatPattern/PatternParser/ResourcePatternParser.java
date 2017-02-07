@@ -3,6 +3,7 @@ package detector.ThreatPattern.PatternParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import detector.LogModule;
 import detector.ThreatPattern.ThreatPattern;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
@@ -29,14 +30,18 @@ public abstract class ResourcePatternParser
     * Fills passed List with parsed objects
     * */
     public abstract void fillListWithData(List<ThreatPattern> listToFill);
+
+
     /*
     * Returns the implementation-specific stream reader
     * */
-    protected abstract InputStream getPatternDataInputStream();
+    @NotNull
+    protected abstract InputStream getContentInputStream();
 
 
-    protected String getResourceData()
+    protected String getResourceContent()
     {
+        assert resourceData != null : "Resource contents is empty somehow!";
         return resourceData;
     }
 
@@ -45,7 +50,7 @@ public abstract class ResourcePatternParser
     * Creates new java object from json object
     * */
     @Nullable
-    protected final ThreatPattern createPattern(JSONObject jPattern)
+    protected ThreatPattern createPattern(JSONObject jPattern)
     {
         try
         {
@@ -67,7 +72,7 @@ public abstract class ResourcePatternParser
     * */
     private final void readDataFromResource()
     {
-        InputStream inputStream = getPatternDataInputStream();
+        InputStream inputStream = getContentInputStream();
         Reader reader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
         BufferedReader resReader = new BufferedReader(reader);
         StringBuilder resData = new StringBuilder();

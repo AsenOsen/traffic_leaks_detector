@@ -1,18 +1,20 @@
 package detector.OsProcessesPrimitives;
 
+import org.jetbrains.annotations.Nullable;
+
 /*********************************************************************
 * This class describes a system process which interacts with network
 * *******************************************************************/
 public class NetProcess {
 
-    private int pid;
+    private Integer pid;
     private String name;
     //private String file;
 
 
     public NetProcess(int pid)
     {
-        this.pid = pid>-1 ? pid : -1;
+        this.pid = pid>-1 ? new Integer(pid) : null;
     }
 
 
@@ -23,13 +25,15 @@ public class NetProcess {
     }
 
 
+    @Nullable
     public String getName()
     {
-        return name==null ? "<undefined_process>" : name;
+        return name;
     }
 
 
-    public int getPid()
+    @Nullable
+    public Integer getPid()
     {
         return pid;
     }
@@ -55,6 +59,10 @@ public class NetProcess {
     @Override
     public String toString()
     {
-        return String.format("[%s|pid=%s]", getName(), getPid());
+        return String.format(
+                "[%s|pid=%s]",
+                (name==null ? "<undefined_process>" : name),
+                (pid==null ? "<pid_undefined>":pid)
+        );
     }
 }

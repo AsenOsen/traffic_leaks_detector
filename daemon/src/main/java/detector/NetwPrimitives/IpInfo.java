@@ -1,6 +1,8 @@
 package detector.NetwPrimitives;
 
 import detector.LogModule;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,21 +67,24 @@ public class IpInfo {
     }
 
 
+    @Nullable
     public String getOrgName()
     {
         return orgName;
     }
 
 
+    @Nullable
     public String getHostName()
     {
         return hostname;
     }
 
 
-    public String getGeo()
+    @NotNull
+    public String getGeoInfo()
     {
-        return String.format("%s,%s,%s", country, region, city);
+        return String.format("%s, %s, %s", country, region, city);
     }
 
 

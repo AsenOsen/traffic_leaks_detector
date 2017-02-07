@@ -16,7 +16,7 @@ public class PatternsDbParser extends ResourcePatternParser
 {
 
     @Override
-    protected InputStream getPatternDataInputStream()
+    protected InputStream getContentInputStream()
     {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream resStream = classLoader.getResourceAsStream("patterns.json");
@@ -33,14 +33,15 @@ public class PatternsDbParser extends ResourcePatternParser
     {
         try
         {
-            JSONObject json = new JSONObject(getResourceData());
+            JSONObject json = new JSONObject(getResourceContent());
             for (String name : json.keySet())
             {
                 JSONObject jsonPattern = json.getJSONObject(name);
-                jsonPattern.put("name", name);
-                if(!jsonPattern.has("priority"))
+                jsonPattern.put(PatternField.NAME, name);
+
+                if(!jsonPattern.has(PatternField.PRIORITY))
                 {
-                    LogModule.Err(new Exception("Each pattern in patterns db SHOULD have a 'priority' field!"));
+                    LogModule.Warn("Each traffic pattern SHOULD have a priority!");
                     continue;
                 }
 
