@@ -40,6 +40,26 @@ namespace gui
         }
 
 
+        public void IgnoreAlertTemporary(ServerMessage alert)
+        {
+            if (!isConnectionAlive())
+                Connect();
+
+            String callback = alert.getCallbackFilter();
+            SendServerInput("ignore_tmp\n" + callback + "\n");
+        }
+
+
+        public void IgnoreAlertPermanently(ServerMessage alert)
+        {
+            if (!isConnectionAlive())
+                Connect();
+
+            String callback = alert.getCallbackFilter();
+            SendServerInput("ignore_permanent\n" + callback + "\n");
+        }
+
+
         private bool isConnectionAlive()
         {
             return 

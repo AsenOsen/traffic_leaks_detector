@@ -221,7 +221,18 @@ namespace gui
 
             // "Ignore" button
             if (e.ColumnIndex == ignoreBtnColumn.Index)
-                MessageBox.Show("We will!", "Surely", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            {
+                DialogResult result = MessageBox.Show(
+                    "Would you like ignore this alert PERMANENTLY?", "Ignore alert", 
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+                if(result == DialogResult.Yes)
+                    client.IgnoreAlertPermanently((ServerMessage)e.Model);
+                else
+                if(result == DialogResult.No)
+                    client.IgnoreAlertTemporary((ServerMessage)e.Model);
+            }
+                
         }
 
         private void objectListView1_BeforeSorting(object sender, BeforeSortingEventArgs e)

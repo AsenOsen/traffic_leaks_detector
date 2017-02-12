@@ -13,7 +13,7 @@ namespace gui
     /*
      * 
      * Contract:
-     * This class DO NOT return NULL-values.
+     * This class DOES NOT return NULL-values.
      * 
      */
     public class ServerMessage
@@ -26,6 +26,7 @@ namespace gui
         String messageFull = null;
         String messageExciter = null;
         String messageType = null;
+        String callbackFilter = null;
         DateTime time = DateTime.Now;
         // end of json object
 
@@ -66,6 +67,12 @@ namespace gui
         }
 
 
+        public String getCallbackFilter()
+        {
+            return callbackFilter == null ? "" : callbackFilter;
+        }
+
+
         public DateTime getMessageTime()
         {
             return time;
@@ -88,7 +95,7 @@ namespace gui
             catch (JsonException)
             {
                 // broken json format
-                Debug.Assert(false, "Brokem JSON!");
+                Debug.Assert(false, "Broken JSON!");
                 return;
             }
 
@@ -99,6 +106,8 @@ namespace gui
                 this.messageExciter = msgObject["message_exciter"].ToString().Trim();
             if (msgObject["message_type"] != null)
                 this.messageType = msgObject["message_type"].ToString().Trim();
+            if (msgObject["callback_filter"] != null)
+                this.callbackFilter = msgObject["callback_filter"].ToString().Trim();
             if (msgObject["utc_timestamp"] != null)
                 this.time = getMessageBirthTime(msgObject["utc_timestamp"].ToString().Trim());
 

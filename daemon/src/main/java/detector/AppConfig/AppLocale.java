@@ -1,6 +1,7 @@
 package detector.AppConfig;
 
 import detector.LogModule;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,6 +29,7 @@ public class AppLocale
     }
 
 
+    @Nullable
     public String getLocalizedString(String id)
     {
         assert id != null;

@@ -1,9 +1,11 @@
 package detector.Data;
 
 import detector.LogModule;
-import detector.ThreatPattern.PatternParser.FiltersDbParser;
+import detector.ThreatPattern.Pattern.ThreatPattern;
+import detector.ThreatPattern.PatternStorage.AppFiltersStorage;
+import detector.ThreatPattern.PatternStorage.UserFiltersStorage;
 import detector.ThreatPattern.Threat;
-import detector.ThreatPattern.ThreatPattern;
+import detector.UserFiltersManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -39,6 +41,19 @@ public class HarmlessPatternsDB
     }
 
 
+    public void addTemporaryPattern(ThreatPattern pattern)
+    {
+        harmlessList.add(pattern);
+    }
+
+
+    public void addPermanentPattern(ThreatPattern pattern)
+    {
+        addTemporaryPattern(pattern);
+        UserFiltersManager.getInstance().addUserFilter(pattern);
+    }
+
+
     private HarmlessPatternsDB()
     {
 
@@ -50,14 +65,20 @@ public class HarmlessPatternsDB
     * */
     public void loadDB()
     {
-        new FiltersDbParser().fillListWithData(harmlessList);
+        List<ThreatPattern> appFilters = new AppFiltersStorage().getItems();
+        List<ThreatPattern> userFilters = new UserFiltersStorage().getItems();
+
+        harmlessList.addAll(appFilters);
+        harmlessList.addAll(userFilters);
 
         /*for(ThreatPattern pattern : harmlessList) {
             pattern.loadDependencies();
             System.out.println("==="+pattern);
         }*/
 
-        LogModule.Log("Filter patterns database loaded "+harmlessList.size()+" patterns.");
+        LogModule.Log("Filter patterns database loaded: "+
+                harmlessList.size()+" filters found. "+
+                "Amongst them "+userFilters.size()+" custom user`s filters.");
     }
 
 }

@@ -1,0 +1,13 @@
+{
+  "patterns" : [ {
+    "pattern" : {
+      "processname" : "^\\Qfilezilla.exe\\E$"
+    },
+    "related-patterns" : "^\\QPattern.Process\\E$",
+    "relation-mode" : "all"
+  }, {
+    "pattern" : { },
+    "related-patterns" : "^\\QPattern.StdApp.Browser.Google\\E$",
+    "relation-mode" : "all"
+  } ]
+}

@@ -1,19 +1,26 @@
-package detector.ThreatPattern.PatternParser;
+package detector.ThreatPattern.PatternStorage;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import detector.LogModule;
-import detector.ThreatPattern.ThreatPattern;
+import detector.ThreatPattern.Pattern.HarmlessPattern;
+import detector.ThreatPattern.Pattern.ThreatPattern;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /*************************************************************
  * Parses white-list(filters) traffic patterns
  * from some outer resource
 ************************************************************/
-public class FiltersDbParser extends ResourcePatternParser
+public class AppFiltersStorage extends ReadableStorage
 {
     private enum Mode{
         MODE_PARANOID,  // minimum filters
@@ -25,6 +32,63 @@ public class FiltersDbParser extends ResourcePatternParser
     private Mode filterMode = null;
 
 
+    @NotNull
+    @Override
+    public List<ThreatPattern> getItems()
+    {
+        List<ThreatPattern> items = new ArrayList<ThreatPattern>();
+
+        try
+        {
+            JSONObject json = new JSONObject(getRawContent());
+            if(json.has("ignores"))
+            {
+                JSONArray ignores = json.getJSONArray("ignores");
+                for(int i=0; i<ignores.length(); i++)
+                {
+                    JSONObject jPattern = ignores.getJSONObject(i);
+                    ThreatPattern threatPattern = createPattern(jPattern);
+                    threatPattern.validate();
+                    if(threatPattern != null)
+                        items.add(threatPattern);
+                }
+            }
+            else {
+                LogModule.Warn("'Ignores' root tag not found for ignores-data-file!");
+            }
+        }
+        catch (JSONException e)
+        {
+            LogModule.Warn("Filter file JSON format error: "+e.getMessage());
+        }
+
+        return items;
+    }
+
+
+    @Nullable
+    public ThreatPattern createPattern(JSONObject jObject)
+    {
+        assert jObject != null;
+
+        try
+        {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+            mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+            ThreatPattern ThreatPattern = mapper.readValue(jObject.toString(), HarmlessPattern.class);
+            return ThreatPattern;
+        }
+        catch (Exception e)
+        {
+            LogModule.Warn("Error while creating filter pattern from storable: "+e.getMessage());
+            return null;
+        }
+    }
+    
+
+    @Nullable
     @Override
     protected InputStream getContentInputStream()
     {
@@ -83,34 +147,6 @@ public class FiltersDbParser extends ResourcePatternParser
         }
 
         return String.format("ignores.%s.json", name);
-    }
-
-
-    @Override
-    public void fillListWithData(List<ThreatPattern> listToFill)
-    {
-        try
-        {
-            JSONObject json = new JSONObject(getResourceContent());
-            if(json.has("ignores"))
-            {
-                JSONArray ignores = json.getJSONArray("ignores");
-                for(int i=0; i<ignores.length(); i++)
-                {
-                    JSONObject ignorePattern = ignores.getJSONObject(i);
-                    ThreatPattern threatPattern = createPattern(ignorePattern);
-                    if(threatPattern != null)
-                        listToFill.add(threatPattern);
-                }
-            }
-            else {
-                LogModule.Warn("'Ignores' root tag not found for ignores-data-file!");
-            }
-        }
-        catch (JSONException e)
-        {
-            LogModule.Warn("Filter file JSON format error: "+e.getMessage());
-        }
     }
 
 }

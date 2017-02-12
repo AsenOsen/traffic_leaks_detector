@@ -1,9 +1,9 @@
 package detector.Data;
 
 import detector.LogModule;
-import detector.ThreatPattern.PatternParser.PatternsDbParser;
+import detector.ThreatPattern.Pattern.ThreatPattern;
+import detector.ThreatPattern.PatternStorage.AppPatternsStorage;
 import detector.ThreatPattern.Threat;
-import detector.ThreatPattern.ThreatPattern;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -67,7 +67,7 @@ public class KnownPatternsDB
     * */
     public void loadDB()
     {
-        new PatternsDbParser().fillListWithData(priorityPatternList);
+        priorityPatternList.addAll(new AppPatternsStorage().getItems());
         Collections.sort(priorityPatternList);
 
         for(ThreatPattern pattern : priorityPatternList)

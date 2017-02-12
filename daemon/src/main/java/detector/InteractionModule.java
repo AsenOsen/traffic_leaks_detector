@@ -1,9 +1,14 @@
 package detector;
 
+import detector.Data.HarmlessPatternsDB;
+import detector.ThreatPattern.Pattern.ThreatPattern;
 import detector.ThreatPattern.ThreatMessage;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
@@ -131,7 +136,7 @@ public class InteractionModule
             // if some error happened, it because server is down and it SHOULD be restarted
             catch (IOException e)
             {
-                LogModule.Warn("Server is down.");
+                LogModule.Warn("Server went down.");
                 try
                 {
                     Thread.sleep(1000);
@@ -146,7 +151,6 @@ public class InteractionModule
     private boolean HandleClientQuery()
     {
         String command = getClientLine();
-        String param;
 
         if(isQuitCommand(command))
         {
@@ -156,7 +160,7 @@ public class InteractionModule
         else
         if(command.equalsIgnoreCase("test"))
         {
-            param = getClientLine();
+            String param = getClientLine();
             sendToClient("Tested. Param: " + param);
         }
         else
@@ -169,6 +173,30 @@ public class InteractionModule
                 LogModule.Log("Message was sent to client through socket.");
             }else{
                 sendToClient(SERVER_PROTOCOL_NO_MSG);
+            }
+        }
+        else
+        if(command.equalsIgnoreCase("ignore_tmp"))
+        {
+            LogModule.Log("Client asked for temporary ignorance.");
+            String filter = getClientLine();
+            ThreatPattern pattern = UserFiltersManager.getInstance().fromStorable(filter);
+            if(pattern!=null)
+            {
+                HarmlessPatternsDB.getInstance().addTemporaryPattern(pattern);
+                LogModule.Log("New temporary filter was added: "+pattern);
+            }
+        }
+        else
+        if(command.equalsIgnoreCase("ignore_permanent"))
+        {
+            LogModule.Log("Client asked for permanent ignorance.");
+            String filter = getClientLine();
+            ThreatPattern pattern = UserFiltersManager.getInstance().fromStorable(filter);
+            if(pattern!=null)
+            {
+                HarmlessPatternsDB.getInstance().addPermanentPattern(pattern);
+                LogModule.Log("New permanent filter was added: "+pattern);
             }
         }
         else

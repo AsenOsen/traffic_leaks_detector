@@ -1,154 +1,251 @@
 {
-  "Pattern.Undefined":{
-    "comment": "This is default pattern. Using in ThreatPattern.java. Normally, this situation is impossible.",
-    "priority": 0
-  },
+  "patterns": [
+    {
+      "name": "Pattern.Undefined",
+      "pattern":{
+        "differ-by":"processname"
+      },
+      "comment": "This is default pattern. Using in ThreatPattern.java. Normally, this situation is impossible.",
+      "priority": 0
+    },
 
-  "Pattern.Port":{
-    "srcport": "^[0-9]{1,5}$",
-    "priority": 10
-  },
+    {
+      "name": "Pattern.Port",
+      "pattern": {
+        "srcport": "^[0-9]{1,5}$",
+        "differ-by":"srcport"
+      },
+      "priority": 10
+    },
 
-  "Pattern.IP":{
-    "dstip": "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$",
-    "priority": 20
-  },
+    {
+      "name": "Pattern.IP",
+      "pattern": {
+        "dstip": "^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$",
+        "differ-by":"dstip"
+      },
+      "priority": 20
+    },
 
-  "Pattern.Process":{
-    "pid": "^[0-9]{1,5}$",
-    "priority": 30
-  },
+    {
+      "name": "Pattern.Process",
+      "pattern": {
+        "pid": "^[0-9]{1,5}$",
+        "differ-by":"processname"
+      },
+      "priority": 30
+    },
 
-  "Pattern.Yandex":{
-    "comment": "data leaks somewhere to Yandex internals",
-    "orgname": ".*yandex.*",
-    "priority": 40
-  },
+    {
+      "name": "Pattern.Yandex",
+      "pattern": {
+        "orgname": ".*yandex.*",
+        "differ-by":"processname"
+      },
+      "comment": "data leaks somewhere to Yandex internals",
+      "priority": 40
+    },
 
-  "Pattern.Google":{
-    "comment": "data leaks somewhere to Google internals",
-    "orgname": ".*google.*",
-    "priority": 40
-  },
+    {
+      "name": "Pattern.Google",
+      "pattern": {
+        "orgname": ".*google.*",
+        "differ-by":"processname"
+      },
+      "comment": "data leaks somewhere to Google internals",
+      "priority": 40
+    },
 
-  "Pattern.Amazon":{
-    "orgname": ".*Amazon\\.Com.*",
-    "priority": 40
-  },
+    {
+      "name": "Pattern.Amazon",
+      "pattern": {
+        "orgname": ".*Amazon\\.Com.*",
+        "differ-by":"processname"
+      },
+      "priority": 40
+    },
 
-  "Pattern.VKontakte":{
-    "orgname": ".*VKontakte\\sLtd.*",
-    "priority": 40
-  },
+    {
+      "name": "Pattern.VKontakte",
+      "pattern": {
+        "orgname": ".*VKontakte\\sLtd.*",
+        "differ-by":"processname"
+      },
+      "priority": 40
+    },
 
-  "Pattern.Mailru":{
-    "orgname": ".*Mail\\.Ru.*",
-    "priority": 40
-  },
+    {
+      "name": "Pattern.Mailru",
+      "pattern": {
+        "orgname": ".*Mail\\.Ru.*",
+        "differ-by":"processname"
+      },
+      "priority": 40
+    },
 
-  "Pattern.StdApps": {
-    "comment": "This pattern is also used by selector UnusualAppSelector.java",
-    "related-patterns": "Pattern\\.StdApp\\.([a-zA-Z0-9]+)$",
-    "relation-mode": "any",
-    "priority": 41
-  },
+    {
+      "name": "Pattern.StdApps",
+      "pattern": {
+        "differ-by":"processname"
+      },
+      "comment": "This pattern is also used by selector UnusualAppSelector.java",
+      "related-patterns": "Pattern\\.StdApp\\.([a-zA-Z0-9]+)$",
+      "relation-mode": "any",
+      "priority": 41
+    },
 
-  "Pattern.Amazon.Aws":{
-    "related-patterns": "Pattern\\.(Amazon)",
-    "relation-mode": "all",
-    "hostname": ".*amazonaws.*",
-    "orgname": ".*Amazon\\.Com.*",
-    "priority": 50
-  },
+    {
+      "name": "Pattern.Amazon.Aws",
+      "pattern": {
+        "hostname": ".*amazonaws.*",
+        "orgname": ".*Amazon\\.Com.*",
+        "differ-by":"processname"
+      },
+      "related-patterns": "Pattern\\.(Amazon)",
+      "relation-mode": "all",
+      "priority": 50
+    },
 
-  "Pattern.Google.Cache":{
-    "related-patterns": "Pattern\\.(Google)",
-    "relation-mode": "all",
-    "hostname": ".*cache.google.com$",
-    "priority": 50
-  },
+    {
+      "name": "Pattern.Google.Cache",
+      "pattern": {
+        "hostname": ".*cache.google.com$",
+        "differ-by":"processname"
+      },
+      "related-patterns": "Pattern\\.(Google)",
+      "relation-mode": "all",
+      "priority": 50
+    },
 
-  "Pattern.StdApp.Skype":{
-    "processname": ".*skype.*"  ,
-    "priority": 51
-  },
+    {
+      "name": "Pattern.StdApp.Skype",
+      "pattern": {
+        "processname": ".*skype.*",
+        "differ-by":"processname"
+      },
+      "priority": 51
+    },
 
-  "Pattern.StdApp.Steam":{
-    "processname" : ".*steam.*"  ,
-    "orgname": ".*Valve\\sCorporation$",
-    "priority": 51
-  },
+    {
+      "name": "Pattern.StdApp.Steam",
+      "pattern": {
+        "processname": ".*steam.*",
+        "orgname": ".*Valve\\sCorporation$",
+        "differ-by":"processname"
+      },
+      "priority": 51
+    },
 
-  "Pattern.StdApp.TorrentClient":{
-    "processname" : ".*torrent.*"  ,
-    "priority": 51
-  },
+    {
+      "name": "Pattern.StdApp.TorrentClient",
+      "pattern": {
+        "processname": ".*torrent.*",
+        "differ-by":"processname"
+      },
+      "priority": 51
+    },
 
-  "Pattern.StdApp.Dropbox":{
-    "processname" : "^dropbox.*"  ,
-    "orgname": ".*Dropbox.*",
-    "priority": 51
-  },
+    {
+      "name": "Pattern.StdApp.Dropbox",
+      "pattern": {
+        "processname": "^dropbox.*",
+        "orgname": ".*Dropbox.*",
+        "differ-by":"processname"
+      },
+      "priority": 51
+    },
 
-  "Pattern.StdApp.Browser":{
-    "comment": "Only top-5 known browsers",
-    "processname" : ".*(chrome|firefox|mozilla|iexplore|opera|safari|browser|iceweasel|amigo).*"  ,
-    "priority": 51
-  },
+    {
+      "name": "Pattern.StdApp.Browser",
+      "pattern": {
+        "processname": ".*(chrome|firefox|mozilla|iexplore|opera|safari|browser|iceweasel|amigo).*",
+        "differ-by": "dstip,hostname"
+      },
+      "comment": "Only top-5 known browsers",
+      "priority": 51
+    },
 
-  "Pattern.Microsoft.Updates":{
-    "processname": "^svchost.*",
-    "orgname": ".*Microsoft\\sCorporation.*",
-    "priority": 52
-  },
+    {
+      "name": "Pattern.Microsoft.Updates",
+      "pattern": {
+        "processname": "^svchost.*",
+        "orgname": ".*Microsoft\\sCorporation.*",
+        "differ-by": "processname"
+      },
+      "priority": 52
+    },
 
-  "Pattern.StdApp.Browser.Google":{
-    "related-patterns": "Pattern\\.((StdApp\\.Browser)|(Google))",
-    "relation-mode": "all",
-    "priority": 60
-  },
+    {
+      "name": "Pattern.StdApp.Browser.Google",
+      "pattern": {
 
-  "Pattern.StdApp.Browser.Yandex":{
-    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
-    "orgname": ".*yandex.*",
-    "priority": 60
-  },
+      },
+      "related-patterns": "Pattern\\.((StdApp\\.Browser)|(Google))",
+      "relation-mode": "all",
+      "priority": 60
+    },
 
-  "Pattern.StdApp.Browser.VKontakte":{
-    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
-    "relation-mode": "all",
-    "orgname": ".*VKontakte\\sLtd.*",
-    "priority": 60
-  },
+    {
+      "name": "Pattern.StdApp.Browser.Yandex",
+      "pattern": {
+        "orgname": ".*yandex.*"
+      },
+      "related-patterns": "Pattern\\.StdApp\\.(Browser)",
+      "priority": 60
+    },
 
-  "Pattern.StdApp.Browser.Yandex.Statica":{
-    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
-    "relation-mode": "all",
-    "hostname": ".*((st\\.kp)|(static)|(front\\.kp)).*yandex.*",
-    "orgname": ".*yandex\\sllc$",
-    "priority": 70
-  },
+    {
+      "name": "Pattern.StdApp.Browser.VKontakte",
+      "pattern": {
+        "orgname": ".*VKontakte\\sLtd.*"
+      },
+      "related-patterns": "Pattern\\.StdApp\\.(Browser)",
+      "relation-mode": "all",
+      "priority": 60
+    },
 
-  "Pattern.StdApp.Browser.Metrica.Yandex":{
-    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
-    "relation-mode": "all",
-    "hostname": ".*(bs|mc|awaps|metrica).*yandex.*",
-    "orgname": ".*yandex\\sllc$",
-    "priority": 70
-  },
+    {
+      "name": "Pattern.StdApp.Browser.Yandex.Statica",
+      "pattern": {
+        "hostname": ".*((st\\.kp)|(static)|(front\\.kp)).*yandex.*",
+        "orgname": ".*yandex\\sllc$"
+      },
+      "related-patterns": "Pattern\\.StdApp\\.(Browser)",
+      "relation-mode": "all",
+      "priority": 70
+    },
 
-  "Pattern.StdApp.Browser.Metrica.Mailru":{
-    "related-patterns": "Pattern\\.StdApp\\.(Browser)",
-    "relation-mode": "all",
-    "hostname": ".*((smailru\\.net)|(mail\\.ru))$",
-    "orgname": ".*Mail\\.Ru.*",
-    "priority": 70
-  },
+    {
+      "name": "Pattern.StdApp.Browser.Metrica.Yandex",
+      "pattern": {
+        "hostname": ".*(bs|mc|awaps|metrica).*yandex.*",
+        "orgname": ".*yandex\\sllc$"
+      },
+      "related-patterns": "Pattern\\.StdApp\\.(Browser)",
+      "relation-mode": "all",
+      "priority": 70
+    },
 
-  "Pattern.StdApp.Browser.Amazon.Aws":{
-    "related-patterns": "Pattern\\.((StdApp\\.Browser)|(Amazon\\.Aws))",
-    "relation-mode": "all",
-    "priority": 70
-  }
+    {
+      "name": "Pattern.StdApp.Browser.Metrica.Mailru",
+      "pattern": {
+        "hostname": ".*((smailru\\.net)|(mail\\.ru))$",
+        "orgname": ".*Mail\\.Ru.*"
+      },
+      "related-patterns": "Pattern\\.StdApp\\.(Browser)",
+      "relation-mode": "all",
+      "priority": 70
+    },
 
+    {
+      "name": "Pattern.StdApp.Browser.Amazon.Aws",
+      "pattern": {
+
+      },
+      "related-patterns": "Pattern\\.((StdApp\\.Browser)|(Amazon\\.Aws))",
+      "relation-mode": "all",
+      "priority": 70
+    }
+
+  ]
 }

@@ -1,11 +1,10 @@
 package detector.NetwPrimitives.TrafficTable.TrafficSelectors;
 
 import detector.Data.HarmlessPatternsDB;
-import detector.LogModule;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficSelector;
+import detector.ThreatPattern.Pattern.ThreatPattern;
 import detector.ThreatPattern.Threat;
-import detector.ThreatPattern.ThreatPattern;
 
 /******************************************************************
  * Selects only those trafficFlows which ARE NOT in user white-list

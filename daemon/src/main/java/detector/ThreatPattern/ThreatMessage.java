@@ -2,6 +2,8 @@ package detector.ThreatPattern;
 
 import detector.AppConfig.AppLocale;
 import detector.LogModule;
+import detector.ThreatPattern.Pattern.ThreatPattern;
+import detector.UserFiltersManager;
 import org.json.JSONObject;
 
 import java.util.Calendar;
@@ -23,7 +25,7 @@ public class ThreatMessage
     private String userMessage;
     private String exciter;
     private String lowLvlMessage;
-    private String pattern;
+    private String callbackFilter;
     private long utcTimestamp;
 
 
@@ -39,12 +41,6 @@ public class ThreatMessage
     }
 
 
-    public void setPatternName(String patternCodeName)
-    {
-        this.pattern = patternCodeName;
-    }
-
-
     public void setMessage(String msg)
     {
         this.userMessage = msg;
@@ -54,6 +50,12 @@ public class ThreatMessage
     public void setExciter(String msg)
     {
         this.exciter = msg;
+    }
+
+
+    public void setCallbackFilter(ThreatPattern filter)
+    {
+        this.callbackFilter = UserFiltersManager.getInstance().toStorable(filter);
     }
 
 
@@ -69,6 +71,7 @@ public class ThreatMessage
         json.put("message_full", userMessage);
         json.put("message_exciter", exciter);
         json.put("message_type", getThreatType());
+        json.put("callback_filter", callbackFilter);
         json.put("utc_timestamp", utcTimestamp);
 
         LogModule.Log("Gui message: "+json.toString());

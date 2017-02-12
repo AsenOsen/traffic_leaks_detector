@@ -5,6 +5,7 @@ import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.OsProcessesPrimitives.NetProcess;
+import detector.ThreatPattern.Pattern.ThreatPattern;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
