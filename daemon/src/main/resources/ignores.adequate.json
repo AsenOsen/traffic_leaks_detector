@@ -3,14 +3,14 @@
   "ignores": [
 
     {
-      "name": "Ignore.Browser.Everything",
+      "name": "Ignore.App.Browser.Everything",
       "comment": "Ignore everything related to browser",
       "related-patterns": "Pattern\\.StdApp\\.Browser\\..*",
       "relation-mode": "all"
     },
 
     {
-      "name": "Ignore.StdApps.Everything",
+      "name": "Ignore.App.StdApps.Everything",
       "comment": "Ignore all standard apps`s traffic",
       "related-patterns": "Pattern\\.StdApps$",
       "relation-mode": "all"

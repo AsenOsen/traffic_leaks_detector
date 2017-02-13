@@ -1,8 +1,9 @@
 package detector;
 
-import detector.Data.HarmlessPatternsDB;
+import detector.AppData.HarmlessPatternsDB;
 import detector.ThreatPattern.Pattern.ThreatPattern;
 import detector.ThreatPattern.ThreatMessage;
+import detector.UserDataManagers.UserFiltersManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;

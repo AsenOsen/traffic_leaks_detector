@@ -9,10 +9,12 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.List;
 
-/**
- * Created by SAMSUNG on 12.02.2017.
- */
-public abstract class ReadableStorage
+/**********************************************
+ * Describes common logic of patterns storage
+ * which belongs to Application.
+ * Storage is Resources.
+ *********************************************/
+public abstract class PatternStorage
 {
 
     /*

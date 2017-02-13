@@ -6,7 +6,7 @@ public class LogModule {
 
 
     /*
-    * Errors after which application cannot executes anymore
+    * Errors after which application cannot recover
     * */
     public static synchronized void Err(Throwable error)
     {
@@ -21,18 +21,17 @@ public class LogModule {
             error.printStackTrace();
         }
 
-        // During debug mode:
         System.exit(-1);
     }
 
 
     /*
-    * Errors, but after which application can save working state
+    * Errors after which application can keep working state
     * */
     public static synchronized void Warn(String warning)
     {
         assert warning!=null && warning.length()>0 : "Warning message cant be empty!";
-        System.out.println("=== WARNING(!) "+warning);
+        System.out.println("=== WARNING(!) "+warning+" === "+getErrorPlace());
     }
 
 
@@ -45,6 +44,27 @@ public class LogModule {
         String time = new Date(System.currentTimeMillis()).toString();
         String msg = String.format(fmt, time, log);
         System.out.println(msg);
+    }
+
+
+    /*
+    * Searches the log`s action initiator
+    * */
+    private static synchronized String getErrorPlace()
+    {
+        try
+        {
+            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            // 0 - getStackTract()
+            // 1 - getErrorPlace()
+            // 2 - Log|Warn|Err
+            // 3 - our <initiator>
+            return stackTrace[3].toString();
+        }
+        catch (Exception e) {
+            assert false;
+            return "Initiator undefined";
+        }
     }
 
 }

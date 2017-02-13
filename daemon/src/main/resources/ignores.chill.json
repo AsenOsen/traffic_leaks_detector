@@ -3,7 +3,7 @@
   "ignores": [
 
     {
-      "name": "Ignore.All",
+      "name": "Ignore.App.All",
       "comment": "Ignore all except Ip, Port, Process and Undefined",
       "related-patterns": "^(?!Pattern\\.((Port)|(IP)|(Process)|(Undefined))).*$",
       "relation-mode": "any"

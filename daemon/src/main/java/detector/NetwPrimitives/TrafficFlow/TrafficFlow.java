@@ -1,6 +1,6 @@
 package detector.NetwPrimitives.TrafficFlow;
 
-import detector.Data.ProcessInfoDB;
+import detector.AppData.ProcessInfoDB;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Packet;
 import detector.NetwPrimitives.Port;

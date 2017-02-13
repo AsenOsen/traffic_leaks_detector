@@ -1,11 +1,11 @@
-package detector.Data;
+package detector.AppData;
 
 import detector.LogModule;
 import detector.ThreatPattern.Pattern.ThreatPattern;
 import detector.ThreatPattern.PatternStorage.AppFiltersStorage;
 import detector.ThreatPattern.PatternStorage.UserFiltersStorage;
 import detector.ThreatPattern.Threat;
-import detector.UserFiltersManager;
+import detector.UserDataManagers.UserFiltersManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
  ************************************************/
 public class HarmlessPatternsDB
 {
-    private static final HarmlessPatternsDB ourInstance =
+    private static final HarmlessPatternsDB instance =
             new HarmlessPatternsDB();
     private volatile List<ThreatPattern> harmlessList =
             new ArrayList<ThreatPattern>();
@@ -25,7 +25,7 @@ public class HarmlessPatternsDB
 
     public static HarmlessPatternsDB getInstance()
     {
-        return ourInstance;
+        return instance;
     }
 
 
@@ -54,12 +54,6 @@ public class HarmlessPatternsDB
     }
 
 
-    private HarmlessPatternsDB()
-    {
-
-    }
-
-
     /*
     * Loads the patterns database from some outer-resource
     * */
@@ -79,6 +73,12 @@ public class HarmlessPatternsDB
         LogModule.Log("Filter patterns database loaded: "+
                 harmlessList.size()+" filters found. "+
                 "Amongst them "+userFilters.size()+" custom user`s filters.");
+    }
+
+
+    private HarmlessPatternsDB()
+    {
+
     }
 
 }

@@ -1,5 +1,6 @@
-package detector.Data;
+package detector.AppData;
 
+import detector.LogModule;
 import detector.NetwPrimitives.Port;
 import detector.OsProcessesPrimitives.NetProcess;
 import detector.OsProcessesPrimitives.ProcessTable;
@@ -58,6 +59,10 @@ public class ProcessInfoDB
             else
             if(isWindows)
                 platformProcessTable = new WindowsProcessTableExtractor();
+        }
+        else
+        {
+            LogModule.Warn("System property 'os.name' is not set in JRE!");
         }
     }
 

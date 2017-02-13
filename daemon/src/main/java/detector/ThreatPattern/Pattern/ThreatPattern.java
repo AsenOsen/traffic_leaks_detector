@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import detector.AppConfig.AppLocale;
-import detector.Data.KnownPatternsDB;
+import detector.AppData.KnownPatternsDB;
 import detector.LogModule;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
@@ -18,11 +18,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 
 /********************************************************
  * Describes concrete known traffic pattern.
- * Patterns store in JSON format
  *******************************************************/
 @JsonIgnoreProperties({PatternField.COMMENT})
 public class ThreatPattern implements Comparable<ThreatPattern>
@@ -105,17 +105,21 @@ public class ThreatPattern implements Comparable<ThreatPattern>
     {
         ThreatMessage threatMessage = new ThreatMessage();
         threatMessage.setMessage(getMessageByTemplate(threat));
-        threatMessage.setCallbackFilter(getCallbackFilter(threat));
+        threatMessage.setCallbackFilter(getUniquePatternByThreat(threat));
         threatMessage.setExciter(getExciter());
 
         return threatMessage;
     }
 
 
-    private ThreatPattern getCallbackFilter(Threat threat)
+    /*
+    * Generates the unique threat-pattern by concrete threat.
+    * */
+    private ThreatPattern getUniquePatternByThreat(Threat threat)
     {
         ThreatPattern filter = new ThreatPattern();
-        filter.relatedPatterns = "^"+ Pattern.quote(codeName) +"$";
+        filter.codeName = String.format("Ignore.Custom.%s", codeName);
+        filter.relatedPatterns = String.format("^%s$", Pattern.quote(codeName));
         filter.relationMode = "all";
 
         if(this.traffic != null)
@@ -252,7 +256,12 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         if(str == null)
             return false;
 
-        return str.matches("(?i)"+pattern);
+        try {
+            return str.matches("(?i)" + pattern);
+        }catch (PatternSyntaxException e){
+            LogModule.Warn("Error in regexp syntax: "+e.getMessage());
+            return false;
+        }
         /*Matcher matcher = pattern.matcher(str);
         return matcher.find();*/
     }

@@ -3,7 +3,7 @@ package detector.ThreatPattern;
 import detector.AppConfig.AppLocale;
 import detector.LogModule;
 import detector.ThreatPattern.Pattern.ThreatPattern;
-import detector.UserFiltersManager;
+import detector.UserDataManagers.UserFiltersManager;
 import org.json.JSONObject;
 
 import java.util.Calendar;

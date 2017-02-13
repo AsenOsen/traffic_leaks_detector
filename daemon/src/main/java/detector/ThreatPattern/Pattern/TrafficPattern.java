@@ -2,6 +2,7 @@ package detector.ThreatPattern.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import detector.LogModule;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.IpInfo;
 import detector.NetwPrimitives.Port;
@@ -10,10 +11,13 @@ import detector.ThreatPattern.PatternStorage.PatternField;
 import detector.ThreatPattern.Threat;
 
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
-/**
- * Created by SAMSUNG on 11.02.2017.
- */
+/*******************************************************
+ * This is a sub-object of ThreatPattern,
+ * which contains entities and logic
+ * related to traffic only.
+ ******************************************************/
 @JsonIgnoreProperties(ignoreUnknown = false)
 public class TrafficPattern
 {
@@ -76,23 +80,23 @@ public class TrafficPattern
             IPv4Address ip = threat.getForeignIp();
             IpInfo info = ip==null ? null : ip.getIpInfo();
 
-            String ipAddr   = ip.toString();
+            String ipAddr   = ip == null    ? null : ip.toString();
             String psName   = process==null ? null : (process.getName()==null  ? null : process.getName());
             String orgName  = info==null    ? null : (info.getOrgName()==null  ? null : info.getOrgName());
             String hstName  = info==null    ? null : (info.getHostName()==null ? null : info.getHostName());
 
             // uniqueness by destination IP
             if (differByFields.indexOf(PatternField.TrafficField.DST_IP) != -1 && ipAddr != null)
-                uniquePattern.dstIp = "^" + Pattern.quote(ipAddr) + "$";
+                uniquePattern.dstIp = String.format("^%s$", Pattern.quote(ipAddr));
             // uniqueness by porcess name
             if (differByFields.indexOf(PatternField.TrafficField.PROCESS_NAME) != -1 && psName != null)
-                uniquePattern.processName = "^" + Pattern.quote(psName) + "$";
+                uniquePattern.processName = String.format("^%s$", Pattern.quote(psName));
             // uniqueness by org name
             if (differByFields.indexOf(PatternField.TrafficField.ORG_NAME) != -1 && orgName != null)
-                uniquePattern.orgName = "^" + Pattern.quote(orgName) + "$";
+                uniquePattern.orgName = "^" + String.format("^%s$", Pattern.quote(orgName));
             // uniqueness by host name
             if (differByFields.indexOf(PatternField.TrafficField.HOST_NAME) != -1 && hostName != null)
-                uniquePattern.hostName = "^" + Pattern.quote(hstName) + "$";
+                uniquePattern.hostName = String.format("^%s$", Pattern.quote(hstName));
         }
 
         return uniquePattern;
@@ -172,7 +176,12 @@ public class TrafficPattern
         if(str == null)
             return false;
 
-        return str.matches("(?i)"+pattern);
+        try {
+            return str.matches("(?i)" + pattern);
+        }catch (PatternSyntaxException e){
+            LogModule.Warn("Error in regexp syntax: "+e.getMessage());
+            return false;
+        }
         /*Matcher matcher = pattern.matcher(str);
         return matcher.find();*/
     }

@@ -63,13 +63,13 @@ public class ProcessTable
 
 
     /*
-    * Removes killed processes and closed ports from data-table
+    * Removes garbage: killed processes and closed ports from data-table
     * */
     public void clearObsoleteData(float obsoleteTimeSec)
     {
-        // remove all obsolete processes` data from table
         Iterator<Map.Entry<Port, Long>> timeTableItr = timeTable.entrySet().iterator();
         Long now = System.currentTimeMillis();
+
         while(timeTableItr.hasNext())
         {
             Map.Entry<Port, Long> entry = timeTableItr.next();

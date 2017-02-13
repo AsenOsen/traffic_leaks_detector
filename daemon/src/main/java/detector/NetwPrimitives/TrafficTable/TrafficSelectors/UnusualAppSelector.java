@@ -1,6 +1,6 @@
 package detector.NetwPrimitives.TrafficTable.TrafficSelectors;
 
-import detector.Data.KnownPatternsDB;
+import detector.AppData.KnownPatternsDB;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficSelector;
 import detector.ThreatPattern.Pattern.ThreatPattern;

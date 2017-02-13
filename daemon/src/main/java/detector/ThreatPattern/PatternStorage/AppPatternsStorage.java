@@ -19,7 +19,7 @@ import java.util.List;
  * Parses all known traffic patterns
  * from some outer resource
  ************************************************************/
-public class AppPatternsStorage extends ReadableStorage
+public class AppPatternsStorage extends PatternStorage
 {
     @NotNull
     @Override

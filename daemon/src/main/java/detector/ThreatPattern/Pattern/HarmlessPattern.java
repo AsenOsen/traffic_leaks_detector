@@ -2,9 +2,11 @@ package detector.ThreatPattern.Pattern;
 
 import detector.LogModule;
 
-/**
- * Created by SAMSUNG on 11.02.2017.
- */
+/*******************************************************
+ * This is a modification of original ThreatPattern
+ * which DOES NOT have any structural differences,
+ * but MAY have different behaviour.
+ ******************************************************/
 public class HarmlessPattern extends ThreatPattern
 {
 

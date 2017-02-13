@@ -20,7 +20,7 @@ import java.util.List;
  * Parses white-list(filters) traffic patterns
  * from some outer resource
 ************************************************************/
-public class AppFiltersStorage extends ReadableStorage
+public class AppFiltersStorage extends PatternStorage
 {
     private enum Mode{
         MODE_PARANOID,  // minimum filters

@@ -1,4 +1,4 @@
-package detector.Data;
+package detector.AppData;
 
 import detector.LogModule;
 import detector.ThreatPattern.Pattern.ThreatPattern;
@@ -17,9 +17,9 @@ import java.util.*;
 public class KnownPatternsDB
 {
 
-    private static final KnownPatternsDB ourInstance =
+    private static final KnownPatternsDB instance =
             new KnownPatternsDB();
-    private volatile List<ThreatPattern> priorityPatternList =  // Patters stores strictly in ordered way!
+    private volatile List<ThreatPattern> priorityPatternList =  // Patterns store STRICTLY in ordered way!
             new ArrayList<ThreatPattern>();
     private volatile HashMap<String, ThreatPattern> patternDB =
             new HashMap<String, ThreatPattern>();
@@ -27,7 +27,7 @@ public class KnownPatternsDB
 
     public static KnownPatternsDB getInstance()
     {
-        return ourInstance;
+        return instance;
     }
 
 
@@ -56,15 +56,9 @@ public class KnownPatternsDB
     }
 
 
-    private KnownPatternsDB()
-    {
-
-    }
-
-
     /*
-    * Loads the patterns database from some outer-resource
-    * */
+   * Loads the patterns database from some outer-resource
+   * */
     public void loadDB()
     {
         priorityPatternList.addAll(new AppPatternsStorage().getItems());
@@ -79,6 +73,12 @@ public class KnownPatternsDB
         }*/
 
         LogModule.Log("Threats patterns database loaded "+priorityPatternList.size()+" patterns.");
+    }
+
+
+    private KnownPatternsDB()
+    {
+
     }
 
 }

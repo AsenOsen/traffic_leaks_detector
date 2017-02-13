@@ -15,13 +15,13 @@ public class InterceptorThread extends Thread
 
         while (true)
         {
-            if(NetInterceptor.getInstance().isDown())
-                NetInterceptor.getInstance().startInterceptor();
+            NetInterceptor.getInstance().makeActive();
 
             try
             {
                 Thread.sleep(5000);
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e) {
 
             }
 

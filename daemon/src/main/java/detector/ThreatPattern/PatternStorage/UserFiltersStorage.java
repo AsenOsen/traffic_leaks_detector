@@ -1,7 +1,7 @@
 package detector.ThreatPattern.PatternStorage;
 
 import detector.ThreatPattern.Pattern.ThreatPattern;
-import detector.UserFiltersManager;
+import detector.UserDataManagers.UserFiltersManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by SAMSUNG on 12.02.2017.
  */
-public class UserFiltersStorage extends ReadableStorage
+public class UserFiltersStorage extends PatternStorage
 {
 
     @Nullable
@@ -20,6 +20,7 @@ public class UserFiltersStorage extends ReadableStorage
     {
         return null;
     }
+
 
     @NotNull
     @Override

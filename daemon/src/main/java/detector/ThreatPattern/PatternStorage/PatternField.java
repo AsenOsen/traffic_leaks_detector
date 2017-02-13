@@ -1,8 +1,8 @@
 package detector.ThreatPattern.PatternStorage;
 
-/*************************************
- * Describes the fields which
- ************************************/
+/*******************************************
+ * Describes the fields of storable format
+ ******************************************/
 public class PatternField
 {
 

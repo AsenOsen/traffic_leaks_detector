@@ -1,13 +1,22 @@
 {
-  "patterns" : [ {
-    "pattern" : {
-      "processname" : "^\\Qfilezilla.exe\\E$"
-    },
-    "related-patterns" : "^\\QPattern.Process\\E$",
+  "filters" : [ {
+    "pattern" : { },
+    "name" : "Ignore.Custom.Pattern.StdApp.Browser.Metrica.Mailru",
+    "related-patterns" : "^\\QPattern.StdApp.Browser.Metrica.Mailru\\E$",
     "relation-mode" : "all"
   }, {
-    "pattern" : { },
-    "related-patterns" : "^\\QPattern.StdApp.Browser.Google\\E$",
+    "pattern" : {
+      "dstip" : "^\\Q109.232.105.57\\E$"
+    },
+    "name" : "Ignore.Custom.Pattern.StdApp.Browser",
+    "related-patterns" : "^\\QPattern.StdApp.Browser\\E$",
+    "relation-mode" : "all"
+  }, {
+    "pattern" : {
+      "dstip" : "^\\Q93.175.31.140\\E$"
+    },
+    "name" : "Ignore.Custom.Pattern.StdApp.Browser",
+    "related-patterns" : "^\\QPattern.StdApp.Browser\\E$",
     "relation-mode" : "all"
   } ]
 }

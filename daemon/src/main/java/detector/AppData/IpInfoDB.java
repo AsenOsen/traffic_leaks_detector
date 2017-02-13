@@ -1,4 +1,4 @@
-package detector.Data;
+package detector.AppData;
 
 
 import detector.LogModule;
@@ -41,7 +41,7 @@ public class IpInfoDB {
         if(!ipTable.containsKey(ip))
             findInfo(ip);
 
-        // return the info value from table after while
+        // return the info value from table after a while
         return ipTable.get(ip);
     }
 
@@ -57,6 +57,7 @@ public class IpInfoDB {
         {
             URL url = new URL(String.format(IP_INFO_SOURCE, ip));
             URLConnection connection = url.openConnection();
+            connection.setConnectTimeout(5000);
             connection.connect();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
@@ -65,6 +66,7 @@ public class IpInfoDB {
         }
         catch (MalformedURLException e)
         {
+            // url is incorrect - this is impossible naturally
             assert false;
         }
         catch (IOException e)

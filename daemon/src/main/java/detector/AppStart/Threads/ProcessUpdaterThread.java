@@ -1,6 +1,6 @@
 package detector.AppStart.Threads;
 
-import detector.Data.ProcessInfoDB;
+import detector.AppData.ProcessInfoDB;
 import detector.LogModule;
 
 /**************************************************

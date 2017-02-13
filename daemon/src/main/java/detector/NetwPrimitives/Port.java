@@ -1,7 +1,7 @@
 package detector.NetwPrimitives;
 
 
-import detector.Data.ProcessInfoDB;
+import detector.AppData.ProcessInfoDB;
 import detector.OsProcessesPrimitives.NetProcess;
 
 

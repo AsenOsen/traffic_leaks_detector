@@ -1,12 +1,13 @@
 package detector.ThreatPattern;
 
-import detector.Data.KnownPatternsDB;
+import detector.AppData.KnownPatternsDB;
 import detector.NetwPrimitives.IPv4Address;
 import detector.NetwPrimitives.Port;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.OsProcessesPrimitives.NetProcess;
 import detector.ThreatPattern.Pattern.ThreatPattern;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 
@@ -52,25 +53,32 @@ public class Threat
     }
 
 
+    @Nullable
     public NetProcess getInitiatorProcess()
     {
         return thrProcess;
     }
 
+
+    @Nullable
     public IPv4Address getForeignIp()
     {
         return thrIp;
     }
 
+
+    @Nullable
     public Port getInitiatorPort()
     {
         return thrPort;
     }
 
+
     public int getLeakSizeBytes()
     {
         return thrTraffic.getBytes();
     }
+
 
     public float getActivityTime()
     {

@@ -5,8 +5,8 @@ import detector.AppStart.Threads.AnalyzerThread;
 import detector.AppStart.Threads.CommunicationThread;
 import detector.AppStart.Threads.InterceptorThread;
 import detector.AppStart.Threads.ProcessUpdaterThread;
-import detector.Data.HarmlessPatternsDB;
-import detector.Data.KnownPatternsDB;
+import detector.AppData.HarmlessPatternsDB;
+import detector.AppData.KnownPatternsDB;
 import detector.LogModule;
 
 

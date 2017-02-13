@@ -8,14 +8,13 @@ import org.apache.commons.cli.*;
  ***********************************************/
 public class AppConfig
 {
-    private static AppConfig ourInstance = new AppConfig();
-
+    private static AppConfig instance = new AppConfig();
     private CommandLine params = null;
 
 
     public static AppConfig getInstance()
     {
-        return ourInstance;
+        return instance;
     }
 
 
@@ -95,7 +94,7 @@ public class AppConfig
                 "Sets the maximum allowed traffic per 10 seconds.\nValue: amount of bytes"
         );
         maxTrafficOpt.setRequired(false);
-        locOpt.setType(int.class);
+        locOpt.setType(Integer.class);
         options.addOption(maxTrafficOpt);
 
         // minimal leak size
@@ -105,7 +104,7 @@ public class AppConfig
                 "Sets the minimum size which will be considered as a leak.\nValue: amount of bytes"
         );
         minLeakOpt.setRequired(false);
-        locOpt.setType(int.class);
+        locOpt.setType(Integer.class);
         options.addOption(minLeakOpt);
 
 

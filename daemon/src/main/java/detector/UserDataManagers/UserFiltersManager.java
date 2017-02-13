@@ -1,15 +1,14 @@
-package detector;
+package detector.UserDataManagers;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import detector.LogModule;
 import detector.ThreatPattern.Pattern.HarmlessPattern;
 import detector.ThreatPattern.Pattern.ThreatPattern;
 import org.jetbrains.annotations.NotNull;
@@ -23,9 +22,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by SAMSUNG on 12.02.2017.
- */
+/*******************************************
+ * Manages the user`s filter storage.
+ ******************************************/
 public class UserFiltersManager
 {
     private static UserFiltersManager instance = new UserFiltersManager();
@@ -47,19 +46,18 @@ public class UserFiltersManager
     public List<ThreatPattern> getUserFilters()
     {
         List<ThreatPattern> items = new ArrayList<ThreatPattern>();
-
-        String userData = getUserDataContents();
+        String parseData = getUserDataContents();
 
         // no user data was found
-        if(userData == null)
+        if(parseData == null)
             return items;
 
         try
         {
-            JSONObject json = new JSONObject(userData);
-            if(json.has("patterns"))
+            JSONObject json = new JSONObject(parseData);
+            if(json.has("filters"))
             {
-                JSONArray patterns = json.getJSONArray("patterns");
+                JSONArray patterns = json.getJSONArray("filters");
                 for(int i=0; i<patterns.length(); i++)
                 {
                     JSONObject jObject = patterns.getJSONObject(i);
@@ -70,7 +68,7 @@ public class UserFiltersManager
                 }
             }
             else {
-                LogModule.Warn("'patterns' root tag not found for user data file!");
+                LogModule.Warn("'filters' root tag not found for user data file!");
             }
         }
         catch (JSONException e)
@@ -86,11 +84,14 @@ public class UserFiltersManager
     {
         List<ThreatPattern> userFilters = getUserFilters();
         userFilters.add(pattern);
-        saveAllFiltersToFile(userFilters);
+        updateUserFilters(userFilters);
     }
 
 
-    private void saveAllFiltersToFile(List<ThreatPattern> filters)
+    /*
+    * Creates storable object from filters array
+    * */
+    private void updateUserFilters(List<ThreatPattern> filters)
     {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -100,7 +101,7 @@ public class UserFiltersManager
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode root = factory.objectNode();
         ArrayNode patternsNode = root.arrayNode();
-        root.set("patterns", patternsNode);
+        root.set("filters", patternsNode);
 
         for(ThreatPattern filter : filters)
         {
@@ -109,7 +110,6 @@ public class UserFiltersManager
         }
 
         String contents = null;
-
         try
         {
             contents = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
@@ -123,6 +123,9 @@ public class UserFiltersManager
     }
 
 
+    /*
+    * Saves storable object to file as string
+    * */
     private void updateUserFileContents(String contents)
     {
         File dataFile = getDataFile();
@@ -139,13 +142,20 @@ public class UserFiltersManager
             fileWriter.close();
             LogModule.Log("User`s file with filters '"+dataFile.getAbsolutePath()+"' was successfully updated!");
         }
-        catch (IOException e)
-        {
+        catch (SecurityException e) {
+            LogModule.Warn("Could not get access to '"+dataFile.getAbsolutePath()+"'! No rights to write!");
+        }
+        catch (IOException e) {
             LogModule.Warn("Could not close user`s filter file after writing: "+e.getMessage());
         }
     }
 
 
+    /*
+    * Converts ThreatPattern object to storable object,
+    * which is appropriate for user storage format
+    * */
+    @Nullable
     public String toStorable(ThreatPattern pattern)
     {
         ObjectMapper mapper = new ObjectMapper();
@@ -167,6 +177,11 @@ public class UserFiltersManager
     }
 
 
+    /*
+    * Creates the ThreatPattern obhect from storable string
+    * relying on the format which is appropriate for user storage format
+    * */
+    @Nullable
     public ThreatPattern fromStorable(String storable)
     {
         assert storable != null;
@@ -177,7 +192,7 @@ public class UserFiltersManager
             mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
             mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
 
-            HarmlessPattern harmlessPattern = mapper.readValue(storable, HarmlessPattern.class);
+            ThreatPattern harmlessPattern = mapper.readValue(storable, HarmlessPattern.class);
             return harmlessPattern;
         }
         catch (Exception e)
@@ -187,14 +202,17 @@ public class UserFiltersManager
         }
     }
 
-
+    @Nullable
     private File getDataFile()
     {
         String workingDir = System.getProperty("user.dir", null);
 
-        assert workingDir!=null;
+        assert workingDir != null;
         if(workingDir == null)
+        {
+            LogModule.Warn("System property 'user.dir' is not set in JRE!");
             return null;
+        }
 
        return new File(workingDir + File.separator + "ignores.user.json");
     }
@@ -204,21 +222,22 @@ public class UserFiltersManager
     private InputStream getContentInputStream()
     {
         File userFiltersFile = getDataFile();
-
-        // if user file do not exists yet:
         if(userFiltersFile==null)
             return null;
 
         InputStream stream = null;
+
         try
         {
-            LogModule.Log("Trying to read user`s filters file: "+userFiltersFile.getAbsolutePath());
+            LogModule.Log("Trying to open user`s filters file: " + userFiltersFile.getAbsolutePath());
             stream = new FileInputStream(userFiltersFile);
-            LogModule.Log("Reading is successful! User file was found.");
+            LogModule.Log("User file was found! Opening is successful! ");
         }
-        catch (FileNotFoundException e)
-        {
+        catch (FileNotFoundException e) {
             LogModule.Log("User`s filters file was not found.");
+        }
+        catch (SecurityException e) {
+            LogModule.Warn("Could not get access to '"+userFiltersFile.getAbsolutePath()+"'! No rights to read!");
         }
 
         return stream;
@@ -229,8 +248,6 @@ public class UserFiltersManager
     protected String getUserDataContents()
     {
         InputStream inputStream = getContentInputStream();
-
-        // user data file do not exists
         if(inputStream==null)
             return null;
 
@@ -244,18 +261,17 @@ public class UserFiltersManager
             while((line = resReader.readLine()) != null)
                 resData.append(line);
         }
-        catch (IOException e)
-        {
-            LogModule.Warn("Error read patterns resource: "+e.getMessage());
+        catch (IOException e) {
+            LogModule.Warn("Error reading patterns resource: "+e.getMessage());
             return null;
         }
 
-
-        try {
+        try
+        {
             resReader.close();
             reader.close();
-        } catch (IOException e)
-        {
+        }
+        catch (IOException e) {
             LogModule.Warn("Could not close user filters file after reading it: "+e.getMessage());
         }
 

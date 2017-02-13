@@ -84,6 +84,15 @@
     },
 
     {
+      "name": "Pattern.Microsoft",
+      "pattern": {
+        "orgname": ".*Microsoft\\sCorporation.*",
+        "differ-by": "processname"
+      },
+      "priority": 40
+    },
+
+    {
       "name": "Pattern.StdApps",
       "pattern": {
         "differ-by":"processname"

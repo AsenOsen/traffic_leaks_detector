@@ -1,6 +1,7 @@
 package detector.NetwPrimitives.TrafficTable.TrafficSelectors;
 
-import detector.Data.HarmlessPatternsDB;
+import detector.AppData.HarmlessPatternsDB;
+import detector.LogModule;
 import detector.NetwPrimitives.TrafficFlow.TrafficFlow;
 import detector.NetwPrimitives.TrafficTable.TrafficOperations.TrafficSelector;
 import detector.ThreatPattern.Pattern.ThreatPattern;
