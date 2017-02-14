@@ -141,6 +141,14 @@ namespace gui
         }
 
 
+        private void AppExit()
+        {
+            if (connectionThread != null && connectionThread.IsAlive)
+                connectionThread.Abort();
+            Application.Exit();
+        }
+
+
         private void AlertForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
@@ -187,9 +195,7 @@ namespace gui
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            if (connectionThread != null && connectionThread.IsAlive)
-                connectionThread.Abort();
-            Application.Exit();
+            AppExit();
         }
 
         private void showToolStripMenuItem_Click(object sender, EventArgs e)
@@ -268,6 +274,10 @@ namespace gui
             }
         }
 
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AppExit();
+        }
         
     }
 }

@@ -27,9 +27,8 @@ public class UnusualAppSelector implements TrafficSelector
         // if pattern is loaded, but traffic mismatches to it, than select this traffic
         else {
             Threat threat = new Threat(trafficFlow);
-            return  !knownApps.matches(threat);
+            return !knownApps.matches(threat);
         }
-
     }
 
 }

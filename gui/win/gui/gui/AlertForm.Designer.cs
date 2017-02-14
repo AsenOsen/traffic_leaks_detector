@@ -36,7 +36,7 @@
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.formHider = new System.Windows.Forms.Timer(this.components);
-            this.button1 = new System.Windows.Forms.Button();
+            this.clearBtn = new System.Windows.Forms.Button();
             this.errorLabel = new System.Windows.Forms.Label();
             this.alertsTable = new BrightIdeasSoftware.ObjectListView();
             this.msgColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -45,8 +45,13 @@
             this.leakTypeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.moreInfoColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.ignoreBtnColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.appMenu = new System.Windows.Forms.MenuStrip();
+            this.applicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.filtersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notifierMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertsTable)).BeginInit();
+            this.appMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // messageChecker
@@ -94,26 +99,28 @@
             this.formHider.Interval = 1;
             this.formHider.Tick += new System.EventHandler(this.formHider_Tick);
             // 
-            // button1
+            // clearBtn
             // 
-            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button1.Location = new System.Drawing.Point(547, 502);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(88, 31);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Clear!";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.clearBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.clearBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.clearBtn.Location = new System.Drawing.Point(1059, 596);
+            this.clearBtn.Name = "clearBtn";
+            this.clearBtn.Size = new System.Drawing.Size(88, 23);
+            this.clearBtn.TabIndex = 2;
+            this.clearBtn.Text = "Clear";
+            this.clearBtn.UseVisualStyleBackColor = true;
+            this.clearBtn.Click += new System.EventHandler(this.button1_Click);
             // 
             // errorLabel
             // 
             this.errorLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.errorLabel.AutoSize = true;
             this.errorLabel.BackColor = System.Drawing.Color.Red;
-            this.errorLabel.Location = new System.Drawing.Point(-3, 523);
+            this.errorLabel.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.errorLabel.Location = new System.Drawing.Point(-3, 598);
             this.errorLabel.Name = "errorLabel";
             this.errorLabel.Padding = new System.Windows.Forms.Padding(5);
-            this.errorLabel.Size = new System.Drawing.Size(374, 23);
+            this.errorLabel.Size = new System.Drawing.Size(439, 24);
             this.errorLabel.TabIndex = 3;
             this.errorLabel.Text = "Connection to server is lost. Can not monitor traffic. Restart the application..." +
     "";
@@ -145,14 +152,14 @@
             this.alertsTable.Cursor = System.Windows.Forms.Cursors.Default;
             this.alertsTable.Font = new System.Drawing.Font("Arial Unicode MS", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.alertsTable.HeaderWordWrap = true;
-            this.alertsTable.Location = new System.Drawing.Point(0, 0);
+            this.alertsTable.Location = new System.Drawing.Point(0, 27);
             this.alertsTable.Name = "alertsTable";
             this.alertsTable.RowHeight = 65;
             this.alertsTable.SelectAllOnControlA = false;
             this.alertsTable.SelectColumnsOnRightClick = false;
             this.alertsTable.SelectColumnsOnRightClickBehaviour = BrightIdeasSoftware.ObjectListView.ColumnSelectBehaviour.None;
             this.alertsTable.ShowItemToolTips = true;
-            this.alertsTable.Size = new System.Drawing.Size(1159, 483);
+            this.alertsTable.Size = new System.Drawing.Size(1147, 568);
             this.alertsTable.SortGroupItemsByPrimaryColumn = false;
             this.alertsTable.Sorting = System.Windows.Forms.SortOrder.Descending;
             this.alertsTable.TabIndex = 1;
@@ -251,13 +258,46 @@
             this.ignoreBtnColumn.UseFiltering = false;
             this.ignoreBtnColumn.Width = 100;
             // 
+            // appMenu
+            // 
+            this.appMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.applicationToolStripMenuItem,
+            this.filtersToolStripMenuItem});
+            this.appMenu.Location = new System.Drawing.Point(0, 0);
+            this.appMenu.Name = "appMenu";
+            this.appMenu.Size = new System.Drawing.Size(1148, 24);
+            this.appMenu.TabIndex = 5;
+            this.appMenu.Text = "menuStrip2";
+            // 
+            // applicationToolStripMenuItem
+            // 
+            this.applicationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exitToolStripMenuItem});
+            this.applicationToolStripMenuItem.Name = "applicationToolStripMenuItem";
+            this.applicationToolStripMenuItem.Size = new System.Drawing.Size(80, 20);
+            this.applicationToolStripMenuItem.Text = "Application";
+            // 
+            // filtersToolStripMenuItem
+            // 
+            this.filtersToolStripMenuItem.Name = "filtersToolStripMenuItem";
+            this.filtersToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.filtersToolStripMenuItem.Text = "Filters";
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
             // AlertForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1160, 545);
+            this.ClientSize = new System.Drawing.Size(1148, 620);
+            this.Controls.Add(this.appMenu);
             this.Controls.Add(this.errorLabel);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.clearBtn);
             this.Controls.Add(this.alertsTable);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AlertForm";
@@ -268,6 +308,8 @@
             this.Resize += new System.EventHandler(this.AlertForm_Resize);
             this.notifierMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.alertsTable)).EndInit();
+            this.appMenu.ResumeLayout(false);
+            this.appMenu.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -286,10 +328,14 @@
         private BrightIdeasSoftware.OLVColumn leakCauseColumn;
         private BrightIdeasSoftware.OLVColumn timeColumn;
         private BrightIdeasSoftware.OLVColumn ignoreBtnColumn;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button clearBtn;
         private BrightIdeasSoftware.OLVColumn moreInfoColumn;
         private System.Windows.Forms.Label errorLabel;
         private BrightIdeasSoftware.OLVColumn leakTypeColumn;
+        private System.Windows.Forms.MenuStrip appMenu;
+        private System.Windows.Forms.ToolStripMenuItem applicationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem filtersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
 

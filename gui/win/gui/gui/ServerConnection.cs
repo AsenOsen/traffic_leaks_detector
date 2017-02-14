@@ -16,9 +16,11 @@ namespace gui
         private const int SERVER_PORT_RANGE_END = 5010;
         private const string SERVER_PROTOCOL_START = ":::daemon_protocol_start:::";
         private const string SERVER_PROTOCOL_NO_MSG = ":::daemon_protocol_no_msg:::";
+        private const string SERVER_PROTOCOL_PINGED = ":::daemon_protocol_pinged:::";
         private const string SERVER_PROTOCOL_FINISH = ":::daemon_protocol_finish:::";
         private const string SERVER_PROTOCOL_UNK_CMD = ":::daemon_protocol_unknown_command:::";
         private readonly Encoding SERVER_CHARSET = Encoding.UTF8;
+        // end contract //
 
         private TcpClient client = new TcpClient();
 
@@ -31,9 +33,11 @@ namespace gui
 
         public String GetMessageFromServer()
         {
-            if (!isConnectionAlive())
-                Connect(); 
+            
+            if (!isConnectionEstablished())
+                Connect();
 
+            Ping();
             SendServerInput("get_alert\n");
             String serverMessage = ReadServerOutput().Replace(SERVER_PROTOCOL_NO_MSG, "").Trim();
             return serverMessage.Length == 0 ? null : serverMessage;
@@ -42,9 +46,10 @@ namespace gui
 
         public void IgnoreAlertTemporary(ServerMessage alert)
         {
-            if (!isConnectionAlive())
+            if (!isConnectionEstablished())
                 Connect();
 
+            Ping();
             String callback = alert.getCallbackFilter();
             SendServerInput("ignore_tmp\n" + callback + "\n");
         }
@@ -52,19 +57,31 @@ namespace gui
 
         public void IgnoreAlertPermanently(ServerMessage alert)
         {
-            if (!isConnectionAlive())
+            if (!isConnectionEstablished())
                 Connect();
 
+            Ping();
             String callback = alert.getCallbackFilter();
             SendServerInput("ignore_permanent\n" + callback + "\n");
         }
 
 
-        private bool isConnectionAlive()
+        private void Ping()
         {
-            return 
-                client != null && 
-                client.Connected && 
+            SendServerInput("ping\n");
+            string serverPong = ReadServerOutput().Trim();
+            bool ponged = serverPong.Contains(SERVER_PROTOCOL_PINGED);
+
+            if (!ponged)
+                Connect();
+        }
+
+
+        private bool isConnectionEstablished()
+        {
+            return
+                client != null &&
+                client.Connected &&
                 client.GetStream() != null;
         }
 
@@ -79,17 +96,18 @@ namespace gui
                     Disconnect();
 
                     // looking for available network application
-                    client = new TcpClient("localhost", port);
+                    client = new TcpClient("localhost", port);                   
                     if (!client.Connected)
                         continue;
 
-                    // wait for server`s respond
-                    Thread.Sleep(1000);
+                    // set the limit time of waiting data from server
+                    client.GetStream().ReadTimeout  = 1000;
+                    client.GetStream().WriteTimeout = 1000;
 
                     // checking if this application is our daemon
                     String protocolStart = ReadServerOutput().Trim().ToLower();
                     if (protocolStart.CompareTo(SERVER_PROTOCOL_START) == 0)
-                        break;                  
+                        break;               
                 }
                 catch (SocketException)
                 {
@@ -106,7 +124,7 @@ namespace gui
 
         private void Disconnect()
         {
-            if (client.Connected)
+            if (client != null && client.Connected)
             {
                 client.GetStream().Close();
                 client.Close();
@@ -116,24 +134,29 @@ namespace gui
 
         private String ReadServerOutput()
         {
-            if (!isConnectionAlive())
+            if (!isConnectionEstablished())
                 return "";
 
             StringBuilder output = new StringBuilder();
-            byte[] msgBuffer = new byte[1024];
+            const int BlockSize = 1024;
+            byte[] msgBuffer = new byte[BlockSize];
 
-            while (client.GetStream().DataAvailable)
+            while (true)
             {
                 try
                 {
-                    int read = client.GetStream().Read(msgBuffer, 0, 1024);
+                    int read = client.GetStream().Read(msgBuffer, 0, BlockSize);
                     output.Append(SERVER_CHARSET.GetString(msgBuffer, 0, read));
+
+                    if (read < BlockSize)
+                        break;
                 }
                 catch (Exception)
                 {
                     Disconnect();
+                    break;
                 }
-            } 
+            }
 
             String serverResult = output.ToString();
 
@@ -156,7 +179,7 @@ namespace gui
         {
             Debug.Assert(data != null, "Why to server`s stream was passed NULL?");
 
-            if (!isConnectionAlive())
+            if (!isConnectionEstablished())
                 return;
 
             try
@@ -167,6 +190,7 @@ namespace gui
             }
             catch (Exception)
             {
+                Debug.Assert(false, "Could not sent data to server");
                 Disconnect();
             }
         }

@@ -29,6 +29,7 @@ public class InteractionModule
     private static final int SERVER_PORT_RANGE_END = 5010;
     private static final String SERVER_PROTOCOL_START = ":::daemon_protocol_start:::";
     private static final String SERVER_PROTOCOL_NO_MSG = ":::daemon_protocol_no_msg:::";
+    private static final String SERVER_PROTOCOL_PINGED = ":::daemon_protocol_pinged:::";
     private static final String SERVER_PROTOCOL_FINISH = ":::daemon_protocol_finish:::";
     private static final String SERVER_PROTOCOL_UNK_CMD = ":::daemon_protocol_unknown_command:::";
     private static final Charset SERVER_CHARSET = Charset.forName("UTF-8");
@@ -80,8 +81,8 @@ public class InteractionModule
                 serverPort = port;
                 LogModule.Log("Communication server is successfully started on localhost:"+serverPort);
                 break;
-            } catch (IOException e)
-            {
+            }
+            catch (IOException e) {
                 error = e;
                 continue;
             }
@@ -149,6 +150,10 @@ public class InteractionModule
     }
 
 
+    /*
+    * Handles client`s message.
+    * Returns FALSE if client wants quit, FALSE - otherwise
+    * */
     private boolean HandleClientQuery()
     {
         String command = getClientLine();
@@ -159,10 +164,9 @@ public class InteractionModule
             return false;
         }
         else
-        if(command.equalsIgnoreCase("test"))
+        if(command.equalsIgnoreCase("ping"))
         {
-            String param = getClientLine();
-            sendToClient("Tested. Param: " + param);
+            sendToClient(SERVER_PROTOCOL_PINGED);
         }
         else
         if(command.equalsIgnoreCase("get_alert"))
@@ -216,8 +220,7 @@ public class InteractionModule
         {
             return clientInput.readLine().trim();
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return null;
         }
     }
@@ -228,9 +231,9 @@ public class InteractionModule
         try
         {
             clientOutput.write(data.getBytes(SERVER_CHARSET));
+            clientOutput.flush();
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return;
         }
     }

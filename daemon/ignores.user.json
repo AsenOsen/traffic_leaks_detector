@@ -18,5 +18,12 @@
     "name" : "Ignore.Custom.Pattern.StdApp.Browser",
     "related-patterns" : "^\\QPattern.StdApp.Browser\\E$",
     "relation-mode" : "all"
+  }, {
+    "pattern" : {
+      "dstip" : "^\\Q109.232.105.57\\E$"
+    },
+    "name" : "Ignore.Custom.Pattern.IP",
+    "related-patterns" : "^\\QPattern.IP\\E$",
+    "relation-mode" : "all"
   } ]
 }
