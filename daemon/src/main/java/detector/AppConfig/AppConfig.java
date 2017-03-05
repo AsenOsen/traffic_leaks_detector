@@ -40,7 +40,7 @@ public class AppConfig
         if(params.hasOption("mode"))
             System.setProperty("daemon.config.mode", params.getOptionValue("mode"));
         // locale
-        if(params.hasOption("gui"))
+        if(params.hasOption("locale"))
             System.setProperty("daemon.config.locale", params.getOptionValue("locale"));
         // analyzer
         if(params.hasOption("max-traffic-during-10-sec"))

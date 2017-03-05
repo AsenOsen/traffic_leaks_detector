@@ -150,69 +150,6 @@ public class InteractionModule
     }
 
 
-    /*
-    * Handles client`s message.
-    * Returns FALSE if client wants quit, FALSE - otherwise
-    * */
-    private boolean HandleClientQuery()
-    {
-        String command = getClientLine();
-
-        if(isQuitCommand(command))
-        {
-            sendToClient(SERVER_PROTOCOL_FINISH);
-            return false;
-        }
-        else
-        if(command.equalsIgnoreCase("ping"))
-        {
-            sendToClient(SERVER_PROTOCOL_PINGED);
-        }
-        else
-        if(command.equalsIgnoreCase("get_alert"))
-        {
-            ThreatMessage message = GUIModule.getInstance().takeMessageForGui();
-            if(message != null)
-            {
-                sendToClient(message.produceGuiMessage());
-                LogModule.Log("Message was sent to client through socket.");
-            }else{
-                sendToClient(SERVER_PROTOCOL_NO_MSG);
-            }
-        }
-        else
-        if(command.equalsIgnoreCase("ignore_tmp"))
-        {
-            LogModule.Log("Client asked for temporary ignorance.");
-            String filter = getClientLine();
-            ThreatPattern pattern = UserFiltersManager.getInstance().fromStorable(filter);
-            if(pattern!=null)
-            {
-                HarmlessPatternsDB.getInstance().addTemporaryPattern(pattern);
-                LogModule.Log("New temporary filter was added: "+pattern);
-            }
-        }
-        else
-        if(command.equalsIgnoreCase("ignore_permanent"))
-        {
-            LogModule.Log("Client asked for permanent ignorance.");
-            String filter = getClientLine();
-            ThreatPattern pattern = UserFiltersManager.getInstance().fromStorable(filter);
-            if(pattern!=null)
-            {
-                HarmlessPatternsDB.getInstance().addPermanentPattern(pattern);
-                LogModule.Log("New permanent filter was added: "+pattern);
-            }
-        }
-        else
-        {
-            sendToClient(SERVER_PROTOCOL_UNK_CMD);
-        }
-
-        return true;
-    }
-
-
     @Nullable
     private String getClientLine()
     {
@@ -239,8 +176,109 @@ public class InteractionModule
     }
 
 
-    private boolean isQuitCommand(String command)
+    /*
+    * Handles client`s message.
+    * Returns FALSE if client wants quit, FALSE - otherwise
+    * */
+    private boolean HandleClientQuery()
     {
-       return command==null || command.trim().length()==0 || command.equalsIgnoreCase("quit");
+        String command = getClientLine();
+        boolean isQuit = command==null ||
+                command.trim().length()==0 ||
+                command.equalsIgnoreCase("quit");
+
+        if(isQuit)
+        {
+            commandQuit();
+            return false;
+        }
+        else if(command.equalsIgnoreCase("ping"))
+        {
+            commandPing();
+        }
+        else if(command.equalsIgnoreCase("get_alert"))
+        {
+            commandGetAlert();
+        }
+        else if(command.equalsIgnoreCase("ignore_tmp"))
+        {
+            commandAddTmpIgnore();
+        }
+        else if(command.equalsIgnoreCase("ignore_permanent"))
+        {
+            commandAddPermanentIgnore();
+        }
+        else if(command.equalsIgnoreCase("grab_all_user_ignores"))
+        {
+
+        }
+        else if(command.equalsIgnoreCase("delete_ignore"))
+        {
+
+        }
+        else
+        {
+            commandUnknown();
+        }
+
+        return true;
     }
+
+
+    private void commandQuit()
+    {
+        sendToClient(SERVER_PROTOCOL_FINISH);
+    }
+
+
+    private void commandPing()
+    {
+        sendToClient(SERVER_PROTOCOL_PINGED);
+    }
+
+
+    private void commandGetAlert()
+    {
+        ThreatMessage message = GUIModule.getInstance().takeMessageForGui();
+        if(message != null)
+        {
+            sendToClient(message.produceGuiMessage());
+            LogModule.Log("Message was sent to client through socket.");
+        }else{
+            sendToClient(SERVER_PROTOCOL_NO_MSG);
+        }
+    }
+
+
+    private void commandAddTmpIgnore()
+    {
+        LogModule.Log("Client asked for temporary ignorance.");
+        String filter = getClientLine();
+        ThreatPattern pattern = UserFiltersManager.getInstance().fromStorable(filter);
+        if(pattern!=null)
+        {
+            HarmlessPatternsDB.getInstance().addTemporaryPattern(pattern);
+            LogModule.Log("New temporary filter was added: "+pattern);
+        }
+    }
+
+
+    private void commandAddPermanentIgnore()
+    {
+        LogModule.Log("Client asked for permanent ignorance.");
+        String filter = getClientLine();
+        ThreatPattern pattern = UserFiltersManager.getInstance().fromStorable(filter);
+        if(pattern!=null)
+        {
+            HarmlessPatternsDB.getInstance().addPermanentPattern(pattern);
+            LogModule.Log("New permanent filter was added: "+pattern);
+        }
+    }
+
+
+    private void commandUnknown()
+    {
+        sendToClient(SERVER_PROTOCOL_UNK_CMD);
+    }
+
 }
