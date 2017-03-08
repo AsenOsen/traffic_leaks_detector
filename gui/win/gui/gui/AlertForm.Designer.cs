@@ -47,8 +47,8 @@
             this.ignoreBtnColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.appMenu = new System.Windows.Forms.MenuStrip();
             this.applicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.filtersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notifierMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertsTable)).BeginInit();
             this.appMenu.SuspendLayout();
@@ -262,7 +262,7 @@
             // 
             this.appMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.applicationToolStripMenuItem,
-            this.filtersToolStripMenuItem});
+            this.helpToolStripMenuItem});
             this.appMenu.Location = new System.Drawing.Point(0, 0);
             this.appMenu.Name = "appMenu";
             this.appMenu.Size = new System.Drawing.Size(1148, 24);
@@ -277,18 +277,19 @@
             this.applicationToolStripMenuItem.Size = new System.Drawing.Size(80, 20);
             this.applicationToolStripMenuItem.Text = "Application";
             // 
-            // filtersToolStripMenuItem
-            // 
-            this.filtersToolStripMenuItem.Name = "filtersToolStripMenuItem";
-            this.filtersToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
-            this.filtersToolStripMenuItem.Text = "Filters";
-            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.feedbackToolStripMenuItem_Click);
             // 
             // AlertForm
             // 
@@ -303,7 +304,7 @@
             this.Name = "AlertForm";
             this.Opacity = 0.01D;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Traffic Leaks Logs";
+            this.Text = "Traffic Theft Logs";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AlertForm_FormClosing);
             this.Resize += new System.EventHandler(this.AlertForm_Resize);
             this.notifierMenu.ResumeLayout(false);
@@ -334,7 +335,7 @@
         private BrightIdeasSoftware.OLVColumn leakTypeColumn;
         private System.Windows.Forms.MenuStrip appMenu;
         private System.Windows.Forms.ToolStripMenuItem applicationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem filtersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }

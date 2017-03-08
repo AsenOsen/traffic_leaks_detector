@@ -278,6 +278,11 @@ namespace gui
         {
             AppExit();
         }
+
+        private void feedbackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://t.me/leaksdetector");
+        }
         
     }
 }

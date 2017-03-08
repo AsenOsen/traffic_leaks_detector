@@ -210,11 +210,11 @@ public class InteractionModule
         }
         else if(command.equalsIgnoreCase("grab_all_user_ignores"))
         {
-
+            commandGrabAllUserIgnores();
         }
-        else if(command.equalsIgnoreCase("delete_ignore"))
+        else if(command.equalsIgnoreCase("delete_user_ignore"))
         {
-
+            commandDeleteUserIgnore();
         }
         else
         {
@@ -273,6 +273,23 @@ public class InteractionModule
             HarmlessPatternsDB.getInstance().addPermanentPattern(pattern);
             LogModule.Log("New permanent filter was added: "+pattern);
         }
+    }
+
+
+    private void commandGrabAllUserIgnores()
+    {
+        String ignoresList = HarmlessPatternsDB.getInstance().compileIgnoresList();
+        if(ignoresList!=null && ignoresList.length()>0)
+        {
+            sendToClient(ignoresList);
+            LogModule.Log("All user filters were sent to client.");
+        }
+    }
+
+
+    private void commandDeleteUserIgnore()
+    {
+
     }
 
 

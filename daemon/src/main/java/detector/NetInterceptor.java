@@ -62,7 +62,7 @@ public class NetInterceptor implements PcapPacketHandler
         {
             LogModule.Log("Interceptor needs reconnection. Trying to reconfigure...");
             if (initChannels()) {
-                LogModule.Log("Interceptor configuring...");
+                LogModule.Log("Interceptor configuring: receivers and queue handler...");
                 startPacketReceivers();
                 startPacketQueueHandler();
                 LogModule.Log("Interceptor configuration complete.");

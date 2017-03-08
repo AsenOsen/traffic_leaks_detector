@@ -50,8 +50,7 @@ You can run it in CLI mode to be able watch leaks right in your terminal, or you
     _max allowed traffic per 10 seconds in bytes(100000 bytes by default)_ 
     + **--min-leak-size**=N  
      _minimal traffic size in bytes which would mean the leakage(32000 by default)_
-        
-__underline__
+
 ### Threat patterns description ###
 
 This tool uses own threat description config in JSON format.  
@@ -182,7 +181,14 @@ Socket interface works next way:
     list stores in a file by path, specified by "user.dir" java`s property,
     name of a file - **ignores.user.json**
     + *grab_all_user_ignores* - **not implemented yet**
-    + *delete_ignore* - **not implemented yet**
+    + *delete_user_ignore* - **not implemented yet**
     
 If daemons accepts the unknown command, it writes to socket 
 ":::daemon_protocol_unknown_command:::" 
+
+### Feedback ###
+
+You can get a feedback via couple variants:
+
+ + Telegram thread: https://t.me/leaksdetector
+ + Writing personally on Email: antochi.anton@ya.ru

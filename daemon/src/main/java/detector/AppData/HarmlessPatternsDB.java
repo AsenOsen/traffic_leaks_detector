@@ -21,6 +21,8 @@ public class HarmlessPatternsDB
             new HarmlessPatternsDB();
     private volatile List<ThreatPattern> harmlessList =
             new ArrayList<ThreatPattern>();
+    private List<ThreatPattern> injectedList =
+            new ArrayList<ThreatPattern>();
 
 
     public static HarmlessPatternsDB getInstance()
@@ -43,6 +45,7 @@ public class HarmlessPatternsDB
 
     public void addTemporaryPattern(ThreatPattern pattern)
     {
+        injectedList.add(pattern);
         harmlessList.add(pattern);
     }
 
@@ -51,6 +54,13 @@ public class HarmlessPatternsDB
     {
         addTemporaryPattern(pattern);
         UserFiltersManager.getInstance().addUserFilter(pattern);
+    }
+
+
+    @Nullable
+    public String compileIgnoresList()
+    {
+        return null;
     }
 
 
