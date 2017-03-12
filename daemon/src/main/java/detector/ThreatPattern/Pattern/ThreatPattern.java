@@ -96,7 +96,7 @@ public class ThreatPattern implements Comparable<ThreatPattern>
         assert threat!=null;
 
         return  matchRelations(threat) &&
-                traffic.matches(threat);
+                (traffic==null ? true : traffic.matches(threat));
     }
 
 

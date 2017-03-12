@@ -1,13 +1,17 @@
 package detector.AppStart;
 
 import detector.AppConfig.AppConfig;
+import detector.AppData.HarmlessPatternsDB;
+import detector.AppData.KnownPatternsDB;
 import detector.AppStart.Threads.AnalyzerThread;
 import detector.AppStart.Threads.CommunicationThread;
 import detector.AppStart.Threads.InterceptorThread;
 import detector.AppStart.Threads.ProcessUpdaterThread;
-import detector.AppData.HarmlessPatternsDB;
-import detector.AppData.KnownPatternsDB;
 import detector.LogModule;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 
 public class Main {

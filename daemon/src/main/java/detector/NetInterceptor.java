@@ -27,7 +27,7 @@ public class NetInterceptor implements PcapPacketHandler
 
     private static final NetInterceptor instance = new NetInterceptor();
 
-    private int discoveredInterfaces = 0;
+    private List<IPv4Address> localIps = new ArrayList<IPv4Address>();
     private List<Pcap> channels = null;
     private BlockingQueue<PcapPacket> packetQueue = new LinkedBlockingQueue<PcapPacket>();
 
@@ -130,12 +130,15 @@ public class NetInterceptor implements PcapPacketHandler
         // 1) network interfaces discovering : IP4 ONLY
         LogModule.Log("Looking for network interfaces...");
         List<PcapIf> interfaces = getInterfaces();
-        discoveredInterfaces = interfaces.size();
         if(interfaces == null || interfaces.size()==0) {
             LogModule.Warn("Could not find any interface! Try number: "+ connFailedAttempts +"...");
             connFailedAttempts++;
             return false;
         }
+        // 1.2) add each interface`s IP to consistency buffer
+        localIps.clear();
+        for(PcapIf iface : interfaces)
+            localIps.addAll(getInterfaceIPv4Address(iface));
 
         // 2) close each loop sniffing channel (in case of restarting)
         if(channels!=null) {
@@ -170,18 +173,26 @@ public class NetInterceptor implements PcapPacketHandler
     * */
     private boolean needRestart()
     {
-        return !isInterceptorActive || newInterfacesAppeared();
+        return !isInterceptorActive || interfacesChanged();
     }
 
 
     /*
-    * Checks the new network devices appeared after already settled interceptor
+    * Checks if network devices changed since last interceptor settling
     * */
-    private boolean newInterfacesAppeared()
+    private boolean interfacesChanged()
     {
-        int oldIfaceCount = discoveredInterfaces;
-        discoveredInterfaces = getInterfaces().size();
-        return oldIfaceCount != discoveredInterfaces;
+        // get current devices` IPs
+        List<IPv4Address> discoveredIps = new ArrayList<IPv4Address>();
+        for(PcapIf iface : getInterfaces())
+            discoveredIps.addAll(getInterfaceIPv4Address(iface));
+
+        // devices` config has changed
+        if(localIps.size() != discoveredIps.size())
+            return true;
+
+        boolean isIntegrityOk = localIps.containsAll(discoveredIps);
+        return !isIntegrityOk;
     }
 
 
@@ -325,21 +336,27 @@ public class NetInterceptor implements PcapPacketHandler
     {
         assert iface != null;
 
-        // Get the MAC of this channel
-        IPv4Address ipAddress = getInterfaceIPv4Address(iface);
-        if(ipAddress == null)
+        // Get the IPs of this channel
+        List<IPv4Address> ipAddresses = getInterfaceIPv4Address(iface);
+        if(ipAddresses.size() == 0)
         {
             LogModule.Err(new Exception("Cant get IPv4 address of interface!"));
             return null;
         }
 
-        String filter = String.format(
-                "(tcp or udp) and (src host %s) and (not dst net %s)",
-                ipAddress.toString(),
-                ipAddress.getNetwork()
-        );
+        StringBuilder filter = new StringBuilder();
 
-        return filter;
+        for(IPv4Address address : ipAddresses)
+        {
+            String l_filter = String.format(
+                    "((tcp or udp) and (src host %s) and (not dst net %s))",
+                    address.toString(),
+                    address.getNetwork()
+            );
+            filter.append(l_filter).append(" or ");
+        }
+
+        return filter.append("1=2").toString();
     }
 
 
@@ -377,21 +394,23 @@ public class NetInterceptor implements PcapPacketHandler
     /*
     * Extract the IPv4 address from concrete network interface if it has one
     * */
-    @Nullable
-    private IPv4Address getInterfaceIPv4Address(PcapIf iface)
+    private List<IPv4Address> getInterfaceIPv4Address(PcapIf iface)
     {
         assert iface != null;
+
+        List<IPv4Address> addresses = new ArrayList<IPv4Address>();
 
         for(PcapAddr addr : iface.getAddresses())
         {
             if(addr.getAddr().getFamily() == PcapSockAddr.AF_INET)
             {
                 byte[] address = addr.getAddr().getData();
-                return new IPv4Address(address);
+                addresses.add(new IPv4Address(address));
+                //return new IPv4Address(address);
             }
         }
 
-        return null;
+        return addresses;
     }
 
 }

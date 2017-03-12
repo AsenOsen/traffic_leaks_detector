@@ -279,9 +279,20 @@ namespace gui
             AppExit();
         }
 
-        private void feedbackToolStripMenuItem_Click(object sender, EventArgs e)
+
+        private void feedbackToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Process.Start("https://t.me/leaksdetector");
+        }
+
+        private void githubRepoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("http://bit.ly/leedetsec");
+        }
+
+        private void checkVersionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(client.getDaemonVersion(), "Daemon Version", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         
     }

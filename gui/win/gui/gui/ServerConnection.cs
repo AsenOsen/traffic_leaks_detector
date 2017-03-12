@@ -65,6 +65,16 @@ namespace gui
             SendServerInput("ignore_permanent\n" + callback + "\n");
         }
 
+        public String getDaemonVersion()
+        {
+            if (!isConnectionEstablished())
+                Connect();
+
+            Ping();
+            SendServerInput("get_info\n");
+            String serverMessage = ReadServerOutput().Trim();
+            return serverMessage.Length == 0 ? null : serverMessage;
+        }
 
         private void Ping()
         {

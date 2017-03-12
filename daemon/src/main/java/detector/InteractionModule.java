@@ -1,5 +1,6 @@
 package detector;
 
+import detector.AppConfig.AppInfo;
 import detector.AppData.HarmlessPatternsDB;
 import detector.ThreatPattern.Pattern.ThreatPattern;
 import detector.ThreatPattern.ThreatMessage;
@@ -192,6 +193,10 @@ public class InteractionModule
             commandQuit();
             return false;
         }
+        else if(command.equalsIgnoreCase("get_info"))
+        {
+            commandInfo();
+        }
         else if(command.equalsIgnoreCase("ping"))
         {
             commandPing();
@@ -228,6 +233,15 @@ public class InteractionModule
     private void commandQuit()
     {
         sendToClient(SERVER_PROTOCOL_FINISH);
+    }
+
+
+    private void commandInfo()
+    {
+        String version = AppInfo.getInstance().getVersion();
+        String rName = AppInfo.getInstance().getReleaseName();
+        sendToClient("Version="+version+"; Release="+rName);
+        LogModule.Log("Client asked for daemon`s version: "+version);
     }
 
 
@@ -278,18 +292,13 @@ public class InteractionModule
 
     private void commandGrabAllUserIgnores()
     {
-        String ignoresList = HarmlessPatternsDB.getInstance().compileIgnoresList();
-        if(ignoresList!=null && ignoresList.length()>0)
-        {
-            sendToClient(ignoresList);
-            LogModule.Log("All user filters were sent to client.");
-        }
+        sendToClient("This function is not implemented for now.");
     }
 
 
     private void commandDeleteUserIgnore()
     {
-
+        sendToClient("This function is not implemented for now.");
     }
 
 

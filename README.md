@@ -11,7 +11,27 @@ You can run it in CLI mode to be able watch leaks right in your terminal, or you
 
 ### Detection algorithms ###
 
-...
+Firstly, I have to introduce the term "traffic":
+**traffic** in context of this tool - is bounded traffic flow to one
+or more of next entities: 1) process id, 2) source port, 3) destination IP
+
+ + _Passive Leak Detection_  
+   If some traffic was leaking during 60 seconds AND it was greater
+   than **--min-leak-size**(see "Startup arguments") AND traffic leakage
+   did not subside more than 15 seconds AND it was targeted(destination IP,
+   source port, process) AND it`s some unusual application than DETECT.
+   
+ + _Sudden Leak Detection_  
+   If during last 10 seconds were leaked more than **--max-traffic-during-10-sec**
+   (see "Startup arguments") AND it was targeted than DETECT.
+ 
+ + _Active Leak Detection_  
+   If some traffic was leaking during 8 seconds AND it was greater
+   than **--min-leak-size**(see "Startup arguments") AND traffic leakage
+   did not subside more than 2 seconds than DETECT
+
+ If you interested to learn more about algorithms, you are welcome to
+ see implementation code - _/detector/Analyzer/Algorithms/*_
 
 ### File hierarchy ###
 
@@ -170,6 +190,7 @@ Socket interface works next way:
  * After this daemon ready to accept commands from client:
     + *quit* - daemon terminates connection and 
     writes to socket ":::daemon_protocol_finish:::"
+    + *get_info* - returns an info about current build
     + *ping* - when daemon got successfully pinged it 
     writes to socket ":::daemon_protocol_pinged:::"
     + *get_alert* - daemon writes to socket first 

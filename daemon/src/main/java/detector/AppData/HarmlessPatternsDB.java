@@ -57,13 +57,6 @@ public class HarmlessPatternsDB
     }
 
 
-    @Nullable
-    public String compileIgnoresList()
-    {
-        return null;
-    }
-
-
     /*
     * Loads the patterns database from some outer-resource
     * */

@@ -13,6 +13,10 @@ public class IPv4Address {
     /*
     * ------------------------------------ Constructors
     * */
+    private IPv4Address()
+    {
+
+    }
     public IPv4Address(byte[] ipv4)
     {
         address = ipv4;
@@ -80,6 +84,7 @@ public class IPv4Address {
     @Override
     public int hashCode()
     {
+        assert addressStr != null;
         return addressStr == null ? 0 : addressStr.hashCode();
     }
 

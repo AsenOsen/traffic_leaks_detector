@@ -49,6 +49,9 @@
             this.applicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.feedbackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.githubRepoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notifierMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertsTable)).BeginInit();
             this.appMenu.SuspendLayout();
@@ -286,10 +289,34 @@
             // 
             // helpToolStripMenuItem
             // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.feedbackToolStripMenuItem,
+            this.githubRepoToolStripMenuItem,
+            this.checkVersionToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
-            this.helpToolStripMenuItem.Click += new System.EventHandler(this.feedbackToolStripMenuItem_Click);
+            // 
+            // feedbackToolStripMenuItem
+            // 
+            this.feedbackToolStripMenuItem.Name = "feedbackToolStripMenuItem";
+            this.feedbackToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.feedbackToolStripMenuItem.Text = "Feedback";
+            this.feedbackToolStripMenuItem.Click += new System.EventHandler(this.feedbackToolStripMenuItem_Click_1);
+            // 
+            // githubRepoToolStripMenuItem
+            // 
+            this.githubRepoToolStripMenuItem.Name = "githubRepoToolStripMenuItem";
+            this.githubRepoToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.githubRepoToolStripMenuItem.Text = "Github Repo";
+            this.githubRepoToolStripMenuItem.Click += new System.EventHandler(this.githubRepoToolStripMenuItem_Click);
+            // 
+            // checkVersionToolStripMenuItem
+            // 
+            this.checkVersionToolStripMenuItem.Name = "checkVersionToolStripMenuItem";
+            this.checkVersionToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.checkVersionToolStripMenuItem.Text = "Check Version...";
+            this.checkVersionToolStripMenuItem.Click += new System.EventHandler(this.checkVersionToolStripMenuItem_Click);
             // 
             // AlertForm
             // 
@@ -337,6 +364,9 @@
         private System.Windows.Forms.ToolStripMenuItem applicationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem feedbackToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem githubRepoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem checkVersionToolStripMenuItem;
     }
 }
 
