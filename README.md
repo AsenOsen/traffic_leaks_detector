@@ -9,7 +9,7 @@ You can run it in CLI mode to be able watch leaks right in your terminal, or you
 
  + Socket interaction interface. You can write your own app which will bind to socket and get leaks messages from it.
 
-### Detection algorithms ###
+### Detection Algorithms ###
 
 Firstly, I have to introduce the term "traffic":
 **traffic** in context of this tool - is bounded traffic flow to one
@@ -29,6 +29,10 @@ or more of next entities: 1) process id, 2) source port, 3) destination IP
    If some traffic was leaking during 8 seconds AND it was greater
    than **--min-leak-size**(see "Startup arguments") AND traffic leakage
    did not subside more than 2 seconds than DETECT
+   
+ + TODO: _Connections rate per session_
+   
+   **Not implemented yet**
 
  If you interested to learn more about algorithms, you are welcome to
  see implementation code - _/detector/Analyzer/Algorithms/*_
@@ -206,6 +210,15 @@ Socket interface works next way:
     
 If daemons accepts the unknown command, it writes to socket 
 ":::daemon_protocol_unknown_command:::" 
+
+### TODO ###
+
+* Create more smart mechanism of retrieving the process information.
+  For now, it is implemented as frequent call of Netstat(standard system util),
+  but it would be much better if it will be an OS-dependent driver.
+* This point depends on previous.  
+  Add check: upload suspicious process`s file to VirusTotal.com and 
+  determine whether it is malware on not.
 
 ### Feedback ###
 

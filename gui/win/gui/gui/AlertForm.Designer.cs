@@ -38,13 +38,6 @@
             this.formHider = new System.Windows.Forms.Timer(this.components);
             this.clearBtn = new System.Windows.Forms.Button();
             this.errorLabel = new System.Windows.Forms.Label();
-            this.alertsTable = new BrightIdeasSoftware.ObjectListView();
-            this.msgColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.timeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.leakCauseColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.leakTypeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.moreInfoColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.ignoreBtnColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.appMenu = new System.Windows.Forms.MenuStrip();
             this.applicationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,9 +45,17 @@
             this.feedbackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.githubRepoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkVersionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.alertsTable = new BrightIdeasSoftware.ObjectListView();
+            this.msgColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.timeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.leakCauseColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.leakTypeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.moreInfoColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.ignoreBtnColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.soundState = new System.Windows.Forms.CheckBox();
             this.notifierMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.alertsTable)).BeginInit();
             this.appMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.alertsTable)).BeginInit();
             this.SuspendLayout();
             // 
             // messageChecker
@@ -128,6 +129,63 @@
             this.errorLabel.Text = "Connection to server is lost. Can not monitor traffic. Restart the application..." +
     "";
             this.errorLabel.Visible = false;
+            // 
+            // appMenu
+            // 
+            this.appMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.applicationToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.appMenu.Location = new System.Drawing.Point(0, 0);
+            this.appMenu.Name = "appMenu";
+            this.appMenu.Size = new System.Drawing.Size(1148, 24);
+            this.appMenu.TabIndex = 5;
+            this.appMenu.Text = "menuStrip2";
+            // 
+            // applicationToolStripMenuItem
+            // 
+            this.applicationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exitToolStripMenuItem});
+            this.applicationToolStripMenuItem.Name = "applicationToolStripMenuItem";
+            this.applicationToolStripMenuItem.Size = new System.Drawing.Size(80, 20);
+            this.applicationToolStripMenuItem.Text = "Application";
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.feedbackToolStripMenuItem,
+            this.githubRepoToolStripMenuItem,
+            this.checkVersionToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // feedbackToolStripMenuItem
+            // 
+            this.feedbackToolStripMenuItem.Name = "feedbackToolStripMenuItem";
+            this.feedbackToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.feedbackToolStripMenuItem.Text = "Feedback";
+            this.feedbackToolStripMenuItem.Click += new System.EventHandler(this.feedbackToolStripMenuItem_Click_1);
+            // 
+            // githubRepoToolStripMenuItem
+            // 
+            this.githubRepoToolStripMenuItem.Name = "githubRepoToolStripMenuItem";
+            this.githubRepoToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.githubRepoToolStripMenuItem.Text = "Github Repo";
+            this.githubRepoToolStripMenuItem.Click += new System.EventHandler(this.githubRepoToolStripMenuItem_Click);
+            // 
+            // checkVersionToolStripMenuItem
+            // 
+            this.checkVersionToolStripMenuItem.Name = "checkVersionToolStripMenuItem";
+            this.checkVersionToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.checkVersionToolStripMenuItem.Text = "Check Version...";
+            this.checkVersionToolStripMenuItem.Click += new System.EventHandler(this.checkVersionToolStripMenuItem_Click);
             // 
             // alertsTable
             // 
@@ -261,68 +319,25 @@
             this.ignoreBtnColumn.UseFiltering = false;
             this.ignoreBtnColumn.Width = 100;
             // 
-            // appMenu
+            // soundState
             // 
-            this.appMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.applicationToolStripMenuItem,
-            this.helpToolStripMenuItem});
-            this.appMenu.Location = new System.Drawing.Point(0, 0);
-            this.appMenu.Name = "appMenu";
-            this.appMenu.Size = new System.Drawing.Size(1148, 24);
-            this.appMenu.TabIndex = 5;
-            this.appMenu.Text = "menuStrip2";
-            // 
-            // applicationToolStripMenuItem
-            // 
-            this.applicationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exitToolStripMenuItem});
-            this.applicationToolStripMenuItem.Name = "applicationToolStripMenuItem";
-            this.applicationToolStripMenuItem.Size = new System.Drawing.Size(80, 20);
-            this.applicationToolStripMenuItem.Text = "Application";
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.feedbackToolStripMenuItem,
-            this.githubRepoToolStripMenuItem,
-            this.checkVersionToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // feedbackToolStripMenuItem
-            // 
-            this.feedbackToolStripMenuItem.Name = "feedbackToolStripMenuItem";
-            this.feedbackToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.feedbackToolStripMenuItem.Text = "Feedback";
-            this.feedbackToolStripMenuItem.Click += new System.EventHandler(this.feedbackToolStripMenuItem_Click_1);
-            // 
-            // githubRepoToolStripMenuItem
-            // 
-            this.githubRepoToolStripMenuItem.Name = "githubRepoToolStripMenuItem";
-            this.githubRepoToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.githubRepoToolStripMenuItem.Text = "Github Repo";
-            this.githubRepoToolStripMenuItem.Click += new System.EventHandler(this.githubRepoToolStripMenuItem_Click);
-            // 
-            // checkVersionToolStripMenuItem
-            // 
-            this.checkVersionToolStripMenuItem.Name = "checkVersionToolStripMenuItem";
-            this.checkVersionToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.checkVersionToolStripMenuItem.Text = "Check Version...";
-            this.checkVersionToolStripMenuItem.Click += new System.EventHandler(this.checkVersionToolStripMenuItem_Click);
+            this.soundState.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.soundState.AutoSize = true;
+            this.soundState.Checked = true;
+            this.soundState.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.soundState.Location = new System.Drawing.Point(996, 600);
+            this.soundState.Name = "soundState";
+            this.soundState.Size = new System.Drawing.Size(57, 17);
+            this.soundState.TabIndex = 6;
+            this.soundState.Text = "Sound";
+            this.soundState.UseVisualStyleBackColor = true;
             // 
             // AlertForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1148, 620);
+            this.Controls.Add(this.soundState);
             this.Controls.Add(this.appMenu);
             this.Controls.Add(this.errorLabel);
             this.Controls.Add(this.clearBtn);
@@ -335,9 +350,9 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AlertForm_FormClosing);
             this.Resize += new System.EventHandler(this.AlertForm_Resize);
             this.notifierMenu.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.alertsTable)).EndInit();
             this.appMenu.ResumeLayout(false);
             this.appMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.alertsTable)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -367,6 +382,7 @@
         private System.Windows.Forms.ToolStripMenuItem feedbackToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem githubRepoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem checkVersionToolStripMenuItem;
+        private System.Windows.Forms.CheckBox soundState;
     }
 }
 

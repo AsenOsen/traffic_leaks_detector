@@ -98,11 +98,15 @@ namespace gui
             String userMessage = newMessage.getMessage();
             String userLabel = newMessage.getCause();
 
-            // show notification
+            
             if (newMessage.isValid() && newMessage.isActual() && !isFormShown)
             {
+                // show notification
                 notifier.ShowBalloonTip(5000, userLabel, (userMessage.Length==0 ? "." : userMessage), ToolTipIcon.Info);
-                notificationSound.Play();
+
+                // play notification sound
+                if(soundState.Checked)
+                    notificationSound.Play();
             }
 
             // addition to table
